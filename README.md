@@ -57,3 +57,8 @@
 ---
 - gRPC 방식의 clova speech api 연결 테스트
 - clova speech 테스트 (실시간 제주도 방언 음성을 텍스트로 잘 바꿔주는지 확인)
+
+### 2024-04-19
+---
+- world it show 코엑스 참석
+- 발표자료 ppt 준비

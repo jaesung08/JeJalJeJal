@@ -6,7 +6,7 @@ buildscript{
 		springCloudVersion = '2023.0.0'
 		nettyVer = '4.1.52.Final'
 		grpcVer = '1.35.0'
-		protocVer = '3.14.0'
+		protocVer = '3.15.8'
 	}
 }
 
@@ -59,15 +59,8 @@ dependencies {
 
 	// clova-grpc
 	implementation "io.grpc:grpc-netty:${grpcVer}"
-	implementation "io.grpc:grpc-netty-shaded:${grpcVer}"
 	implementation "io.grpc:grpc-protobuf:${grpcVer}"
 	implementation "io.grpc:grpc-stub:${grpcVer}"
-
-//	implementation 'io.grpc:grpc-netty-shaded:1.42.1'
-//	implementation 'io.grpc:grpc-protobuf:1.42.1'
-//	implementation 'io.grpc:grpc-stub:1.42.1'
-//	implementation 'com.naver.clova.speech:clova-speech-client:1.0.0' // Check for the actual version
-//	implementation 'com.google.protobuf:protobuf-java:3.19.1'
 
 }
 
@@ -90,7 +83,7 @@ protobuf {
 	}
 	plugins {
 		grpc {
-			artifact = 'io.grpc:protoc-gen-grpc-java:1.36.0'
+			artifact = 'io.grpc:protoc-gen-grpc-java:1.35.0'
 		}
 	}
 	generateProtoTasks.generatedFilesBaseDir = "$projectDir/src/generated"

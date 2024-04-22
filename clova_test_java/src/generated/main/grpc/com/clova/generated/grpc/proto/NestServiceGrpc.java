@@ -1,3 +1,5 @@
+package com.clova.generated.grpc.proto;
+
 import static io.grpc.MethodDescriptor.generateFullMethodName;
 
 /**
@@ -9,32 +11,32 @@ public final class NestServiceGrpc {
 
   private NestServiceGrpc() {}
 
-  public static final String SERVICE_NAME = "NestService";
+  public static final String SERVICE_NAME = "com.clova.generated.grpc.proto.NestService";
 
   // Static method descriptors that strictly reflect the proto.
-  private static volatile io.grpc.MethodDescriptor<NestRequest,
-      NestResponse> getRecognizeMethod;
+  private static volatile io.grpc.MethodDescriptor<com.clova.generated.grpc.proto.NestRequest,
+      com.clova.generated.grpc.proto.NestResponse> getRecognizeMethod;
 
   @io.grpc.stub.annotations.RpcMethod(
       fullMethodName = SERVICE_NAME + '/' + "recognize",
-      requestType = NestRequest.class,
-      responseType = NestResponse.class,
+      requestType = com.clova.generated.grpc.proto.NestRequest.class,
+      responseType = com.clova.generated.grpc.proto.NestResponse.class,
       methodType = io.grpc.MethodDescriptor.MethodType.BIDI_STREAMING)
-  public static io.grpc.MethodDescriptor<NestRequest,
-      NestResponse> getRecognizeMethod() {
-    io.grpc.MethodDescriptor<NestRequest, NestResponse> getRecognizeMethod;
+  public static io.grpc.MethodDescriptor<com.clova.generated.grpc.proto.NestRequest,
+      com.clova.generated.grpc.proto.NestResponse> getRecognizeMethod() {
+    io.grpc.MethodDescriptor<com.clova.generated.grpc.proto.NestRequest, com.clova.generated.grpc.proto.NestResponse> getRecognizeMethod;
     if ((getRecognizeMethod = NestServiceGrpc.getRecognizeMethod) == null) {
       synchronized (NestServiceGrpc.class) {
         if ((getRecognizeMethod = NestServiceGrpc.getRecognizeMethod) == null) {
           NestServiceGrpc.getRecognizeMethod = getRecognizeMethod =
-              io.grpc.MethodDescriptor.<NestRequest, NestResponse>newBuilder()
+              io.grpc.MethodDescriptor.<com.clova.generated.grpc.proto.NestRequest, com.clova.generated.grpc.proto.NestResponse>newBuilder()
               .setType(io.grpc.MethodDescriptor.MethodType.BIDI_STREAMING)
               .setFullMethodName(generateFullMethodName(SERVICE_NAME, "recognize"))
               .setSampledToLocalTracing(true)
               .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
-                  NestRequest.getDefaultInstance()))
+                  com.clova.generated.grpc.proto.NestRequest.getDefaultInstance()))
               .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
-                  NestResponse.getDefaultInstance()))
+                  com.clova.generated.grpc.proto.NestResponse.getDefaultInstance()))
               .setSchemaDescriptor(new NestServiceMethodDescriptorSupplier("recognize"))
               .build();
         }
@@ -93,8 +95,8 @@ public final class NestServiceGrpc {
 
     /**
      */
-    public io.grpc.stub.StreamObserver<NestRequest> recognize(
-        io.grpc.stub.StreamObserver<NestResponse> responseObserver) {
+    public io.grpc.stub.StreamObserver<com.clova.generated.grpc.proto.NestRequest> recognize(
+        io.grpc.stub.StreamObserver<com.clova.generated.grpc.proto.NestResponse> responseObserver) {
       return io.grpc.stub.ServerCalls.asyncUnimplementedStreamingCall(getRecognizeMethod(), responseObserver);
     }
 
@@ -104,8 +106,8 @@ public final class NestServiceGrpc {
             getRecognizeMethod(),
             io.grpc.stub.ServerCalls.asyncBidiStreamingCall(
               new MethodHandlers<
-                NestRequest,
-                NestResponse>(
+                com.clova.generated.grpc.proto.NestRequest,
+                com.clova.generated.grpc.proto.NestResponse>(
                   this, METHODID_RECOGNIZE)))
           .build();
     }
@@ -127,8 +129,8 @@ public final class NestServiceGrpc {
 
     /**
      */
-    public io.grpc.stub.StreamObserver<NestRequest> recognize(
-        io.grpc.stub.StreamObserver<NestResponse> responseObserver) {
+    public io.grpc.stub.StreamObserver<com.clova.generated.grpc.proto.NestRequest> recognize(
+        io.grpc.stub.StreamObserver<com.clova.generated.grpc.proto.NestResponse> responseObserver) {
       return io.grpc.stub.ClientCalls.asyncBidiStreamingCall(
           getChannel().newCall(getRecognizeMethod(), getCallOptions()), responseObserver);
     }
@@ -195,7 +197,7 @@ public final class NestServiceGrpc {
       switch (methodId) {
         case METHODID_RECOGNIZE:
           return (io.grpc.stub.StreamObserver<Req>) serviceImpl.recognize(
-              (io.grpc.stub.StreamObserver<NestResponse>) responseObserver);
+              (io.grpc.stub.StreamObserver<com.clova.generated.grpc.proto.NestResponse>) responseObserver);
         default:
           throw new AssertionError();
       }
@@ -208,7 +210,7 @@ public final class NestServiceGrpc {
 
     @java.lang.Override
     public com.google.protobuf.Descriptors.FileDescriptor getFileDescriptor() {
-      return Nest.getDescriptor();
+      return com.clova.generated.grpc.proto.Nest.getDescriptor();
     }
 
     @java.lang.Override

@@ -1,9 +1,11 @@
+package com.clova.grpc.proto;
+
 import static io.grpc.MethodDescriptor.generateFullMethodName;
 
 /**
  */
 @javax.annotation.Generated(
-    value = "by gRPC proto compiler (version 1.35.0)",
+    value = "by gRPC proto compiler (version 1.36.0)",
     comments = "Source: nest.proto")
 public final class NestServiceGrpc {
 
@@ -49,7 +51,7 @@ public final class NestServiceGrpc {
   public static NestServiceStub newStub(io.grpc.Channel channel) {
     io.grpc.stub.AbstractStub.StubFactory<NestServiceStub> factory =
       new io.grpc.stub.AbstractStub.StubFactory<NestServiceStub>() {
-        @java.lang.Override
+        @Override
         public NestServiceStub newStub(io.grpc.Channel channel, io.grpc.CallOptions callOptions) {
           return new NestServiceStub(channel, callOptions);
         }
@@ -64,7 +66,7 @@ public final class NestServiceGrpc {
       io.grpc.Channel channel) {
     io.grpc.stub.AbstractStub.StubFactory<NestServiceBlockingStub> factory =
       new io.grpc.stub.AbstractStub.StubFactory<NestServiceBlockingStub>() {
-        @java.lang.Override
+        @Override
         public NestServiceBlockingStub newStub(io.grpc.Channel channel, io.grpc.CallOptions callOptions) {
           return new NestServiceBlockingStub(channel, callOptions);
         }
@@ -79,7 +81,7 @@ public final class NestServiceGrpc {
       io.grpc.Channel channel) {
     io.grpc.stub.AbstractStub.StubFactory<NestServiceFutureStub> factory =
       new io.grpc.stub.AbstractStub.StubFactory<NestServiceFutureStub>() {
-        @java.lang.Override
+        @Override
         public NestServiceFutureStub newStub(io.grpc.Channel channel, io.grpc.CallOptions callOptions) {
           return new NestServiceFutureStub(channel, callOptions);
         }
@@ -98,7 +100,7 @@ public final class NestServiceGrpc {
       return io.grpc.stub.ServerCalls.asyncUnimplementedStreamingCall(getRecognizeMethod(), responseObserver);
     }
 
-    @java.lang.Override public final io.grpc.ServerServiceDefinition bindService() {
+    @Override public final io.grpc.ServerServiceDefinition bindService() {
       return io.grpc.ServerServiceDefinition.builder(getServiceDescriptor())
           .addMethod(
             getRecognizeMethod(),
@@ -119,7 +121,7 @@ public final class NestServiceGrpc {
       super(channel, callOptions);
     }
 
-    @java.lang.Override
+    @Override
     protected NestServiceStub build(
         io.grpc.Channel channel, io.grpc.CallOptions callOptions) {
       return new NestServiceStub(channel, callOptions);
@@ -142,7 +144,7 @@ public final class NestServiceGrpc {
       super(channel, callOptions);
     }
 
-    @java.lang.Override
+    @Override
     protected NestServiceBlockingStub build(
         io.grpc.Channel channel, io.grpc.CallOptions callOptions) {
       return new NestServiceBlockingStub(channel, callOptions);
@@ -157,7 +159,7 @@ public final class NestServiceGrpc {
       super(channel, callOptions);
     }
 
-    @java.lang.Override
+    @Override
     protected NestServiceFutureStub build(
         io.grpc.Channel channel, io.grpc.CallOptions callOptions) {
       return new NestServiceFutureStub(channel, callOptions);
@@ -179,8 +181,8 @@ public final class NestServiceGrpc {
       this.methodId = methodId;
     }
 
-    @java.lang.Override
-    @java.lang.SuppressWarnings("unchecked")
+    @Override
+    @SuppressWarnings("unchecked")
     public void invoke(Req request, io.grpc.stub.StreamObserver<Resp> responseObserver) {
       switch (methodId) {
         default:
@@ -188,8 +190,8 @@ public final class NestServiceGrpc {
       }
     }
 
-    @java.lang.Override
-    @java.lang.SuppressWarnings("unchecked")
+    @Override
+    @SuppressWarnings("unchecked")
     public io.grpc.stub.StreamObserver<Req> invoke(
         io.grpc.stub.StreamObserver<Resp> responseObserver) {
       switch (methodId) {
@@ -206,12 +208,12 @@ public final class NestServiceGrpc {
       implements io.grpc.protobuf.ProtoFileDescriptorSupplier, io.grpc.protobuf.ProtoServiceDescriptorSupplier {
     NestServiceBaseDescriptorSupplier() {}
 
-    @java.lang.Override
+    @Override
     public com.google.protobuf.Descriptors.FileDescriptor getFileDescriptor() {
       return Nest.getDescriptor();
     }
 
-    @java.lang.Override
+    @Override
     public com.google.protobuf.Descriptors.ServiceDescriptor getServiceDescriptor() {
       return getFileDescriptor().findServiceByName("NestService");
     }
@@ -231,7 +233,7 @@ public final class NestServiceGrpc {
       this.methodName = methodName;
     }
 
-    @java.lang.Override
+    @Override
     public com.google.protobuf.Descriptors.MethodDescriptor getMethodDescriptor() {
       return getServiceDescriptor().findMethodByName(methodName);
     }

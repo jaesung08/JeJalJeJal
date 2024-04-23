@@ -4,9 +4,9 @@ buildscript{
 		querydslVer = '5.0.0'
 		springDependencyMgmtVer = '1.1.4'
 		springCloudVersion = '2023.0.0'
-		nettyVer = '4.1.52.Final'
+//		nettyVer = '4.1.52.Final'
 		grpcVer = '1.35.0'
-		protocVer = '3.15.8'
+//		protocVer = '3.14.8'
 	}
 }
 
@@ -62,6 +62,18 @@ dependencies {
 	implementation "io.grpc:grpc-protobuf:${grpcVer}"
 	implementation "io.grpc:grpc-stub:${grpcVer}"
 
+	// JUnit 5
+	testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
+	testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
+
+	// Mockito for mocking gRPC
+	testImplementation 'org.mockito:mockito-core:3.6.0'
+
+}
+
+// JUnit 5를 위한 설정
+test {
+	useJUnitPlatform()
 }
 
 dependencyManagement {
@@ -79,7 +91,7 @@ tasks.named('test') {
 }
 protobuf {
 	protoc {
-		artifact = "com.google.protobuf:protoc:3.15.8"
+		artifact = "com.google.protobuf:protoc:3.15.0"
 	}
 	plugins {
 		grpc {

@@ -17,28 +17,11 @@ import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
-    RecyclerView recyclerView;
-    Historyadapter adapter;
-
-    ArrayList<history_item> history_items = new ArrayList<>();
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_history_page);
-
-        history_items.add(new history_item("소영", "안녕"));
-        history_items.add(new history_item("재성", "안녕"));
-        history_items.add(new history_item("지우", "안녕"));
-        history_items.add(new history_item("현지", "안녕"));
-        history_items.add(new history_item("중현", "안녕"));
-        history_items.add(new history_item("성호", "안녕"));
-
-        recyclerView = findViewById(R.id.history_rv);
-        adapter = new Historyadapter(this, history_items);
-        recyclerView.setAdapter(adapter);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this, RecyclerView.VERTICAL,false));
+        setContentView(R.layout.activity_landing);
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());

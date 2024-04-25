@@ -1,0 +1,35 @@
+server:
+  port: 8000
+  servlet:
+    context-path: "/api/"
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
+
+spring:
+  application:
+    name: JeJal
+  datasource:
+    url: jdbc:sqlite:mydb.db
+    driver-class-name: org.sqlite.JDBC
+  jpa:
+    database-platform: org.hibernate.community.dialect.SQLiteDialect
+    hibernate:
+      ddl-auto: update
+
+
+
+#logging
+logging:
+  level:
+    org.hibernate.SQL: DEBUG
+    org.hibernate.orm.jdbc.bind: trace
+    root: INFO
+    org:
+      springframework:
+        web: INFO
+        apache:
+          tiles: DEBUG
+        springframework:
+          boot: DEBUG

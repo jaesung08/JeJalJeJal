@@ -16,4 +16,4 @@
 - Jira issue 에서 브렌치 생성 클릭
 - 이슈번호_{내용}
     - **ex) FE-member_api**
-    - **ex) BE-member_api**
+    - **ex) BE-member_api** 

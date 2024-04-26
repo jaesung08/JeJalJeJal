@@ -27,7 +27,7 @@ class CallOverlayService : Service() {
 
     private lateinit var windowManager: WindowManager
     private lateinit var overlayView: View
-    private lateinit var textOverlay: TextView
+    private lateinit var textOverlay: LinearLayout
     private lateinit var speechBubbleContainer: LinearLayout
     private var isTextVisible = true
 

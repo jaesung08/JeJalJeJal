@@ -1,3 +1,4 @@
+package com.example.jejal.call
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -7,7 +8,7 @@ import android.util.Log
 
 class CallReceiver : BroadcastReceiver() {
 
-//    private var webSocketClient: WebSocketClient? = null
+    //    private var webSocketClient: WebSocketClient? = null
     override fun onReceive(context: Context, intent: Intent) {
 
         //정상 작동 체크 완료

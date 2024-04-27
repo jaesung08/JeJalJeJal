@@ -3,6 +3,7 @@ package com.example.jejal
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
+import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.Settings
@@ -18,26 +19,37 @@ import com.example.jejal.R
 class MainActivity : AppCompatActivity() {
 
     private val PHONE_STATE_PERMISSION_CODE = 101
+    private lateinit var overlayPermissionRequest: ActivityResultLauncher<Intent>
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
         setContentView(R.layout.activity_main_page)
 
-        // 런타임 권한 요청
-        checkPermission(android.Manifest.permission.READ_PHONE_STATE, PHONE_STATE_PERMISSION_CODE)
-
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
+        // Set up the overlay permission request launcher
+        overlayPermissionRequest = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (Settings.canDrawOverlays(this)) {
+                // Permission granted, continue with showing overlay
+                // You can perform actions now that require drawing over other apps
+            } else {
+                // Permission not granted, handle the scenario
+                // Inform the user or disable functionality that requires this permission
+            }
         }
 
+        requestOverlayPermission()
+        checkPhoneStatePermission()
     }
 
-    // 앱 시작 시 권한 요청 팝업 뜸
-    private fun checkPermission(permission: String, requestCode: Int) {
-        if (ContextCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, arrayOf(permission), requestCode)
+    private fun requestOverlayPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(this)) {
+            val intent = Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:$packageName"))
+            overlayPermissionRequest.launch(intent)
+        }
+    }
+
+    private fun checkPhoneStatePermission() {
+        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, arrayOf(android.Manifest.permission.READ_PHONE_STATE), PHONE_STATE_PERMISSION_CODE)
         }
     }
 }

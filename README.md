@@ -92,3 +92,8 @@
 - Backend 프로젝트 초기 설정
 - Gerrit 연동 및 문서화
 - Gitlab MM alert 설정
+
+### 2024-04-29
+---
+- untrunc 기능 구현위한 VoicePassing 코드 분석
+- 팀 미팅 후 내용 재정리

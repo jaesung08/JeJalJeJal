@@ -26,8 +26,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="com.example.jejal.call.CallActivity" android:exported="true">
-        </activity>
+        <activity android:name="com.example.jejal.call.CallActivity" android:exported="true" />
+        <activity android:name=".historylist.HistoryListActivity" android:exported="true" />
+        <activity android:name=".history.HistoryActivity" android:exported="true" />
 <!--        <activity android:name=".call.CallActivity"-->
 <!--            android:theme="@style/Theme.App.Overlay" />-->
         <receiver android:name="com.example.jejal.call.CallReceiver"

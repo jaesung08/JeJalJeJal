@@ -27,8 +27,9 @@
             android:layout_marginHorizontal="30dp"
             android:id="@+id/listview"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
-
+            android:layout_height="match_parent"
+            android:divider="@color/primary"
+            android:dividerHeight="0.5dp" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -97,3 +97,8 @@
 ---
 - untrunc 기능 구현위한 VoicePassing 코드 분석
 - 팀 미팅 후 내용 재정리
+
+### 2024-04-30
+---
+- untrunc 코드 분석
+- untrunc 활용을 위한 테스트

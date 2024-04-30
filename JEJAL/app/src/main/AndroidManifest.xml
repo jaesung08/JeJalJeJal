@@ -6,6 +6,32 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.MANAGE_OWN_CALLS" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_PHONE_CALL" /> <!-- 새로운 권한 추가 -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <!--전화번호, 네트워크 정보, 진행 중인 통화 상태 등 전화 상태에 대한 읽기 권한-->
+    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+
+    <!--외부 저장소 파일 읽기, 쓰기, 관리-->
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />
+
+    <!--인터넷 연결-->
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <!--팝업-->
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+
+    <!--화면 안꺼지게-->
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+
+    <!-- 오버레이 권한 추가 -->
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
+
+    <!-- 녹음을 위한 권한 -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
         android:allowBackup="true"
@@ -29,6 +55,7 @@
         <activity android:name="com.example.jejal.call.CallActivity" android:exported="true" />
         <activity android:name=".historylist.HistoryListActivity" android:exported="true" />
         <activity android:name=".history.HistoryActivity" android:exported="true" />
+        <activity android:name=".translator.TranslatorActivity" android:exported="true"/>
 <!--        <activity android:name=".call.CallActivity"-->
 <!--            android:theme="@style/Theme.App.Overlay" />-->
         <receiver android:name="com.example.jejal.call.CallReceiver"
@@ -42,6 +69,7 @@
             android:foregroundServiceType="phoneCall" />
 
     </application>
+<<<<<<< Updated upstream
 
     <!--전화번호, 네트워크 정보, 진행 중인 통화 상태 등 전화 상태에 대한 읽기 권한-->
     <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
@@ -83,4 +111,6 @@
 
 
 
+=======
+>>>>>>> Stashed changes
 </manifest>

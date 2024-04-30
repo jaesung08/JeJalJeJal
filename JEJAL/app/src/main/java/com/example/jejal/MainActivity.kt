@@ -1,5 +1,7 @@
 package com.example.jejal
 
+import AutoCallRecordingHelper
+import AutoCallRecordingHelper.AUTO_CALL_RECORDING_SETTING_REQUEST_CODE
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
@@ -25,9 +27,22 @@ class MainActivity : AppCompatActivity() {
     private val READ_EXTERNAL_STORAGE_PERMISSION_CODE = 103
     private lateinit var overlayPermissionRequest: ActivityResultLauncher<Intent>
 
+    private val autoCallRecordingSettingLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == RESULT_OK) {
+            AutoCallRecordingHelper.handleActivityResult(result.resultCode, this)
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main_page)
+
+        // 통화 자동 녹음 활성화 안내 메시지 표시
+        AutoCallRecordingHelper.showAutoCallRecordingMessage(this) {
+            AutoCallRecordingHelper.openAutoCallRecordingSettings(this)
+        }
 
         findViewById<LinearLayout>(R.id.gotoTranslate).setOnClickListener {
             val intent = Intent(this, HistoryListActivity::class.java)
@@ -53,8 +68,22 @@ class MainActivity : AppCompatActivity() {
 
         requestOverlayPermission()
         checkPhoneStatePermission()
+<<<<<<< Updated upstream
         checkReadMediaAudioPermission()
         checkReadExternalStoragePermission()
+=======
+        // 통화 자동 녹음 활성화 안내 메시지 표시
+        AutoCallRecordingHelper.showAutoCallRecordingMessage(this) {
+            AutoCallRecordingHelper.openAutoCallRecordingSettings(this@MainActivity)
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == AUTO_CALL_RECORDING_SETTING_REQUEST_CODE) {
+            AutoCallRecordingHelper.handleActivityResult(resultCode, this)
+        }
+>>>>>>> Stashed changes
     }
 
     private fun requestOverlayPermission() {

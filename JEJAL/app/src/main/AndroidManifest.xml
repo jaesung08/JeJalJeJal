@@ -69,7 +69,6 @@
             android:foregroundServiceType="phoneCall" />
 
     </application>
-<<<<<<< Updated upstream
 
     <!--전화번호, 네트워크 정보, 진행 중인 통화 상태 등 전화 상태에 대한 읽기 권한-->
     <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
@@ -109,8 +108,4 @@
     <uses-permission android:name="android.permission.READ_CONTACTS" />
     <uses-permission android:name="android.permission.READ_CALL_LOG" />
 
-
-
-=======
->>>>>>> Stashed changes
 </manifest>

@@ -68,10 +68,7 @@ class MainActivity : AppCompatActivity() {
 
         requestOverlayPermission()
         checkPhoneStatePermission()
-<<<<<<< Updated upstream
-        checkReadMediaAudioPermission()
-        checkReadExternalStoragePermission()
-=======
+
         // 통화 자동 녹음 활성화 안내 메시지 표시
         AutoCallRecordingHelper.showAutoCallRecordingMessage(this) {
             AutoCallRecordingHelper.openAutoCallRecordingSettings(this@MainActivity)
@@ -83,7 +80,6 @@ class MainActivity : AppCompatActivity() {
         if (requestCode == AUTO_CALL_RECORDING_SETTING_REQUEST_CODE) {
             AutoCallRecordingHelper.handleActivityResult(resultCode, this)
         }
->>>>>>> Stashed changes
     }
 
     private fun requestOverlayPermission() {

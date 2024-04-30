@@ -21,6 +21,8 @@ import com.example.jejal.historylist.HistoryListActivity
 class MainActivity : AppCompatActivity() {
 
     private val PHONE_STATE_PERMISSION_CODE = 101
+    private val READ_MEDIA_AUDIO_PERMISSION_CODE = 102
+    private val READ_EXTERNAL_STORAGE_PERMISSION_CODE = 103
     private lateinit var overlayPermissionRequest: ActivityResultLauncher<Intent>
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -51,6 +53,8 @@ class MainActivity : AppCompatActivity() {
 
         requestOverlayPermission()
         checkPhoneStatePermission()
+        checkReadMediaAudioPermission()
+        checkReadExternalStoragePermission()
     }
 
     private fun requestOverlayPermission() {
@@ -63,6 +67,25 @@ class MainActivity : AppCompatActivity() {
     private fun checkPhoneStatePermission() {
         if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, arrayOf(android.Manifest.permission.READ_PHONE_STATE), PHONE_STATE_PERMISSION_CODE)
+        }
+    }
+
+    private fun checkReadMediaAudioPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && ContextCompat.checkSelfPermission(
+                this, android.Manifest.permission.READ_MEDIA_AUDIO
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(android.Manifest.permission.READ_MEDIA_AUDIO),
+                READ_MEDIA_AUDIO_PERMISSION_CODE
+            )
+        }
+    }
+
+    private fun checkReadExternalStoragePermission() {
+        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, arrayOf(android.Manifest.permission.READ_EXTERNAL_STORAGE), READ_EXTERNAL_STORAGE_PERMISSION_CODE)
         }
     }
 }

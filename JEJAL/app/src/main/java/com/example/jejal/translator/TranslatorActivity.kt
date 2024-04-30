@@ -99,7 +99,7 @@ class TranslatorActivity : AppCompatActivity() {
         Toast.makeText(this, "Recording saved to: $audioFilePath", Toast.LENGTH_LONG).show()
         Log.d("AudioPath", "File URI: $audioFilePath")
     }
-
+    // onDestroy
     override fun onDestroy() {
         super.onDestroy()
         mediaRecorder?.release()

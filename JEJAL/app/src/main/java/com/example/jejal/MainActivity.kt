@@ -17,6 +17,7 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import com.example.jejal.R
 import com.example.jejal.historylist.HistoryListActivity
+import com.example.jejal.translator.TranslatorActivity
 
 class MainActivity : AppCompatActivity() {
 
@@ -31,6 +32,11 @@ class MainActivity : AppCompatActivity() {
 
         findViewById<LinearLayout>(R.id.gotoTranslate).setOnClickListener {
             val intent = Intent(this, HistoryListActivity::class.java)
+            startActivity(intent)
+        }
+
+        findViewById<LinearLayout>(R.id.translator).setOnClickListener {
+            val intent = Intent(this, TranslatorActivity::class.java)
             startActivity(intent)
         }
 

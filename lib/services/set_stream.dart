@@ -4,6 +4,7 @@ import 'dart:io';
 
 import 'package:flutter/services.dart';
 import 'recent_file.dart';
+import 'package:phone_state/phone_state.dart';
 
 
 void setStream() async {
@@ -15,8 +16,22 @@ void setStream() async {
   File? targetFile;
   Timer? timer;
   int offset = 0;
-
+  PhoneStateStatus phoneStatus = PhoneStateStatus.NOTHING;
   recordDirectory = Directory(recordDirectoryPath);
+
+  PhoneState.stream.listen((event) async {
+      phoneStatus = event as PhoneStateStatus;
+      if (event.status == PhoneStateStatus.CALL_INCOMING) {
+        print("Incoming call detected.");
+
+      } else if (event.status == PhoneStateStatus.CALL_STARTED) {
+        print("Call started.");
+      } else if (event.status == PhoneStateStatus.CALL_ENDED) {
+        print("Call ended.");
+      }
+    });
+  }
+
   // androidId = await UniqueDeviceId.instance.getUniqueId() ?? 'unknown';
   //
   // PlatformChannel().callStream().listen((event) {
@@ -45,22 +60,22 @@ void setStream() async {
       // App.navigatorKey.currentContext!.read<IsAnalyzing>().on();
 
       // 통화 녹음 데이터 전송
-      var temp = await recentFile(recordDirectory);
-      targetFile = temp is FileSystemEntity ? temp as File : null;
-      offset = 0;
-      if (targetFile is File) {
-        print("파일 찾음");
-        timer = Timer.periodic(const Duration(seconds: 6), (timer) async {
-          Uint8List entireBytes = targetFile!.readAsBytesSync();
-          var nextOffset = entireBytes.length;
-          var splittedBytes = entireBytes.sublist(offset, nextOffset);
-          offset = nextOffset;
-          // ws?.sink.add(splittedBytes);
-        });
-      } else {
-        print("파일 못찾음");
-        // ws?.sink.close();
-      }
+      // var temp = await recentFile(recordDirectory);
+      // targetFile = temp is FileSystemEntity ? temp as File : null;
+      // offset = 0;
+      // if (targetFile is File) {
+      //   print("파일 찾음");
+      //   timer = Timer.periodic(const Duration(seconds: 6), (timer) async {
+      //     Uint8List entireBytes = targetFile!.readAsBytesSync();
+      //     var nextOffset = entireBytes.length;
+      //     var splittedBytes = entireBytes.sublist(offset, nextOffset);
+      //     offset = nextOffset;
+      //     // ws?.sink.add(splittedBytes);
+      //   });
+      // } else {
+      //   print("파일 못찾음");
+      //   // ws?.sink.close();
+      // }
 
       // 검사 결과 수신
       // ws?.stream.listen((msg) async {
@@ -132,4 +147,4 @@ void setStream() async {
   //     // ws?.sink.add(jsonEncode(endMessage));
   //   }
   // });
-}
+// }

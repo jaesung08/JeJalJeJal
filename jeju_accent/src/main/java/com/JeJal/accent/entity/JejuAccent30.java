@@ -1,10 +1,18 @@
 package com.JeJal.accent.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import com.JeJal.accent.dto.JejuAccentDTO;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+@Entity
+@Setter
+@Getter
+@Table(name = "jeju_accent30")
+@AllArgsConstructor
+@NoArgsConstructor
 public class JejuAccent30 {
 
     @Id
@@ -18,6 +26,12 @@ public class JejuAccent30 {
     private String standard;
 
     @Column
-    private Long count;
+    private int count;
+
+    public JejuAccent30(JejuAccentDTO dto) {
+        this.jejuo = dto.getJejuo();
+        this.standard = dto.getStandard();
+        this.count = dto.getCount();
+    }
 
 }

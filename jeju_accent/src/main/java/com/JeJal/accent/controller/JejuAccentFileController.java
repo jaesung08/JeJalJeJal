@@ -1,5 +1,8 @@
 package com.JeJal.accent.controller;
 
+import com.JeJal.accent.dto.JejuAccentDTO;
+import com.JeJal.accent.service.JejuAccentService;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -10,6 +13,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,6 +22,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @Tag(name = "로컬에 저장된 JSON 파일로 데이터 추출")
 public class JejuAccentFileController {
+
+    static JejuAccentService jejuAccentService;
 
     private static final String DIRECTORY_PATH = "/path/to/your/json/files"; // 파일이 저장된 디렉토리 경로
 
@@ -32,32 +38,40 @@ public class JejuAccentFileController {
                 .forEach(path -> {
                     try {
                         File file = path.toFile();
+                        JsonNode rootNode = mapper.readTree(file);
 
-                        Map<String, Object> jsonMap = mapper.readValue(file, Map.class);
-
-
-
-
-
-
-
-
+                        Map<String, String> speakerAges = rootNode.get("speaker")
+                                .findValuesAsText("id").stream()
+                                .collect(Collectors.toMap(
+                                        id -> id,
+                                        id -> rootNode.get("speaker").get(Integer.parseInt(id) - 1).get("age").asText().substring(0, 2) // 나이의 앞 두 글자 추출
+                                ));
 
 
+                        JsonNode utterances = rootNode.get("utterance");
 
-                        List<Map<String, Object>> utterances = (List<Map<String, Object>>) jsonMap.get("utterance");
+                        if (utterances.isArray()) {
+                            for (JsonNode utterance : utterances) {
+                                String speakerId = utterance.get("speaker_id").asText();
+                                JsonNode eojeolList = utterance.get("eojeolList");
+                                for (JsonNode eojeol : eojeolList) {
+                                    String eojeolText = eojeol.get("eojeol").asText();
+                                    String standardText = eojeol.get("standard").asText();
+                                    if (!eojeolText.equals(standardText)) {
+                                        // 결과 객체에 추가
+                                        results.addObject()
+                                                .put("speaker_id", speakerId)
+                                                .put("age_group", speakerAges.get(speakerId))
+                                                .put("eojeol", eojeolText)
+                                                .put("standard", standardText);
 
-                        if (utterances != null) {
-                            for (Map<String, Object> utterance : utterances) {
-                                List<Map<String, String>> eojeolList = (List<Map<String, String>>) utterance.get("eojeolList");
-                                if (eojeolList != null) {
-                                    for (Map<String, String> eojeol : eojeolList) {
-                                        if (!eojeol.get("eojeol").equals(eojeol.get("standard"))) {
-                                            System.out.println("Eojeol: " + eojeol.get("eojeol") + ", Standard: " + eojeol.get("standard"));
-                                            results.addObject()
-                                                .put("eojeol", eojeol.get("eojeol"))
-                                                .put("standard", eojeol.get("standard"));
-                                        }
+                                        //  데이터 베이스 저장
+                                        JejuAccentDTO dto = new JejuAccentDTO();
+                                        dto.setAge(speakerAges.get(speakerId));
+                                        dto.setJejuo(eojeolText);
+                                        dto.setStandard(standardText);
+                                        dto.setCount(1);
+                                        jejuAccentService.checkWord(dto);
                                     }
                                 }
                             }
@@ -72,5 +86,4 @@ public class JejuAccentFileController {
         }
         return ResponseEntity.ok(results);
     }
-
 }

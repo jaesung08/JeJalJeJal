@@ -14,7 +14,10 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/jeju_accent?useSSL=false&serverTimezone=Asia/Seoul&characterEncoding=UTF-8
     username: root
-    password: soyoung95
+    # 맥
+    password: soyoung
+    # 윈도우
+    # password: soyoung95
   jpa:
     open-in-view: true
     hibernate:

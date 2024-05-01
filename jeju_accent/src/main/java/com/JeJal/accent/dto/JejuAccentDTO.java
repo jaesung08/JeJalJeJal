@@ -12,8 +12,9 @@ import lombok.Setter;
 public class JejuAccentDTO {
 
     private Long accentId;
+    private String age;
     private String jejuo;
     private String standard;
-    private Long count;
+    private int count;
 
 }

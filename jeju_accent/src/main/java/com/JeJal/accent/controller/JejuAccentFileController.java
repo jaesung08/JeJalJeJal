@@ -15,17 +15,24 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @Tag(name = "로컬에 저장된 JSON 파일로 데이터 추출")
+@RequiredArgsConstructor
 public class JejuAccentFileController {
 
-    static JejuAccentService jejuAccentService;
+    private final JejuAccentService jejuAccentService;
 
-    private static final String DIRECTORY_PATH = "/path/to/your/json/files"; // 파일이 저장된 디렉토리 경로
+    // 맥북 경로임
+    private static final String DIRECTORY_PATH = "/Users/jeongsoyeong/Desktop/JejuAccent/data"; // 파일이 저장된 디렉토리 경로
+
+    // 윈도우 경로
+    
 
     @GetMapping("/process-files")
     public ResponseEntity<ArrayNode> processFiles() throws IOException {
@@ -55,8 +62,8 @@ public class JejuAccentFileController {
                                 String speakerId = utterance.get("speaker_id").asText();
                                 JsonNode eojeolList = utterance.get("eojeolList");
                                 for (JsonNode eojeol : eojeolList) {
-                                    String eojeolText = eojeol.get("eojeol").asText();
-                                    String standardText = eojeol.get("standard").asText();
+                                    String eojeolText = eojeol.get("eojeol").asText().replaceAll("[,.?!#]", "");
+                                    String standardText = eojeol.get("standard").asText().replaceAll("[,.?!#]", "");
                                     if (!eojeolText.equals(standardText)) {
                                         // 결과 객체에 추가
                                         results.addObject()

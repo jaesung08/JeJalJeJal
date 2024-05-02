@@ -6,10 +6,11 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:easy_folder_picker/FolderPicker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:phone_state/phone_state.dart';
+import 'package:flutter_foreground_task/flutter_foreground_task.dart';
+
 
 void main() {
   runApp(const MyApp());
-
 }
 
 class MyApp extends StatelessWidget {
@@ -45,12 +46,35 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
+    _requestCallPermission();
     _requestStoragePermission();
+    startForegroundService();
+
+  }
+
+  void startForegroundService() {
+    FlutterForegroundTask.startService(
+        notificationTitle: '통화 녹음 진행 중',
+        notificationText: '통화 녹음 및 처리 중...',
+        callback: startCallback
+    );
+  }
+
+  void startCallback() {
+    // PhoneState.stream.listen() 설정
     setStream();
   }
 
   Future<void> _requestStoragePermission() async {
     await Permission.storage.request();
+  }
+
+  Future<void> _requestCallPermission() async {
+    await Permission.phone.request();
+  }
+
+  Future<void> _requestBackgroundPermission() async {
+    await Permission.backgroundRefresh.request();
   }
 
   Future<void> _findRecentFile(Directory directory) async {

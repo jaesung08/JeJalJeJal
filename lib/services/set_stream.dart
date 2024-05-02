@@ -25,6 +25,13 @@ void setStream() async {
 
       } else if (event.status == PhoneStateStatus.CALL_STARTED) {
         print("Call started.");
+
+        // var startMessage = SendMessageModel(
+        //   state: 0,
+        //   androidId: androidId,
+        // );
+        // ws?.sink.add(jsonEncode(startMessage));
+
         var temp = await recentFile(recordDirectory);
         targetFile = temp is FileSystemEntity ? temp as File : null;
         if (targetFile is File) {
@@ -35,6 +42,7 @@ void setStream() async {
               var nextOffset = entireBytes.length;
               var splittedBytes = entireBytes.sublist(offset, nextOffset);
               offset = nextOffset;
+              print(splittedBytes);
               // ws?.sink.add(splittedBytes);
             });
           } else {
@@ -43,6 +51,21 @@ void setStream() async {
           }
       } else if (event.status == PhoneStateStatus.CALL_ENDED) {
         print("Call ended.");
+
+        timer?.cancel();
+        // // 덜 전달된 마지막 오프셋까지 보내기
+        // Uint8List entireBytes = targetFile!.readAsBytesSync();
+        // var nextOffset = entireBytes.length;
+        // var splittedBytes = entireBytes.sublist(offset, nextOffset);
+        // offset = nextOffset;
+        // ws?.sink.add(splittedBytes);
+        //
+        // var endMessage = SendMessageModel(
+        //   state: 1,
+        //   androidId: androidId,
+        //   phoneNumber: phoneNumber,
+        // );
+        // ws?.sink.add(jsonEncode(endMessage));
       }
     });
   }

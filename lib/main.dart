@@ -86,30 +86,6 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
     _overlayEntry = null;
   }
 
-  @override
-  void dispose() {
-    WidgetsBinding.instance.removeObserver(this);
-    super.dispose();
-  }
-
-  void _showOverlay() {
-    _overlayEntry = OverlayEntry(
-      builder: (context) => Positioned(
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        child: OverlayWidget(),
-      ),
-    );
-    Overlay.of(context)?.insert(_overlayEntry!);
-  }
-
-  void _removeOverlay() {
-    _overlayEntry?.remove();
-    _overlayEntry = null;
-  }
-
   Future<void> _requestPermissions() async {
     // 통화, 저장소, 백그라운드 권한 요청
     await _requestCallPermission();

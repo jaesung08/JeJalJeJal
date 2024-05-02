@@ -34,13 +34,13 @@ public class TranslateController {
 
     @PostMapping("/clova")
     @Operation(summary = "제주 방언 번역 - clova", description = "제주 방언을 표준어로 번역합니다.")
-    public ResponseEntity<BaseResponse<?>> translateByClova(@RequestBody TextDto textDto) {
+    public ResponseEntity<BaseResponse<TextDto>> translateByClova(@RequestBody TextDto textDto) {
         ClovaStudioResponseDto clovaStudioResponseDto = clovaStudioService.translateByClova(textDto.getText());
 
         String translatedText = clovaStudioResponseDto.getResult().getMessage().content;
         TextDto resultTextDto = TextDto.builder()
-                .text(translatedText).
-                build();
+                .text(translatedText)
+                .build();
 
         return ResponseEntity
                 .status(HttpStatus.OK)

@@ -15,18 +15,18 @@ spring:
     url: jdbc:mysql://localhost:3306/jeju_accent?useSSL=false&serverTimezone=Asia/Seoul&characterEncoding=UTF-8
     username: root
     # 맥
-    password: soyoung
+    # password: soyoung
     # 윈도우
-    # password: soyoung95
+    password: soyoung95
   jpa:
     open-in-view: true
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
       naming:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
-    show-sql: true
+    show-sql: false
     properties:
-      hibernate.format_sql: true
+      hibernate.format_sql: false
       dialect: org.hibernate.dialect.MySQL8InnoDBDialect
 
 
@@ -44,3 +44,7 @@ logging:
           tiles: DEBUG
         springframework:
           boot: DEBUG
+  file:
+    name: logs/json_file_upload.log
+    pattern:
+      file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"

@@ -4,10 +4,12 @@ import com.JeJal.accent.dto.JejuAccentDTO;
 import com.JeJal.accent.entity.*;
 import com.JeJal.accent.repository.*;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class JejuAccentService {
 
     private final JejuAccent10Repository jejuAccent10Repository;
@@ -24,8 +26,10 @@ public class JejuAccentService {
                 existingWord.setCount(existingWord.getCount() + 1);
                 jejuAccent10Repository.save(existingWord);
                 System.out.println("이미 존재하는 단어: " + dto.getJejuo() + ", 현재 횟수: " + existingWord.getCount());
+                log.info("이미 존재하는 단어: " + dto.getJejuo() + ", 현재 횟수: " + existingWord.getCount());
             } else {
                 System.out.println("10대 데이터베이스에 없는 새로운 단어: " + dto.getJejuo());
+                log.info("10대 데이터베이스에 없는 새로운 단어: " + dto.getJejuo());
                 jejuAccent10Repository.save(new JejuAccent10(dto));
             }
         }
@@ -36,8 +40,10 @@ public class JejuAccentService {
                 existingWord.setCount(existingWord.getCount() + 1);
                 jejuAccent20Repository.save(existingWord);
                 System.out.println("이미 존재하는 단어: " + dto.getJejuo() + ", 현재 횟수: " + existingWord.getCount());
+                log.info("이미 존재하는 단어: " + dto.getJejuo() + ", 현재 횟수: " + existingWord.getCount());
             } else {
                 System.out.println("20대 데이터베이스에 없는 새로운 단어: " + dto.getJejuo());
+                log.info("20대 데이터베이스에 없는 새로운 단어: " + dto.getJejuo());
                 jejuAccent20Repository.save(new JejuAccent20(dto));
             }
         }
@@ -48,8 +54,10 @@ public class JejuAccentService {
                 existingWord.setCount(existingWord.getCount() + 1);
                 jejuAccent30Repository.save(existingWord);
                 System.out.println("이미 존재하는 단어: " + dto.getJejuo() + ", 현재 횟수: " + existingWord.getCount());
+                log.info("이미 존재하는 단어: " + dto.getJejuo() + ", 현재 횟수: " + existingWord.getCount());
             } else {
                 System.out.println("30대 데이터베이스에 없는 새로운 단어: " + dto.getJejuo());
+                log.info("30대 데이터베이스에 없는 새로운 단어: " + dto.getJejuo());
                 jejuAccent30Repository.save(new JejuAccent30(dto));
             }
         }
@@ -60,8 +68,10 @@ public class JejuAccentService {
                 existingWord.setCount(existingWord.getCount() + 1);
                 jejuAccent40Repository.save(existingWord);
                 System.out.println("이미 존재하는 단어: " + dto.getJejuo() + ", 현재 횟수: " + existingWord.getCount());
+                log.info("이미 존재하는 단어: " + dto.getJejuo() + ", 현재 횟수: " + existingWord.getCount());
             } else {
                 System.out.println("40대 데이터베이스에 없는 새로운 단어: " + dto.getJejuo());
+                log.info("40대 데이터베이스에 없는 새로운 단어: " + dto.getJejuo());
                 jejuAccent40Repository.save(new JejuAccent40(dto));
             }
         }
@@ -72,8 +82,10 @@ public class JejuAccentService {
                 existingWord.setCount(existingWord.getCount() + 1);
                 jejuAccent50Repository.save(existingWord);
                 System.out.println("이미 존재하는 단어: " + dto.getJejuo() + ", 현재 횟수: " + existingWord.getCount());
+                log.info("이미 존재하는 단어: " + dto.getJejuo() + ", 현재 횟수: " + existingWord.getCount());
             } else {
                 System.out.println("50대 데이터베이스에 없는 새로운 단어: " + dto.getJejuo());
+                log.info("50대 데이터베이스에 없는 새로운 단어: " + dto.getJejuo());
                 jejuAccent50Repository.save(new JejuAccent50(dto));
             }
         }
@@ -84,8 +96,10 @@ public class JejuAccentService {
                 existingWord.setCount(existingWord.getCount() + 1);
                 jejuAccent60Repository.save(existingWord);
                 System.out.println("이미 존재하는 단어: " + dto.getJejuo() + ", 현재 횟수: " + existingWord.getCount());
+                log.info("이미 존재하는 단어: " + dto.getJejuo() + ", 현재 횟수: " + existingWord.getCount());
             } else {
                 System.out.println("60대 데이터베이스에 없는 새로운 단어: " + dto.getJejuo());
+                log.info("60대 데이터베이스에 없는 새로운 단어: " + dto.getJejuo());
                 jejuAccent60Repository.save(new JejuAccent60(dto));
             }
         }

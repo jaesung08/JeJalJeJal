@@ -1,7 +1,9 @@
 package com.JeJal.translate.controller;
 
 import com.JeJal.global.common.response.BaseResponse;
+import com.JeJal.translate.dto.ClovaStudioResponseDto;
 import com.JeJal.translate.dto.TextDto;
+import com.JeJal.translate.service.ClovaStudioService;
 import com.JeJal.translate.service.TranslateService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
@@ -18,23 +20,30 @@ import org.springframework.web.bind.annotation.RestController;
 public class TranslateController {
 
     private final TranslateService translateService;
+    private final ClovaStudioService clovaStudioService;
 
-//    @PostMapping("/")
-//    @Operation(summary = "제주 방언 번역", description = "제주 방언을 표준어로 번역합니다.")
-//    public ResponseEntity<BaseResponse<TextDto>> translate(@RequestBody TextDto textDto) {
-//
-//        TextDto translatedText = translateService.translate(textDto);
-//        return ResponseEntity
-//                .status(HttpStatus.OK)
-//                .body(BaseResponse.success(200, "번역 성공", translatedText));
-//    }
+    @PostMapping("/jebert")
+    @Operation(summary = "제주 방언 번역 - jeBert", description = "제주 방언을 표준어로 번역합니다.")
+    public ResponseEntity<BaseResponse<TextDto>> translateByJebert(@RequestBody TextDto textDto) {
 
-    //todo. clova studio 통신
-    @PostMapping("/")
-    @Operation(summary = "제주 방언 번역", description = "제주 방언을 표준어로 번역합니다.")
-    public ResponseEntity<BaseResponse<TextDto>> translate(@RequestBody TextDto textDto) {
-
-        return null;
+        TextDto translatedText = translateService.translateByJeBert(textDto);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(BaseResponse.success(200, "jeBert 번역 성공", translatedText));
     }
 
+    @PostMapping("/clova")
+    @Operation(summary = "제주 방언 번역 - clova", description = "제주 방언을 표준어로 번역합니다.")
+    public ResponseEntity<BaseResponse<?>> translateByClova(@RequestBody TextDto textDto) {
+        ClovaStudioResponseDto clovaStudioResponseDto = clovaStudioService.translateByClova(textDto.getText());
+
+        String translatedText = clovaStudioResponseDto.getResult().getMessage().content;
+        TextDto resultTextDto = TextDto.builder()
+                .text(translatedText).
+                build();
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(BaseResponse.success(200, "clova 번역 성공", resultTextDto));
+    }
 }

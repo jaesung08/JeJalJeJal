@@ -15,17 +15,18 @@ import java.util.Collections;
 @Slf4j
 public class TranslateService {
 
-    String uriBase = "http://127.0.0.1:8000/translate"; //파이썬 uri
+    private final String uriBase = "http://127.0.0.1:8000/translate"; //파이썬 uri
+    private final WebClient webClient;
 
-    WebClient webClient = WebClient.builder()
-            .baseUrl(uriBase)
-            .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-            .defaultUriVariables(Collections.singletonMap("url", uriBase))
-            .build();
+//    WebClient webClient = WebClient.builder()
+//            .baseUrl(uriBase)
+//            .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+//            .defaultUriVariables(Collections.singletonMap("url", uriBase))
+//            .build();
 
-    public TextDto translate(TextDto textDto) {
-
+    public TextDto translateByJeBert(TextDto textDto) {
         return webClient.post()
+                .uri(uriBase)
                 .bodyValue(textDto)
                 .retrieve()
                 .bodyToMono(TextDto.class)

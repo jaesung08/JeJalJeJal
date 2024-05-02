@@ -11,6 +11,7 @@ import 'package:flutter/services.dart';
 import 'widgets/overlay_widget.dart';
 import 'package:jejal_project/screens/main_screen.dart';
 
+
 void main() {
   // 앱 실행 시 MyApp 위젯 실행
   runApp(const MyApp());
@@ -56,6 +57,33 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
     initForegroundService();
     // 콜백 함수 시작
     startCallback();
+    requestOverlayPermission();
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  void _showOverlay() {
+    if (_overlayEntry == null) {
+      _overlayEntry = OverlayEntry(
+        builder: (context) => Positioned(
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          child: OverlayWidget(),
+        ),
+      );
+      Overlay.of(context)?.insert(_overlayEntry!);
+    }
+  }
+
+  void _removeOverlay() {
+    _overlayEntry?.remove();
+    _overlayEntry = null;
   }
 
   @override
@@ -176,6 +204,20 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
       }
     }
     return null;
+  }
+
+  Future<void> requestOverlayPermission() async {
+    const platform = MethodChannel('overlay_permission');
+    try {
+      final result = await platform.invokeMethod('requestOverlayPermission');
+      if (result) {
+        print('Overlay permission granted');
+      } else {
+        print('Overlay permission not granted');
+      }
+    } on PlatformException catch (e) {
+      print('Error: ${e.message}');
+    }
   }
 
   @override

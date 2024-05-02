@@ -10,22 +10,37 @@ import 'package:phone_state/phone_state.dart';
 void setStream() async {
   String phoneNumber = '01012345678';
   late Directory recordDirectory;
-  // PhoneStateStatus phoneStatus = PhoneStateStatus.NOTHING;
   late String androidId;
   const String recordDirectoryPath = "/storage/emulated/0/Recordings/Call";
   File? targetFile;
   Timer? timer;
   int offset = 0;
-  PhoneStateStatus phoneStatus = PhoneStateStatus.NOTHING;
+  PhoneState phoneStatus = PhoneState.nothing();
   recordDirectory = Directory(recordDirectoryPath);
 
   PhoneState.stream.listen((event) async {
-      phoneStatus = event as PhoneStateStatus;
+      phoneStatus = event as PhoneState;
       if (event.status == PhoneStateStatus.CALL_INCOMING) {
         print("Incoming call detected.");
 
       } else if (event.status == PhoneStateStatus.CALL_STARTED) {
         print("Call started.");
+        var temp = await recentFile(recordDirectory);
+        targetFile = temp is FileSystemEntity ? temp as File : null;
+        if (targetFile is File) {
+            print("파일 찾음");
+            print(targetFile?.path);
+            timer = Timer.periodic(const Duration(seconds: 6), (timer) async {
+              Uint8List entireBytes = targetFile!.readAsBytesSync();
+              var nextOffset = entireBytes.length;
+              var splittedBytes = entireBytes.sublist(offset, nextOffset);
+              offset = nextOffset;
+              // ws?.sink.add(splittedBytes);
+            });
+          } else {
+            print("파일 못찾음");
+            // ws?.sink.close();
+          }
       } else if (event.status == PhoneStateStatus.CALL_ENDED) {
         print("Call ended.");
       }

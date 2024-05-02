@@ -23,16 +23,8 @@ pipe = pipeline(
 
 # service 따로 뺄지 고민
 def translate_jeju_to_standard(text: str) -> str:
-    """
-    제주 방언을 표준어로 번역
-    :param text: 제주 방언 텍스트
-    :return: 표준어 텍스트
-    """
     result = pipe(text, max_length=100) # 최대길이 지정
-    # print(result[0]['generated_text'])
     return result[0]["generated_text"]
-
-# translate_jeju_to_standard("무사 나한테 뭐라고하맨")
 
 # todo. 속도, 정확성 개선
 # todo. 예외 처리

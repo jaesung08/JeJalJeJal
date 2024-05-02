@@ -2,8 +2,8 @@ package com.JeJal.translate.dto;
 
 import lombok.*;
 
-// todo. 추후 네이버 클로바 형식에 맞추어 변경
 @Getter
+@Setter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor

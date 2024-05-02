@@ -8,7 +8,6 @@ import 'package:path_provider/path_provider.dart';
 import 'package:phone_state/phone_state.dart';
 import 'package:flutter_foreground_task/flutter_foreground_task.dart';
 
-
 void main() {
   runApp(const MyApp());
 }
@@ -46,10 +45,34 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
-    _requestCallPermission();
-    _requestStoragePermission();
-    startForegroundService();
+    _requestPermissions();
+    initForegroundService();
+    startCallback();
+  }
 
+  Future<void> _requestPermissions() async {
+    await _requestCallPermission();
+    await _requestStoragePermission();
+    await _requestBackgroundPermission();
+  }
+
+  Future<void> initForegroundService() async {
+    FlutterForegroundTask.init(
+      androidNotificationOptions: AndroidNotificationOptions(
+        channelId: 'channel_id',
+        channelName: 'Foreground Service',
+        channelDescription: 'This channel is used for important notifications.',
+        channelImportance: NotificationChannelImportance.LOW,
+        priority: NotificationPriority.LOW,
+      ),
+      iosNotificationOptions: const IOSNotificationOptions(),
+      foregroundTaskOptions: const ForegroundTaskOptions(
+        interval: 5000,
+        autoRunOnBoot: true,
+        allowWifiLock: true,
+      ),
+    );
+    startForegroundService();
   }
 
   void startForegroundService() {
@@ -95,8 +118,6 @@ class _MyHomePageState extends State<MyHomePage> {
     return null;
   }
 
-
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -122,6 +143,3 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 }
-
-
-

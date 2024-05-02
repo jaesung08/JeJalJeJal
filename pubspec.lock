@@ -305,7 +305,7 @@ packages:
     source: hosted
     version: "0.2.1"
   phone_state:
-    dependency: "direct dev"
+    dependency: "direct main"
     description:
       name: phone_state
       sha256: b68ddbde95915400808b14d680d20439a4320212ad13ea9a0962fe833c5b0079

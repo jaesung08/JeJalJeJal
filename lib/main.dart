@@ -9,6 +9,8 @@ import 'package:phone_state/phone_state.dart';
 import 'package:flutter_foreground_task/flutter_foreground_task.dart';
 import 'package:flutter/services.dart';
 import 'widgets/overlay_widget.dart';
+import 'package:jejal_project/screens/main_screen.dart';
+
 
 void main() {
   // 앱 실행 시 MyApp 위젯 실행
@@ -77,6 +79,30 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
       );
       Overlay.of(context)?.insert(_overlayEntry!);
     }
+  }
+
+  void _removeOverlay() {
+    _overlayEntry?.remove();
+    _overlayEntry = null;
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  void _showOverlay() {
+    _overlayEntry = OverlayEntry(
+      builder: (context) => Positioned(
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        child: OverlayWidget(),
+      ),
+    );
+    Overlay.of(context)?.insert(_overlayEntry!);
   }
 
   void _removeOverlay() {
@@ -198,12 +224,10 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
   Widget build(BuildContext context) {
     // 앱 UI 구성
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-      ),
-      body: Center(
-        child: Text('앱이 백그라운드에서 실행 중입니다.'),
-      ),
+      // appBar: AppBar(
+      //   title: Text(widget.title),
+      // ),
+      body: MainScreen(),
     );
   }
 }

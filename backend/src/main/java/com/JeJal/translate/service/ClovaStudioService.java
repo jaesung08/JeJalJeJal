@@ -1,5 +1,7 @@
 package com.JeJal.translate.service;
 
+import com.JeJal.global.common.exception.ErrorHttpStatus;
+import com.JeJal.global.common.exception.GlobalException;
 import com.JeJal.translate.dto.ClovaStudioRequestDto;
 import com.JeJal.translate.dto.ClovaStudioResponseDto;
 import com.JeJal.translate.dto.Message;
@@ -7,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 
 import java.util.Arrays;
 import java.util.List;
@@ -63,12 +66,18 @@ public class ClovaStudioService {
                 .seed(0)
                 .build();
 
-        return webClient.post()
-                .uri(ENDPOINT)
-                .bodyValue(clovaStudioRequestDto)
-                .retrieve()
-                .bodyToMono(ClovaStudioResponseDto.class)
-                .block();
+        try{
+            return webClient.post()
+                    .uri(ENDPOINT)
+                    .bodyValue(clovaStudioRequestDto)
+                    .retrieve()
+                    .bodyToMono(ClovaStudioResponseDto.class)
+                    .block();
+        } catch (WebClientResponseException we) {
+            throw new GlobalException(ErrorHttpStatus.N0T_CONNETED_CLOVA_STUDIO);
+        } catch (Exception e) {
+            throw new GlobalException(ErrorHttpStatus.UNKNOWN_ERROR);
+        }
 
     }
 }

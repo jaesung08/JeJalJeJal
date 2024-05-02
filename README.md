@@ -102,3 +102,8 @@
 ---
 - untrunc 코드 분석
 - untrunc 활용을 위한 테스트
+
+### 2024-05-02
+---
+- untrunc 실행 위해 voicepassing 백엔드 실행
+- 서버 Jenkins 세팅

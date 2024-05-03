@@ -11,13 +11,12 @@ spring:
   application:
     name: JeJal
   datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/jeju_accent?useSSL=false&serverTimezone=Asia/Seoul&characterEncoding=UTF-8
-    username: root
-    # 맥
-    # password: soyoung
-    # 윈도우
-    password: soyoung95
+    hikari:
+      driver-class-name: org.mariadb.jdbc.Driver
+      username: S10P31A406
+      password: dy12tnf34
+    url: jdbc:mariadb://k10a406.p.ssafy.io:3306/S10P31A406?serverTimezone=UTC&useUnicode=true&characterEncoding=utf8
+
   jpa:
     open-in-view: true
     hibernate:

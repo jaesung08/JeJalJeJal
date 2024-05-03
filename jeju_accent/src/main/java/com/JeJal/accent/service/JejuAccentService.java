@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class JejuAccentService {
 
+    private final JejuAccentRepository jejuAccentRepository;
     private final JejuAccent10Repository jejuAccent10Repository;
     private final JejuAccent20Repository jejuAccent20Repository;
     private final JejuAccent30Repository jejuAccent30Repository;
@@ -19,6 +20,20 @@ public class JejuAccentService {
     private final JejuAccent50Repository jejuAccent50Repository;
     private final JejuAccent60Repository jejuAccent60Repository;
 
+
+    public void checkWordAll(JejuAccentDTO dto) {
+        if (jejuAccentRepository.existsByJejuo(dto.getJejuo())) {
+            JejuAccent existingWord = jejuAccentRepository.findByJejuo(dto.getJejuo());
+            existingWord.setCount(existingWord.getCount() + 1);
+            jejuAccentRepository.save(existingWord);
+            System.out.println("이미 존재하는 단어: " + dto.getJejuo() + ", 현재 횟수: " + existingWord.getCount());
+            log.info("이미 존재하는 단어: " + dto.getJejuo() + ", 현재 횟수: " + existingWord.getCount());
+        } else {
+            System.out.println("전체 데이터베이스에 없는 새로운 단어: " + dto.getJejuo());
+            log.info("전체 데이터베이스에 없는 새로운 단어: " + dto.getJejuo());
+            jejuAccentRepository.save(new JejuAccent(dto));
+        }
+    }
     public void checkWord(JejuAccentDTO dto) {
         if (dto.getAge().equals("10")) {
             if (jejuAccent10Repository.existsByJejuo(dto.getJejuo())) {

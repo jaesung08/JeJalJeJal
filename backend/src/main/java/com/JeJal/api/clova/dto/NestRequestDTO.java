@@ -1,6 +1,7 @@
-package com.JeJal.clova.dto;
+package com.JeJal.api.clova.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import java.util.List;
 import java.util.Map;
 import lombok.Getter;
 import lombok.Setter;
@@ -27,11 +28,11 @@ public class NestRequestDTO {
     private Boolean fullText = Boolean.TRUE;
 
 
-    //boosting object array (키워드 부스팅)
-//    private List<Boosting> boostings;
+    //boosting object array (키워드 부스팅 - 인식 확률 높이기)
+    private List<Boosting> boostings;
 
-    //comma separated words
-//    private String forbiddens;
+    //comma separated words (민감 키워드 - 인식 확률 낮추기)
+    private String forbiddens;
 
 //    private Diarization diarization;
 

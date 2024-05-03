@@ -1,4 +1,4 @@
-package com.JeJal.translate.dto;
+package com.JeJal.api.translate.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;

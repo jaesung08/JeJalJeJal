@@ -1,10 +1,10 @@
-package com.JeJal.translate.service;
+package com.JeJal.api.translate.service;
 
 import com.JeJal.global.common.exception.ErrorHttpStatus;
 import com.JeJal.global.common.exception.GlobalException;
-import com.JeJal.translate.dto.ClovaStudioRequestDto;
-import com.JeJal.translate.dto.ClovaStudioResponseDto;
-import com.JeJal.translate.dto.Message;
+import com.JeJal.api.translate.dto.ClovaStudioRequestDto;
+import com.JeJal.api.translate.dto.ClovaStudioResponseDto;
+import com.JeJal.api.translate.dto.Message;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;

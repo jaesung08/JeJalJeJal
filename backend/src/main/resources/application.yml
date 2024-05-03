@@ -33,3 +33,11 @@ logging:
           tiles: DEBUG
         springframework:
           boot: DEBUG
+
+
+
+DOMAIN_UNTRUNC: "http://untrunc:8000"
+SPRING_RECORD_TEMP_DIR: /data/WebSocket
+AI_SERVER_URI: http://fastapi:80
+SPEECH_SECRET: 123
+SPEECH_INVOKE_URL: 123

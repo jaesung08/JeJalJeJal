@@ -1,8 +1,8 @@
-package com.JeJal.api.translate.translate.controller;
+package com.JeJal.api.translate.controller;
 
 import com.JeJal.global.common.response.BaseResponse;
-import com.JeJal.api.translate.translate.dto.TextDto;
-import com.JeJal.api.translate.translate.service.TranslateService;
+import com.JeJal.api.translate.dto.TextDto;
+import com.JeJal.api.translate.service.TranslateService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

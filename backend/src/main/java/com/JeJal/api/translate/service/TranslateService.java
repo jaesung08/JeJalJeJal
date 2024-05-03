@@ -1,6 +1,6 @@
-package com.JeJal.api.translate.translate.service;
+package com.JeJal.api.translate.service;
 
-import com.JeJal.api.translate.translate.dto.TextDto;
+import com.JeJal.api.translate.dto.TextDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

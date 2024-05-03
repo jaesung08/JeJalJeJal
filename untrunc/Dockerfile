@@ -34,3 +34,39 @@ RUN pip3 install -r requirement.txt
 # 생략
 # RUN useradd voicepassing
 # USER voicepassing
+
+
+# # Base image and build environment setup
+# FROM ubuntu:bionic AS build
+# LABEL stage=intermediate
+
+# # Install build dependencies
+# RUN apt-get update && apt-get install -y --no-install-recommends \
+#     libavformat-dev \
+#     libavcodec-dev \
+#     libavutil-dev \
+#     g++ \
+#     make \
+#     git \
+#     && rm -rf /var/lib/apt/lists/*
+
+# # Copy source code into the container
+# COPY . /untrunc-src
+# WORKDIR /untrunc-src
+
+# # Build untrunc
+# RUN make && strip untrunc
+
+# # Final stage: setup the runtime environment
+# FROM ubuntu:bionic
+# COPY --from=build /untrunc-src/untrunc /usr/local/bin/untrunc
+
+# # Install runtime dependencies
+# RUN apt-get update && apt-get install -y --no-install-recommends \
+#     libavformat57 \
+#     libavcodec57 \
+#     libavutil55 \
+#     && rm -rf /var/lib/apt/lists/*
+
+# # Set entrypoint to untrunc executable
+# ENTRYPOINT ["untrunc"]

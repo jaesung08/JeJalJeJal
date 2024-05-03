@@ -1,4 +1,4 @@
-package com.JeJal.api.translate.translate.dto;
+package com.JeJal.api.translate.dto;
 
 import lombok.*;
 

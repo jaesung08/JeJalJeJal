@@ -10,10 +10,9 @@ class TangerineIcon extends StatelessWidget {
         shape: BoxShape.circle,
         color: Colors.orange,
       ),
-      child: Icon(
-        Icons.favorite,
-        color: Colors.white,
-        size: 32,
+      child: Image.asset(
+        'assets/images/common_mandarin.png',
+        fit: BoxFit.cover,
       ),
     );
   }

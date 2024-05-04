@@ -6,9 +6,7 @@ import 'dart:typed_data';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_overlay_window/flutter_overlay_window.dart';
-import 'package:jejal_project/models/send_message_model.dart';
 import 'package:jejal_project/services/recent_file.dart';
-import 'package:jejal_project/widgets/overlay_widget.dart';
 import 'package:phone_state/phone_state.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
@@ -33,26 +31,31 @@ void setStream() async {
     phoneStatus = event as PhoneState;
     if (event.status == PhoneStateStatus.CALL_INCOMING) {
       print("Incoming call detected.");
-    } else if (event.status == PhoneStateStatus.CALL_STARTED) {
+    }
+
+    else if (event.status == PhoneStateStatus.CALL_STARTED) {
+
+      //전화 시작되면 위젯 띄우기
+      //지금 실행 안되고 있음
+      if (!await FlutterOverlayWindow.isActive()) {
+        await FlutterOverlayWindow.showOverlay(
+          enableDrag: true,
+          overlayTitle: "Overlay Title",
+          overlayContent: 'Overlay Content',
+          flag: OverlayFlag.defaultFlag,
+          visibility: NotificationVisibility.visibilityPublic,
+          positionGravity: PositionGravity.auto,
+          height: WindowSize.matchParent,
+          width: WindowSize.matchParent,
+        );
+      }
 
       print("Call started.");
-      print("Showing overlay..."); // 오버레이 표시 확인용 print 문 추가
 
       //전화번호 받아오기
       phoneNumber = phoneStatus.number.toString();
       print("전화온 번호"+phoneNumber);
 
-      bool isOverlayShown = await FlutterOverlayWindow.isActive();
-      print("Is overlay already shown? $isOverlayShown"); // 오버레이 표시 여부 확인용 print 문 추가
-      if (!isOverlayShown) {
-        await FlutterOverlayWindow.showOverlay(
-          height: 200,
-          width: 200,
-          alignment: OverlayAlignment.centerRight,
-          flag: OverlayFlag.defaultFlag,
-        );
-        print("Overlay shown."); // 오버레이 표시 확인용 print 문 추가
-      }
       ws = WebSocketChannel.connect(
         Uri.parse('ws://k8a607.p.ssafy.io:8080/record'),
       );
@@ -84,9 +87,11 @@ void setStream() async {
       }
     } else if (event.status == PhoneStateStatus.CALL_ENDED) {
         print("Call ended.");
-        print("Closing overlay..."); // 오버레이 닫기 확인용 print 문 추가
-        await FlutterOverlayWindow.closeOverlay();
-        print("Overlay closed."); // 오버레이 닫기 확인용 print 문 추가
+
+        //통화 종료되면 위젯 끄기
+        //됐다가 안됐다가 함
+        //UX 상으로 없애는게 나을 수도 있을 듯
+        FlutterOverlayWindow.closeOverlay();
 
         timer?.cancel();
         Uint8List entireBytes = targetFile!.readAsBytesSync();

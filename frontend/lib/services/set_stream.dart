@@ -1,3 +1,4 @@
+// lib/services/set_stream.dart
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
@@ -6,11 +7,13 @@ import 'dart:typed_data';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_overlay_window/flutter_overlay_window.dart';
+import 'package:jejal_project/databases/database.dart';
 import 'package:jejal_project/services/recent_file.dart';
+import 'package:jejal_project/services/translation_service.dart';
 import 'package:phone_state/phone_state.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
-void setStream() async {
+void setStream(JejalDatabase database) async {
   WebSocketChannel? ws;
   String phoneNumber;
   late Directory recordDirectory;
@@ -19,6 +22,7 @@ void setStream() async {
   File? targetFile;
   Timer? timer;
   int offset = 0;
+  int? conversationId;
   PhoneState phoneStatus = PhoneState.nothing();
   DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
   AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
@@ -56,9 +60,31 @@ void setStream() async {
       phoneNumber = phoneStatus.number.toString();
       print("전화온 번호"+phoneNumber);
 
+      // 웹소켓 연결 열기
       ws = WebSocketChannel.connect(
         Uri.parse('ws://k8a607.p.ssafy.io:8080/record'),
       );
+
+      // TranslationService 인스턴스 생성
+      final translationService = TranslationService(ws!, database);
+
+      // 새로운 Conversation 레코드 생성
+      conversationId = await database.insertConversation(
+        ConversationsCompanion.insert(
+          phoneNumber: phoneNumber,
+          date: DateTime.now(), name: '', recordingFilePath: '',
+        ) as Conversation,
+      );
+
+      // 번역 데이터 받아오기 및 저장
+      translationService.translationStream.listen((translation) async {
+        await translationService.saveTranslation(translation, conversationId!);
+        // 번역 데이터를 UI에 업데이트하는 로직 추가
+      });
+
+      translationService.translationStream.listen((translation) async {
+        await translationService.saveTranslation(translation, conversationId!);
+      });
 
       var temp = await recentFile(recordDirectory);
       targetFile = temp is FileSystemEntity ? temp as File : null;

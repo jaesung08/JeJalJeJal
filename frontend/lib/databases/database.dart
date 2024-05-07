@@ -39,6 +39,27 @@ class JejalDatabase extends _$JejalDatabase {
   Future<List<Conversation>> getAllConversations() => select(conversations).get();
   Stream<List<Conversation>> watchAllConversations() => select(conversations).watch();
   Future<int> insertConversation(Conversation conversation) => into(conversations).insert(conversation);
+
+  // JejuTexts 테이블에 데이터 삽입
+  Future<int> insertJejuText(JejuTextsCompanion jejuText) => into(jejuTexts).insert(jejuText);
+
+  // TranslatedTexts 테이블에 데이터 삽입
+  Future<int> insertTranslatedText(TranslatedTextsCompanion translatedText) => into(translatedTexts).insert(translatedText);
+  
+  // 특정 conversationId에 해당하는 모든 jejuTexts 데이터 조회
+  Future<List<JejuText>> getJejuTextsByConversationId(int conversationId) {
+    return (select(jejuTexts)..where((tbl) => tbl.conversationId.equals(conversationId))).get();
+  }
+
+  // 특정 conversationId에 해당하는 모든 TranslatedTexts 데이터 조회
+  Future<List<TranslatedText>> getTranslatedTextsByConversationId(int conversationId) {
+    return (select(translatedTexts)..where((tbl) => tbl.conversationId.equals(conversationId))).get();
+  }
+
+  // 특정 대화를 클릭했을 때 conversationId 조회
+  Future<Conversation> getConversationById(int id) {
+    return (select(conversations)..where((tbl) => tbl.id.equals(id))).getSingle();
+  }
 }
 
 LazyDatabase _openConnection() {

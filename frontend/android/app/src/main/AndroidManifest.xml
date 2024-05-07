@@ -67,4 +67,7 @@
 
     <!--다른 앱 위에 표시 권한-->
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+
+
+
 </manifest>

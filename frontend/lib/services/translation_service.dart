@@ -15,23 +15,27 @@ class TranslationService {
 
   // 번역 데이터를 데이터베이스에 저장하는 메서드
   Future<void> saveTranslation(TranslateResponseDto translation, int conversationId) async {
-    // 제주 방언 텍스트를 JejuTexts 테이블에 삽입
-    await _database.insertJejuText(
-      JejuTextsCompanion.insert(
-        conversationId: conversationId,
-        jejuText: translation.jeju,
-        timestamp: DateTime.now(),
-      ),
-    );
+    try {
+      // 제주 방언 텍스트를 JejuTexts 테이블에 삽입
+      await _database.insertJejuText(
+        JejuTextsCompanion.insert(
+          conversationId: conversationId,
+          jejuText: translation.jeju,
+          timestamp: DateTime.now(),
+        ),
+      );
 
-    // 표준어 텍스트를 TranslatedTexts 테이블에 삽입
-    await _database.insertTranslatedText(
-      TranslatedTextsCompanion.insert(
-        conversationId: conversationId,
-        translatedText: translation.translated,
-        timestamp: DateTime.now(),
-      ),
-    );
+      // 표준어 텍스트를 TranslatedTexts 테이블에 삽입
+      await _database.insertTranslatedText(
+        TranslatedTextsCompanion.insert(
+          conversationId: conversationId,
+          translatedText: translation.translated,
+          timestamp: DateTime.now(),
+        ),
+      );
+    } catch (e) {
+      print('saving translation to database 에러: $e');
+    }
   }
 }
 

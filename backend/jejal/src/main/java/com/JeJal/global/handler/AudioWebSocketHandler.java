@@ -1,8 +1,8 @@
 package com.JeJal.global.handler;
 
-import com.JeJal.api.clova.dto.Boosting;
-import com.JeJal.api.clova.dto.NestRequestDTO;
-import com.JeJal.api.clova.service.ClovaspeechService;
+import com.JeJal.api.clovaspeech.dto.Boosting;
+import com.JeJal.api.clovaspeech.dto.NestRequestDTO;
+import com.JeJal.api.clovaspeech.service.ClovaspeechService;
 import com.JeJal.api.translate.dto.ClovaStudioResponseDto;
 import com.JeJal.api.translate.dto.TranslateResponseDto;
 import com.JeJal.api.translate.service.ClovaStudioService;

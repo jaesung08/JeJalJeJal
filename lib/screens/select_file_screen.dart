@@ -5,8 +5,10 @@ import 'package:dio/dio.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:device_info_plus/device_info_plus.dart';
+import 'package:jejal_project/screens/result_screen_detail.dart';
 import 'package:styled_text/tags/styled_text_tag.dart';
 import 'package:styled_text/widgets/styled_text.dart';
+import 'package:jejal_project/models/file_result_model.dart';
 
 import '../style/color_style.dart';
 import '../widgets/head_bar.dart';
@@ -57,44 +59,34 @@ class _SelectFileScreenState extends State<SelectFileScreen> {
 
   void _sendFile() async {
     final file = File(_filePath!);
+
     final formData = FormData.fromMap({
       'file': await MultipartFile.fromFile(file.path),
       'androidId': androidId,
     });
 
     // Send data to backend
-    // final response = await Dio().post(
-    //   'http://k8a607.p.ssafy.io:8080/api/analysis/file',
-    //   data: formData,
-    // );
-    // final jsonString = jsonEncode(response.data);
-    // final json = jsonDecode(jsonString);
-    // final resultModel = ResultModel.fromJson(json);
+    final response = await Dio().post(
+      'http://k8a607.p.ssafy.io:8080/api/analysis/file',
+      data: formData,
+    );
 
-    // if (response.statusCode == 200) {
-    //   Navigator.push(
-    //     context,
-    //     MaterialPageRoute(
-    //         builder: (context) =>
-    //             ResultScreenDetail(
-    //               caseInfo: resultModel,
-    //             )),
-    //   );
-    // } else if (response.statusCode == 201) {
-    //   Navigator.push(
-    //     context,
-    //     MaterialPageRoute(
-    //         builder: (context) =>
-    //             ResultScreenDetailOK(
-    //               caseInfo: resultModel,
-    //             )),
-    //   );
-    // }
+    final jsonString = jsonEncode(response.data);
+    final json = jsonDecode(jsonString);
+    final resultModel = FileResultModel.fromJson(json);
 
-    // setState(() {
-    //   result = response.toString();
-    // });
+    if (response.statusCode == 200) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) =>
+                ResultScreenDetail(
+                  caseInfo: resultModel,
+                )),
+      );
+    }
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -115,9 +107,9 @@ class _SelectFileScreenState extends State<SelectFileScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const SizedBox(height: 40),
+              const SizedBox(height: 10),
               SizedBox(
-                width: 230,
+                width: 300,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -129,14 +121,14 @@ class _SelectFileScreenState extends State<SelectFileScreen> {
                           tags: {
                             'b': StyledTextTag(
                                 style: const TextStyle(
-                                    color: ColorStyles.themeLightBlue,
-                                    fontSize: 18,
+                                    color: ColorStyles.themeOrange,
+                                    fontSize: 25,
                                     fontWeight: FontWeight.w700
                                 ))
                           },
                           style: const TextStyle(
                             color: ColorStyles.textDarkGray,
-                            fontSize: 15,
+                            fontSize: 22,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -144,7 +136,7 @@ class _SelectFileScreenState extends State<SelectFileScreen> {
                             text: isSend ? '분석 중 입니다' : '검사할 수 있습니다',
                             style: const TextStyle(
                               color: ColorStyles.textDarkGray,
-                              fontSize: 15,
+                              fontSize: 22,
                               fontWeight: FontWeight.bold,
                             )),
                       ],
@@ -152,27 +144,23 @@ class _SelectFileScreenState extends State<SelectFileScreen> {
                     const SizedBox(width: 12),
                     Image.asset(
                       !isSend
-                          ? 'assets/images/common_jeju.png'
-                          : 'assets/images/common_mandarin.png',
+                          ? 'assets/images/file.png'
+                          : 'assets/images/translating.png',
                       height: 101,
                       width: 79,
                     )
                   ],
                 ),
               ),
-              const SizedBox(height: 70),
+              const SizedBox(height: 40),
               Visibility(
                 visible: !isSend,
-                child: ElevatedButton(
-                  onPressed: _openFilePicker,
-                  style: ButtonStyle(
-                    padding: MaterialStateProperty.all<EdgeInsets>(
-                        const EdgeInsets.all(0)),
-                  ),
+                child: GestureDetector(
+                  onTap: _openFilePicker,
                   child: Image.asset(
                     'assets/images/select_file.png',
-                    height: 200,
-                    width: 200,
+                    height: 280,
+                    width: 280,
                   ),
                 ),
               ),

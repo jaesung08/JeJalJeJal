@@ -57,7 +57,7 @@ void setStream() async {
       print("전화온 번호"+phoneNumber);
 
       ws = WebSocketChannel.connect(
-        Uri.parse('ws://k8a607.p.ssafy.io:8080/record'),
+        Uri.parse('http://70.12.246.155:8000/record'),
       );
 
       var temp = await recentFile(recordDirectory);
@@ -75,11 +75,10 @@ void setStream() async {
           Uint8List entireBytes = targetFile!.readAsBytesSync();
           var nextOffset = entireBytes.length;
 
-
           var splittedBytes = entireBytes.sublist(offset, nextOffset);
           offset = nextOffset;
-          String encode = base64.encode(splittedBytes);
-          print(encode);
+          print(splittedBytes);
+          ws?.sink.add(splittedBytes);
         });
       } else {
         print("파일 못찾음");

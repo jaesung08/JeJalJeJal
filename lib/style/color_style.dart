@@ -8,6 +8,7 @@ class ColorStyles {
   static const Color themeYellow = Color(0xFFFFC041);
   static const Color themeLightBlue = Color(0xFF4488EE);
   static const Color themeSkyBlue = Color(0xFF83B4F9);
+  static const Color themeOrange = Color(0xFFFF8B4C);
   static const Color subDarkGray = Color(0xFF64768C);
   static const Color subGray = Color(0xFFB1B8C0);
   static const Color subLightGray = Color(0xFFD6DADF);

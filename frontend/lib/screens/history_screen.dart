@@ -1,5 +1,8 @@
+<<<<<<< HEAD
 // lib/screens/history_screen.dart
 
+=======
+>>>>>>> 6f09919dac175feb3bd4634f1fde1deb05cd503b
 import 'package:flutter/material.dart';
 import 'package:jejal_project/screens/history_chat_screen.dart';
 import 'history_chat_screen.dart';

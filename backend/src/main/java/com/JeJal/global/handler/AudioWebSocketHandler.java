@@ -26,6 +26,7 @@ import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.AbstractWebSocketHandler;
 
 
+// todo. 제잘제잘에 맞게 수정 필요
 // 웹소켓 통신에서 발생할 수 있는 다양한 이벤트를 처리
 @Component
 public class AudioWebSocketHandler extends AbstractWebSocketHandler {
@@ -76,6 +77,7 @@ public class AudioWebSocketHandler extends AbstractWebSocketHandler {
     // BinaryMessage를 처리하는 메서드
     // 우리 프로젝트의 경우 오디오 데이터 받았을때 호출됨
     // 받은 오디오 데이터를 파일에 추가 저장하고 복원과 분석을 위해 외부 api에 데이터 전송
+    
     @Override
     public void handleBinaryMessage(WebSocketSession session, BinaryMessage message) throws Exception {
         logger.info("바이너리 메시지 처리: {}", session.getId());

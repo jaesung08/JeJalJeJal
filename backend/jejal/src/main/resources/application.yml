@@ -1,0 +1,43 @@
+server:
+  port: 8000
+  servlet:
+    context-path: "/api/"
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
+
+spring:
+  application:
+    name: JeJal
+  datasource:
+    url: jdbc:sqlite:mydb.db
+    driver-class-name: org.sqlite.JDBC
+  jpa:
+    database-platform: org.hibernate.community.dialect.SQLiteDialect
+    hibernate:
+      ddl-auto: update
+
+
+
+#logging
+logging:
+  level:
+    org.hibernate.SQL: DEBUG
+    org.hibernate.orm.jdbc.bind: trace
+    root: INFO
+    org:
+      springframework:
+        web: INFO
+        apache:
+          tiles: DEBUG
+        springframework:
+          boot: DEBUG
+
+
+
+DOMAIN_UNTRUNC: "http://untrunc:8000"
+SPRING_RECORD_TEMP_DIR: /data/WebSocket
+AI_SERVER_URI: http://fastapi:80
+SPEECH_SECRET: 123
+SPEECH_INVOKE_URL: 123

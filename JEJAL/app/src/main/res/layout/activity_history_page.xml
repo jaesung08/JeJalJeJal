@@ -1,0 +1,59 @@
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!-- 통화 번역 기록 제목 -->
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="통화 번역 기록"
+        android:layout_marginTop="30dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:textSize="30sp"
+        android:textStyle="bold"/>
+
+    <!-- 대화 상자를 위한 LinearLayout -->
+    <LinearLayout
+        android:id="@+id/chatContainer"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp"
+        app:layout_constraintTop_toBottomOf="@+id/title"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <!-- 사용자의 메시지를 위한 TextView -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/chatbox_left"
+            android:layout_gravity="start"
+            android:layout_marginTop="20dp"
+            android:padding="30dp"
+            android:textSize="20sp"
+            android:textFontWeight="700"
+            android:text="어떤 삶이 진정한가?" />
+
+        <!-- 상대방의 메시지를 위한 TextView -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/chatbox_right"
+            android:layout_gravity="end"
+            android:layout_marginTop="20dp"
+            android:padding="30dp"
+            android:textSize="20sp"
+            android:textFontWeight="700"
+            android:text="어떻게 살고 있는가?" />
+
+        <!-- 추가적인 메시지 TextViews... -->
+
+    </LinearLayout>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

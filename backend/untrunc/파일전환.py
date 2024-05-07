@@ -1,25 +1,21 @@
-# 필요한 라이브러리를 불러옵니다.
-import os
-import base64
+from base64 import b64encode
+import binascii
 
-# 파일 경로를 설정합니다.
-file_path = r'C:\Users\SSAFY\Desktop\DZES20000032.wav' # 여기에 원하는 파일의 경로를 입력하세요.
+# Load the audio file
+file_path = r'C:\Users\SSAFY\Desktop\S10P31A406_backend\backend\untrunc\역삼동.m4a'  # 백슬래시 앞에 'r' 추가
+with open(file_path, 'rb') as file:
+    file_content = file.read()
 
-# 파일을 바이너리 모드로 열고 내용을 읽습니다.
-def read_file_as_binary(file_path):
-    with open(file_path, 'rb') as file:
-        binary_data = file.read()
-    return binary_data
+# Encode to base64 and hexadecimal
+base64_encoded = b64encode(file_content).decode('utf-8')
+hex_encoded = binascii.hexlify(file_content).decode('utf-8')
 
-# 함수를 호출하여 파일을 읽습니다.
-binary_content = read_file_as_binary(file_path)
+# Save to text files
+base64_path = './encoded_base64.txt'
+hex_path = './encoded_hexadecimal.txt'
 
-# 바이너리 데이터를 Base64로 인코딩합니다.
-base64_encoded_data = base64.b64encode(binary_content)
+with open(base64_path, 'w') as file:
+    file.write(base64_encoded)
 
-# 인코딩된 데이터를 UTF-8 문자열로 디코딩합니다.
-base64_message = base64_encoded_data.decode('utf-8')
-
-# 결과를 출력합니다.
-print(f"Binary data length: {len(binary_content)} bytes")
-print(f"Base64 Encoded Data: {base64_message}")
+with open(hex_path, 'w') as file:
+    file.write(hex_encoded)

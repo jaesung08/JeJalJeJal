@@ -15,7 +15,7 @@ services:
       - FLASK_FILE_PERIOD=15000
       - FLASK_FILE_DUPLICATE=0
     ports:
-      - 8300:8000
+      - 8300:8300
 
   backend:
       build: jejal

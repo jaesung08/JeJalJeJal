@@ -1,5 +1,9 @@
 package com.JeJal.global.handler;
 
+import com.JeJal.api.translate.dto.ClovaStudioResponseDto;
+import com.JeJal.api.translate.dto.TextDto;
+import com.JeJal.api.translate.dto.TranslateResponseDto;
+import com.JeJal.api.translate.service.ClovaStudioService;
 import com.JeJal.global.util.RestAPIUtil;
 import com.google.gson.Gson;
 import java.io.File;
@@ -21,25 +25,19 @@ import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.AbstractWebSocketHandler;
 
+
+// todo. 제잘제잘에 맞게 수정 필요
+// 웹소켓 통신에서 발생할 수 있는 다양한 이벤트를 처리
 @Component
 public class AudioWebSocketHandler extends AbstractWebSocketHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(AudioWebSocketHandler.class);
 
     @Autowired
-    private RestAPIUtil restApiUtil; // REST API 유틸리티
+    private RestAPIUtil restApiUtil;
 
     @Autowired
-    private ResultService resultService; // 결과 서비스
-
-    @Autowired
-    private KeywordService keywordService; // 키워드 서비스
-
-    @Autowired
-    private KeywordSentenceService keywordSentenceService; // 키워드 문장 서비스
-
-    @Autowired
-    private ResultDetailService resultDetailService; // 결과 상세 서비스
+    private ClovaStudioService clovaStudioService;
 
     // 설정값 주입
     @Value("${SPRING_RECORD_TEMP_DIR}")
@@ -49,11 +47,16 @@ public class AudioWebSocketHandler extends AbstractWebSocketHandler {
     private String DOMAIN_UNTRUNC; // untrunc 도메인
 
     // WebSocket 연결이 성립된 후 실행되는 메서드
+    // websocket 세션 : 클라이언트와 서버 간의 지속적인 양방향 통신 가능케 하는 객체
+    // sessoin.getId() : 해당 소켓 세션의 고유 식별자 -> 클라이언트와 연결된 세션 구분에 사용
+    // 세션 사용하여 연결 초기화 작업 수행
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
         super.afterConnectionEstablished(session);
         logger.info("WebSocket 연결 성공");
         createFolder(session.getId());
+        // -> websocket 세션의 고유 식별자 사용하여 해당 세션에 대한 폴더 생성
+        // 오디오 레코드 파일 저장을 위해 사용
     }
 
     // 통화연결 시작했을 때 폴더생성
@@ -72,6 +75,9 @@ public class AudioWebSocketHandler extends AbstractWebSocketHandler {
     }
 
     // BinaryMessage를 처리하는 메서드
+    // 우리 프로젝트의 경우 오디오 데이터 받았을때 호출됨
+    // 받은 오디오 데이터를 파일에 추가 저장하고 복원과 분석을 위해 외부 api에 데이터 전송
+    
     @Override
     public void handleBinaryMessage(WebSocketSession session, BinaryMessage message) throws Exception {
         logger.info("바이너리 메시지 처리: {}", session.getId());
@@ -90,7 +96,10 @@ public class AudioWebSocketHandler extends AbstractWebSocketHandler {
         sendACloverServer(newFile, newFilePath, session, false);
     }
 
+
     // 파일에 데이터를 추가하는 메서드
+    // ByteBuffer에서 받은 데이터를 파일에 추가
+    // 이 메서드는 바이너리 메시지 처리 중에 호출됨
     private void appendFile(ByteBuffer byteBuffer, String sessionId) throws IOException {
         try (var outputStream = new FileOutputStream(RECORD_PATH + "/" + sessionId + "/record.m4a", true)) {
             byte[] bytes = new byte[byteBuffer.remaining()];
@@ -100,6 +109,9 @@ public class AudioWebSocketHandler extends AbstractWebSocketHandler {
     }
 
     // TextMessage를 처리하는 메서드
+    // 텍스트 메시지 받았을 때 호출됨
+    // 메시지 내용에 따라 다양한 처리 수행
+    // 특정 상태 값에 따라 추가 정보(전화번호) 저장하거나 복원 작업
     @Override
     public void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
         logger.info("socket 정보 전달받음 : {}", message);
@@ -133,6 +145,7 @@ public class AudioWebSocketHandler extends AbstractWebSocketHandler {
     }
 
     // 새로생성된 part파일을 clover api로 전송.
+    //todo. 제잘제잘에 맞게 변경 필요
     //Todo : clover API 로 연결하기
     private void sendACloverServer(List<String> newFile, String newFilePath, WebSocketSession session, Boolean isFinish) throws Exception {
         for (int i = 0; i < newFile.size(); i++) {
@@ -147,68 +160,39 @@ public class AudioWebSocketHandler extends AbstractWebSocketHandler {
             var myResult = restApiUtil.requestPost(myUrl, multiValueMap);
             myResult.put("isFinish", isFinish && i == newFile.size() - 1);
 
-            sendClient(session, myResult);
+//            sendClient(session, myResult); // todo. 우리는 translate로 요청
             logger.info("클로바 요청 {} 결과: {}", i, myResult);
         }
     }
 
-    // AI 서버로 분석결과(데이터)를 전송하는 메서드
-    private void sendClient(WebSocketSession session, Map<String, Object> result) throws IOException {
-        var gson = new Gson();
-        var json = gson.toJson(result);
-        var textMessage = new TextMessage(json);
 
-        var aiDTO = gson.fromJson(gson.toJson(result.get("result")), AIResponseDTO.Response.class);
-        var isFinish = (Boolean) result.get("isFinish");
+    // clova speech로 stt 후 출력된 제주 방언 텍스트 -> jejuText
+    private void sendTranslateServer(WebSocketSession session, String jejuText) throws IOException {
+        logger.info("통역 요청 시작 jejuText : {}", jejuText );
+        ClovaStudioResponseDto resultDto = clovaStudioService.translateByClova(jejuText);
+        String translatedText = resultDto.getResult().getMessage().content;
+
+        TranslateResponseDto translateResponseDto = TranslateResponseDto.builder()
+                .jeju(jejuText)
+                .translated(translatedText)
+                .build();
+
+        sendClient(session, translateResponseDto);
+    }
+
+
+    // 클라이언트에게 (웹소켓 연결을 통해) 결과 전송
+    private void sendClient(WebSocketSession session, TranslateResponseDto translateResponseDto) throws IOException {
+        logger.info("sendClient 호출됨, {}, {}", translateResponseDto.getJeju(), translateResponseDto.getTranslated() );
+
+        Gson gson = new Gson();
+        String json = gson.toJson(translateResponseDto);
+        TextMessage textMessage = new TextMessage(json);
+        logger.info("textmessage = {}", textMessage);
 
         session.sendMessage(textMessage);
-
-        if (isFinish && aiDTO.getTotalCategory() != 0) { //result처리 , 60%이상인 데이터만 우선 insert
-            var androidId = (String) session.getAttributes().get("androidId");
-            var phoneNumber = (String) session.getAttributes().get("phoneNumber");
-            logger.info("안드로이드 : {}  폰번호 : {}  로그기록을 시작합니다.", androidId, phoneNumber);
-            dataInput(aiDTO, phoneNumber, androidId);
-        }
     }
 
-    // 데이터를 DB에 입력하는 메서드
-    // ToDo: 안드로이드 DB 맞춰서 로직 변경
-    private void dataInput(AIResponseDTO.Response rep, String phoneNumber, String androidId) {
-        var res = ResultDTO.Result.builder()
-            .androidId(androidId)
-            .phoneNumber(phoneNumber)
-            .category(rep.getTotalCategory())
-            .risk(rep.getTotalCategoryScore())
-            .build();
-
-        int rId = resultService.addResult(res);
-
-        var resultList = rep.getResults();
-
-        for (var r : resultList) {
-            var keywordDTO = KeywordDTO.Keyword.builder()
-                .keyword(r.getSentKeyword())
-                .category(r.getSentCategory())
-                .count(0)
-                .build();
-
-            var k = keywordService.addKeywordReturn(keywordDTO);
-
-            var ksDTO = KeywordSentenceDTO.KeywordSentence.builder()
-                .score(r.getKeywordScore())
-                .keyword(k.getKeyword())
-                .sentence(r.getSentence())
-                .category(k.getCategory())
-                .build();
-            var ksb = keywordSentenceService.addKeywordSentenceReturn(ksDTO);
-
-            var rdDTO = ResultDetailDTO.ResultDetail.builder()
-                .resultId(rId)
-                .sentence(ksb.getSentence())
-                .build();
-            int rgd = resultDetailService.addResultDetail(rdDTO);
-        }
-    }
 
     // WebSocket 연결이 종료된 후 실행되는 메서드
     @Override

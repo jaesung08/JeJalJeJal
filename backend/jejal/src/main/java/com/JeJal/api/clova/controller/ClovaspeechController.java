@@ -40,115 +40,115 @@ public class ClovaspeechController {
 
 
     // 핸들러에 사용할 api (file)
-    @PostMapping("/multipartfile")
-    @Operation(summary = "핸들러에 사용할 api (multipartfile)", description = "복원된 음성 파일을 STT 처리")
-    public ResponseEntity<BaseResponse<?>> recognizeByMultipartFile(MultipartFile file) throws IOException {
-        // 기존 로직 유지
-        ObjectMapper objectMapper = new ObjectMapper();
-
-        // 키워드 부스팅
-        Resource resource = new ClassPathResource("keyword/boosting.json");
-        JsonNode keywordJson = objectMapper.readTree(new File(String.valueOf(resource.getFile().toPath())));
-        String boostingWords = keywordJson.get("boostingWords").asText();
-
-        Boosting boost = new Boosting();
-        boost.setWords(boostingWords);
-        List<Boosting> boostList = new ArrayList<>();
-        boostList.add(boost);
-
-        NestRequestDTO request = new NestRequestDTO();
-        request.setBoostings(boostList);
-
-        // clova speech api
-        String jsonResponse = clovaspeechService.recognizeByUpload(file, request);
-
-        try {
-            JsonNode rootNode = objectMapper.readTree(jsonResponse); // 응답 JSON을 JsonNode로 변환
-            String textContent = rootNode.get("text").asText(); // 'text' 필드의 값을 추출
-
-            return ResponseEntity.ok(BaseResponse.success(200, "clova speech api 통신완료", textContent));
-
-        } catch (Exception e) {
-            return ResponseEntity
-                    .badRequest()
-                    .body(BaseResponse.error(400, "Failed to process the file: " + e.getMessage()));
-        }
-    }
+//    @PostMapping("/multipartfile")
+//    @Operation(summary = "핸들러에 사용할 api (multipartfile)", description = "복원된 음성 파일을 STT 처리")
+//    public ResponseEntity<BaseResponse<?>> recognizeByMultipartFile(MultipartFile file) throws IOException {
+//        // 기존 로직 유지
+//        ObjectMapper objectMapper = new ObjectMapper();
+//
+//        // 키워드 부스팅
+//        Resource resource = new ClassPathResource("keyword/boosting.json");
+//        JsonNode keywordJson = objectMapper.readTree(new File(String.valueOf(resource.getFile().toPath())));
+//        String boostingWords = keywordJson.get("boostingWords").asText();
+//
+//        Boosting boost = new Boosting();
+//        boost.setWords(boostingWords);
+//        List<Boosting> boostList = new ArrayList<>();
+//        boostList.add(boost);
+//
+//        NestRequestDTO request = new NestRequestDTO();
+//        request.setBoostings(boostList);
+//
+//        // clova speech api
+//        String jsonResponse = clovaspeechService.recognizeByUpload(file, request);
+//
+//        try {
+//            JsonNode rootNode = objectMapper.readTree(jsonResponse); // 응답 JSON을 JsonNode로 변환
+//            String textContent = rootNode.get("text").asText(); // 'text' 필드의 값을 추출
+//
+//            return ResponseEntity.ok(BaseResponse.success(200, "clova speech api 통신완료", textContent));
+//
+//        } catch (Exception e) {
+//            return ResponseEntity
+//                    .badRequest()
+//                    .body(BaseResponse.error(400, "Failed to process the file: " + e.getMessage()));
+//        }
+//    }
 
     // 핸들러에 사용할 api (file)
-    @PostMapping("/file")
-    @Operation(summary = "핸들러에 사용할 api (file)", description = "복원된 음성 파일을 STT 처리")
-    public ResponseEntity<BaseResponse<?>> recognizeByFile(File file) throws IOException {
-        // 기존 로직 유지
-        ObjectMapper objectMapper = new ObjectMapper();
-
-        // 키워드 부스팅
-        Resource resource = new ClassPathResource("keyword/boosting.json");
-        JsonNode keywordJson = objectMapper.readTree(new File(String.valueOf(resource.getFile().toPath())));
-        String boostingWords = keywordJson.get("boostingWords").asText();
-
-        Boosting boost = new Boosting();
-        boost.setWords(boostingWords);
-        List<Boosting> boostList = new ArrayList<>();
-        boostList.add(boost);
-
-        NestRequestDTO request = new NestRequestDTO();
-        request.setBoostings(boostList);
-
-        // clova speech api
-        String jsonResponse = clovaspeechService.recognizeByFile(file, request);
-
-        try {
-            JsonNode rootNode = objectMapper.readTree(jsonResponse); // 응답 JSON을 JsonNode로 변환
-            String textContent = rootNode.get("text").asText(); // 'text' 필드의 값을 추출
-
-            return ResponseEntity.ok(BaseResponse.success(200, "clova speech api 통신완료", textContent));
-
-        } catch (Exception e) {
-            return ResponseEntity
-                    .badRequest()
-                    .body(BaseResponse.error(400, "Failed to process the file: " + e.getMessage()));
-        }
-    }
+//    @PostMapping("/file")
+//    @Operation(summary = "핸들러에 사용할 api (file)", description = "복원된 음성 파일을 STT 처리")
+//    public ResponseEntity<BaseResponse<?>> recognizeByFile(File file) throws IOException {
+//        // 기존 로직 유지
+//        ObjectMapper objectMapper = new ObjectMapper();
+//
+//        // 키워드 부스팅
+//        Resource resource = new ClassPathResource("keyword/boosting.json");
+//        JsonNode keywordJson = objectMapper.readTree(new File(String.valueOf(resource.getFile().toPath())));
+//        String boostingWords = keywordJson.get("boostingWords").asText();
+//
+//        Boosting boost = new Boosting();
+//        boost.setWords(boostingWords);
+//        List<Boosting> boostList = new ArrayList<>();
+//        boostList.add(boost);
+//
+//        NestRequestDTO request = new NestRequestDTO();
+//        request.setBoostings(boostList);
+//
+//        // clova speech api
+//        String jsonResponse = clovaspeechService.recognizeByFile(file, request);
+//
+//        try {
+//            JsonNode rootNode = objectMapper.readTree(jsonResponse); // 응답 JSON을 JsonNode로 변환
+//            String textContent = rootNode.get("text").asText(); // 'text' 필드의 값을 추출
+//
+//            return ResponseEntity.ok(BaseResponse.success(200, "clova speech api 통신완료", textContent));
+//
+//        } catch (Exception e) {
+//            return ResponseEntity
+//                    .badRequest()
+//                    .body(BaseResponse.error(400, "Failed to process the file: " + e.getMessage()));
+//        }
+//    }
 
     // 핸들러에 사용할 api (byte[])
-    @PostMapping(value = "/byte", consumes = MediaType.APPLICATION_OCTET_STREAM_VALUE)
-    @Operation(summary = "핸들러에 사용할 api (byte[])", description = "복원된 음성 파일을 STT 처리")
-    public ResponseEntity<BaseResponse<?>> recognizeBybyte(@RequestBody byte[] fileData) {
-        File tempFile = null;
-        try {
-            tempFile = File.createTempFile("upload-", ".m4a", new File("temp"));
-            try (OutputStream os = new FileOutputStream(tempFile)) {
-                os.write(fileData);
-            }
-
-            String response = sendFileToClovaSpeech(tempFile);
-            return ResponseEntity.ok(BaseResponse.success(200, "File processed successfully", response));
-        } catch (Exception e) {
-            if (tempFile != null) tempFile.delete();
-            return ResponseEntity.badRequest().body(BaseResponse.error(400, "Failed to process the file: " + e.getMessage()));
-        } finally {
-            if (tempFile != null) tempFile.delete();
-        }
-    }
-    private String sendFileToClovaSpeech(File file) throws IOException {
-        ObjectMapper objectMapper = new ObjectMapper();
-        Resource resource = new ClassPathResource("keyword/boosting.json");
-        JsonNode keywordJson = objectMapper.readTree(resource.getFile());
-        String boostingWords = keywordJson.get("boostingWords").asText();
-
-        Boosting boost = new Boosting();
-        boost.setWords(boostingWords);
-        List<Boosting> boostList = new ArrayList<>();
-        boostList.add(boost);
-
-        NestRequestDTO request = new NestRequestDTO();
-        request.setBoostings(boostList);
-
-        String jsonResponse = clovaspeechService.recognizeByFile(file, request);
-        JsonNode rootNode = objectMapper.readTree(jsonResponse);
-        return rootNode.get("text").asText();
-    }
+//    @PostMapping(value = "/byte", consumes = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+//    @Operation(summary = "핸들러에 사용할 api (byte[])", description = "복원된 음성 파일을 STT 처리")
+//    public ResponseEntity<BaseResponse<?>> recognizeBybyte(@RequestBody byte[] fileData) {
+//        File tempFile = null;
+//        try {
+//            tempFile = File.createTempFile("upload-", ".m4a", new File("temp"));
+//            try (OutputStream os = new FileOutputStream(tempFile)) {
+//                os.write(fileData);
+//            }
+//
+//            String response = sendFileToClovaSpeech(tempFile);
+//            return ResponseEntity.ok(BaseResponse.success(200, "File processed successfully", response));
+//        } catch (Exception e) {
+//            if (tempFile != null) tempFile.delete();
+//            return ResponseEntity.badRequest().body(BaseResponse.error(400, "Failed to process the file: " + e.getMessage()));
+//        } finally {
+//            if (tempFile != null) tempFile.delete();
+//        }
+//    }
+//    private String sendFileToClovaSpeech(File file) throws IOException {
+//        ObjectMapper objectMapper = new ObjectMapper();
+//        Resource resource = new ClassPathResource("keyword/boosting.json");
+//        JsonNode keywordJson = objectMapper.readTree(resource.getFile());
+//        String boostingWords = keywordJson.get("boostingWords").asText();
+//
+//        Boosting boost = new Boosting();
+//        boost.setWords(boostingWords);
+//        List<Boosting> boostList = new ArrayList<>();
+//        boostList.add(boost);
+//
+//        NestRequestDTO request = new NestRequestDTO();
+//        request.setBoostings(boostList);
+//
+//        String jsonResponse = clovaspeechService.recognizeByFile(file, request);
+//        JsonNode rootNode = objectMapper.readTree(jsonResponse);
+//        return rootNode.get("text").asText();
+//    }
 
 
     // 스웨거에서 파일 업로드해서 테스트 해보는 곳
@@ -173,7 +173,7 @@ public class ClovaspeechController {
         request.setBoostings(boostList);
 
         // clova speech api
-        String jsonResponse = clovaspeechService.recognizeByUpload(file, request);
+        String jsonResponse = clovaspeechService.recognizeByMultipartFile(file, request);
 
         try {
             JsonNode rootNode = objectMapper.readTree(jsonResponse); // 응답 JSON을 JsonNode로 변환

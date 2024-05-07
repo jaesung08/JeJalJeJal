@@ -37,7 +37,7 @@ public class ClovaspeechService {
     };
 
     // MultipartFile 형식일 때
-    public String recognizeByUpload(MultipartFile file, NestRequestDTO request) throws IOException {
+    public String recognizeByMultipartFile(MultipartFile file, NestRequestDTO request) throws IOException {
         log.info("Starting file upload with parameters: {}", gson.toJson(request));
 
         HttpPost httpPost = new HttpPost(INVOKE_URL + "/recognizer/upload");
@@ -67,8 +67,6 @@ public class ClovaspeechService {
         return execute(httpPost);
     }
 
-
-
     private String execute(HttpPost httpPost) {
         try (final CloseableHttpResponse httpResponse = httpClient.execute(httpPost)) {
             final HttpEntity entity = httpResponse.getEntity();
@@ -82,5 +80,4 @@ public class ClovaspeechService {
             throw new RuntimeException(e);
         }
     }
-
 }

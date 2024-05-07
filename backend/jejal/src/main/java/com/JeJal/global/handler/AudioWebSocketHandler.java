@@ -95,6 +95,7 @@ public class AudioWebSocketHandler extends AbstractWebSocketHandler {
     @Override
     public void handleBinaryMessage(WebSocketSession session, BinaryMessage message) throws Exception {
         logger.info("바이너리 메시지 처리: {}", session.getId());
+        logger.info("파일에 데이터 추가 : {}", message.getPayload().get());
         appendFile(message.getPayload(), session.getId());
 
         logger.info("GET 요청 (복원): {}", DOMAIN_UNTRUNC + "/recover");
@@ -245,10 +246,18 @@ public class AudioWebSocketHandler extends AbstractWebSocketHandler {
                 if (file.isDirectory()) {
                     deleteDirectory(file);
                 } else {
-                    file.delete();
+                    boolean success = file.delete();
+                    if (!success) {
+                        // 파일 삭제 실패에 대한 처리
+                        System.err.println("Failed to delete file: " + file.getAbsolutePath());
+                    }
                 }
             }
         }
-        directory.delete();
+        boolean success = directory.delete();
+        if (!success) {
+            // 디렉터리 삭제 실패에 대한 처리
+            System.err.println("Failed to delete directory: " + directory.getAbsolutePath());
+        }
     }
 }

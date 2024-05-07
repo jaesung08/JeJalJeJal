@@ -1,10 +1,9 @@
 package com.JeJal.global.handler;
 
-import com.JeJal.api.clova.dto.Boosting;
-import com.JeJal.api.clova.dto.NestRequestDTO;
-import com.JeJal.api.clova.service.ClovaspeechService;
+import com.JeJal.api.clovaspeech.dto.Boosting;
+import com.JeJal.api.clovaspeech.dto.NestRequestDTO;
+import com.JeJal.api.clovaspeech.service.ClovaspeechService;
 import com.JeJal.api.translate.dto.ClovaStudioResponseDto;
-import com.JeJal.api.translate.dto.TextDto;
 import com.JeJal.api.translate.dto.TranslateResponseDto;
 import com.JeJal.api.translate.service.ClovaStudioService;
 import com.JeJal.global.util.RestAPIUtil;
@@ -27,8 +26,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.socket.BinaryMessage;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;

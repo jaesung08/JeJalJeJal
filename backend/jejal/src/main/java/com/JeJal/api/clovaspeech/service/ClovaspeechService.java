@@ -1,6 +1,6 @@
-package com.JeJal.api.clova.service;
+package com.JeJal.api.clovaspeech.service;
 
-import com.JeJal.api.clova.dto.NestRequestDTO;
+import com.JeJal.api.clovaspeech.dto.NestRequestDTO;
 import com.google.gson.Gson;
 import java.io.File;
 import java.io.IOException;

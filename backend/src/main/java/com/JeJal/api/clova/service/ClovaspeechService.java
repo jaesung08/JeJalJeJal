@@ -3,6 +3,7 @@ package com.JeJal.api.clova.service;
 import com.JeJal.api.clova.dto.NestRequestDTO;
 import com.google.gson.Gson;
 import java.io.File;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpEntity;
@@ -16,6 +17,7 @@ import org.apache.http.message.BasicHeader;
 import org.apache.http.util.EntityUtils;
 import org.springframework.stereotype.Service;
 import org.apache.http.Header;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @Slf4j
@@ -34,20 +36,38 @@ public class ClovaspeechService {
         new BasicHeader("X-CLOVASPEECH-API-KEY", SECRET),
     };
 
-    public String recognizeByUpload(File file, NestRequestDTO request) {
+    // MultipartFile 형식일 때
+    public String recognizeByUpload(MultipartFile file, NestRequestDTO request) throws IOException {
+        log.info("Starting file upload with parameters: {}", gson.toJson(request));
 
+        HttpPost httpPost = new HttpPost(INVOKE_URL + "/recognizer/upload");
+        httpPost.setHeaders(HEADERS);
+
+        // MultipartFile을 사용하여 파일 데이터를 스트림으로 처리
+        HttpEntity httpEntity = MultipartEntityBuilder.create()
+                .addTextBody("params", gson.toJson(request), ContentType.APPLICATION_JSON)
+                .addBinaryBody("media", file.getInputStream(), ContentType.MULTIPART_FORM_DATA, file.getOriginalFilename())
+                .build();
+        httpPost.setEntity(httpEntity);
+        return execute(httpPost);
+    }
+
+    // File 형식일 때
+    public String recognizeByFile(File file, NestRequestDTO request) throws IOException {
         log.info("Starting file upload with parameters: {}", gson.toJson(request));
 
         HttpPost httpPost = new HttpPost(INVOKE_URL + "/recognizer/upload");
         httpPost.setHeaders(HEADERS);
 
         HttpEntity httpEntity = MultipartEntityBuilder.create()
-            .addTextBody("params", gson.toJson(request), ContentType.APPLICATION_JSON)
-            .addBinaryBody("media", file, ContentType.MULTIPART_FORM_DATA, file.getName())
-            .build();
+                .addTextBody("params", gson.toJson(request), ContentType.APPLICATION_JSON)
+                .addBinaryBody("media", file, ContentType.MULTIPART_FORM_DATA, file.getName())
+                .build();
         httpPost.setEntity(httpEntity);
         return execute(httpPost);
     }
+
+
 
     private String execute(HttpPost httpPost) {
         try (final CloseableHttpResponse httpResponse = httpClient.execute(httpPost)) {

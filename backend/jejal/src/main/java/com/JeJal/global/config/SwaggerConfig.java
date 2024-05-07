@@ -18,7 +18,7 @@ public class SwaggerConfig {
     public OpenAPI customOpenAPI() {
         return new OpenAPI()
                 .addServersItem(new Server().url("https://k10a406.p.ssafy.io/api/").description("요청 서버"))
-                .addServersItem(new Server().url("http://localhost:8000/api/").description("Local server"))
+                .addServersItem(new Server().url("http://localhost:8080/api/").description("Local server"))
                 .info(new Info()
                         .title("제잘제잘")
                         .version("1.0")

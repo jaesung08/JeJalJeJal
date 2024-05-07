@@ -26,7 +26,7 @@ public class ClovaspeechService {
     private CloseableHttpClient httpClient = HttpClients.createDefault();
 
     // Clova Speech secret key
-    private static final String SECRET = "8c7c98b68d584fe580b0b37867473209";
+    private static final String SECRET = "6d0818ad065e42b89876bb08e2d0059b";
     // Clova Speech invoke URL
     private static final String INVOKE_URL = "https://clovaspeech-gw.ncloud.com/external/v1/7745/ca39def33be85300d7797f337cc24b066519204a3e929f6dff97501e398632fa";
     private Gson gson = new Gson();
@@ -37,7 +37,7 @@ public class ClovaspeechService {
     };
 
     // MultipartFile 형식일 때
-    public String recognizeByMultipartFile(MultipartFile file, NestRequestDTO request) throws IOException {
+    public String recognizeByMultipartFile(MultipartFile multipartFile, NestRequestDTO request) throws IOException {
         log.info("Starting file upload with parameters: {}", gson.toJson(request));
 
         HttpPost httpPost = new HttpPost(INVOKE_URL + "/recognizer/upload");
@@ -46,7 +46,7 @@ public class ClovaspeechService {
         // MultipartFile을 사용하여 파일 데이터를 스트림으로 처리
         HttpEntity httpEntity = MultipartEntityBuilder.create()
                 .addTextBody("params", gson.toJson(request), ContentType.APPLICATION_JSON)
-                .addBinaryBody("media", file.getInputStream(), ContentType.MULTIPART_FORM_DATA, file.getOriginalFilename())
+                .addBinaryBody("media", multipartFile.getInputStream(), ContentType.MULTIPART_FORM_DATA, multipartFile.getOriginalFilename())
                 .build();
         httpPost.setEntity(httpEntity);
         return execute(httpPost);

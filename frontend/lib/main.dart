@@ -24,8 +24,12 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-    _requestPermissions();
-    requestOverlayPermission();
+    _initializeApp();
+  }
+
+  Future<void> _initializeApp() async {
+    await _requestPermissions();
+    await requestOverlayPermission();
     setStream(widget.database);
   }
 
@@ -39,8 +43,9 @@ class _MyAppState extends State<MyApp> {
 
   Future<void> _requestPermissions() async {
     await _requestCallPermission();
-    await _requestStoragePermission();
+    await _requestContactPermission(); // 연락처 권한 요청 추가
     await _requestBackgroundPermission();
+    await _requestStoragePermission();
     await _requestSystemAlertWindowPermission();
   }
 
@@ -59,6 +64,14 @@ class _MyAppState extends State<MyApp> {
   Future<void> _requestSystemAlertWindowPermission() async {
     if (!await Permission.systemAlertWindow.isGranted) {
       await Permission.systemAlertWindow.request();
+    }
+  }
+  // 연락처 권한 추가
+  Future<void> _requestContactPermission() async {
+    try {
+      await Permission.contacts.request();
+    } catch (e) {
+      print('Error requesting contact permission: $e');
     }
   }
 

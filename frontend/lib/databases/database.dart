@@ -1,3 +1,5 @@
+// lib/databases/database.dart
+
 import 'dart:io';
 import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
@@ -38,14 +40,14 @@ class JejalDatabase extends _$JejalDatabase {
 
   Future<List<Conversation>> getAllConversations() => select(conversations).get();
   Stream<List<Conversation>> watchAllConversations() => select(conversations).watch();
-  Future<int> insertConversation(Conversation conversation) => into(conversations).insert(conversation);
+  Future<int> insertConversation(ConversationsCompanion conversation) => into(conversations).insert(conversation);
 
   // JejuTexts 테이블에 데이터 삽입
   Future<int> insertJejuText(JejuTextsCompanion jejuText) => into(jejuTexts).insert(jejuText);
 
   // TranslatedTexts 테이블에 데이터 삽입
   Future<int> insertTranslatedText(TranslatedTextsCompanion translatedText) => into(translatedTexts).insert(translatedText);
-  
+
   // 특정 conversationId에 해당하는 모든 jejuTexts 데이터 조회
   Future<List<JejuText>> getJejuTextsByConversationId(int conversationId) {
     return (select(jejuTexts)..where((tbl) => tbl.conversationId.equals(conversationId))).get();

@@ -79,7 +79,7 @@ class HomePage extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => HistoryScreen(database: database),
+                      builder: (context) => HistoryScreen(database: database),
                     ),
                   );
                 },

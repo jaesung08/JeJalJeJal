@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:jejal_project/screens/history_chat_screen.dart';
 import 'package:jejal_project/databases/database.dart';
+import 'package:intl/intl.dart';
 
 class HistoryScreen extends StatelessWidget {
   final JejalDatabase database;
@@ -18,7 +19,10 @@ class HistoryScreen extends StatelessWidget {
         ),
       ),
       body: FutureBuilder<List<Conversation>>(
-        future: database.getAllConversations(),
+        future: database.getAllConversations().catchError((error) {
+          print('fetching conversations 에러: $error');
+          return <Conversation>[];
+        }),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             final conversations = snapshot.data!;
@@ -53,7 +57,7 @@ class HistoryScreen extends StatelessWidget {
                             ),
                           ),
                           SizedBox(height: 4),
-                          Text(conversation.date.toString()),
+                          Text(DateFormat('yyyy-MM-dd HH:mm').format(conversation.date)),
                         ],
                       ),
                       contentPadding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 15.0),

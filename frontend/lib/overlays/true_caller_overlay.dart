@@ -5,11 +5,12 @@ import 'package:jejal_project/services/translation_service.dart';
 import 'package:jejal_project/databases/database.dart';
 import 'package:jejal_project/overlays/tangerine_icon.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
+import 'package:jejal_project/overlays/tangerine_icon.dart';
 
 
 //메인에서 설정 눌렀을 때 호출된 위젯
 class TrueCallerOverlay extends StatefulWidget {
-  // 위젯의 생성자에 웹소켓 채널과 데이터베이스를 받아오도록 설정
+
   final WebSocketChannel channel;
   final JejalDatabase database;
 

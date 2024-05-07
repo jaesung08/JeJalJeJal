@@ -1,4 +1,5 @@
 // lib/screens/history_chat_screen.dart
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:jejal_project/databases/database.dart';
 
@@ -37,19 +38,25 @@ class HistoryChatScreen extends StatelessWidget {
           },
         ),
       ),
-      body: FutureBuilder<List<JejuText>>(
-        future: database.getJejuTextsByConversationId(conversationId),
+      body : FutureBuilder<List<JejuText>>(
+        future: database.getJejuTextsByConversationId(conversationId).catchError((error) {
+          print('Error fetching jeju texts: $error');
+          return <JejuText>[];
+        }),
         builder: (context, jejuSnapshot) {
           if (jejuSnapshot.hasData) {
             return FutureBuilder<List<TranslatedText>>(
-              future: database.getTranslatedTextsByConversationId(conversationId),
+              future: database.getTranslatedTextsByConversationId(conversationId).catchError((error) {
+                print('Error fetching translated texts: $error');
+                return <TranslatedText>[];
+              }),
               builder: (context, translatedSnapshot) {
                 if (translatedSnapshot.hasData) {
                   final jejuTexts = jejuSnapshot.data!;
                   final translatedTexts = translatedSnapshot.data!;
 
                   return ListView.builder(
-                    itemCount: jejuTexts.length,
+                    itemCount: min(jejuTexts.length, translatedTexts.length),
                     itemBuilder: (context, index) {
                       final jejuText = jejuTexts[index];
                       final translatedText = translatedTexts[index];

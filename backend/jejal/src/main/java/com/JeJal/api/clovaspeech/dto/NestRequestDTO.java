@@ -1,4 +1,4 @@
-package com.JeJal.api.clova.dto;
+package com.JeJal.api.clovaspeech.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;

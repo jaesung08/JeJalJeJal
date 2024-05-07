@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_overlay_window/flutter_overlay_window.dart';
+import 'package:jejal_project/databases/database.dart';
 import 'package:jejal_project/screens/history_screen.dart';
+import 'package:jejal_project/screens/select_file_screen.dart';
 
 class HomePage extends StatelessWidget {
-  const HomePage({Key? key}) : super(key: key);
+  final JejalDatabase database;
+
+  const HomePage({Key? key, required this.database}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -20,14 +24,7 @@ class HomePage extends StatelessWidget {
               padding: const EdgeInsets.fromLTRB(20, 60, 20, 60),
               child: Row(
                 children: [
-                  const Text(
-                    'ㅇㅇ님,',
-                    style: TextStyle(
-                      fontSize: 26,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.orange, // 텍스트 색상
-                    ),
-                  ),
+
                   const SizedBox(width: 5),
                   const Text(
                     '혼저옵서예!',
@@ -76,7 +73,9 @@ class HomePage extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => HistoryScreen()),
+
+                      builder: (context) => HistoryScreen(),
+                    ),
                   );
                 },
                 child: Container(
@@ -138,6 +137,11 @@ class HomePage extends StatelessWidget {
               child: GestureDetector(
                 onTap: () {
                   // 번역기 사용 버튼 클릭 시 동작 구현
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => SelectFileScreen()),
+                  );
                 },
                 child: Container(
                   height: 200,
@@ -162,7 +166,7 @@ class HomePage extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: const [
                               Text(
-                                '번역기 사용',
+                                '파일 통역',
                                 style: TextStyle(
                                   fontSize: 27,
                                   fontWeight: FontWeight.bold,
@@ -171,7 +175,7 @@ class HomePage extends StatelessWidget {
                               ),
                               Spacer(),
                               Text(
-                                '번역된 통화 기록들을\n다시 확인해보세요!\n제주 방언 단어의\n의미도 알려줘요!',
+                                '파일을 바로 \n 통역해보세요',
                                 style: TextStyle(
                                   fontSize: 15,
                                   color: Colors.white,
@@ -192,4 +196,3 @@ class HomePage extends StatelessWidget {
     );
   }
 }
-

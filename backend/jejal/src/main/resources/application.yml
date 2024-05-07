@@ -1,5 +1,5 @@
 server:
-  port: 8000
+  port: 8080
   servlet:
     context-path: "/api/"
     encoding:
@@ -35,9 +35,16 @@ logging:
           boot: DEBUG
 
 
+#clova studio
+clovastudio:
+  api_key: NTA0MjU2MWZlZTcxNDJiY2W69+ukC2YzzqzaAgLATjpbH+QlZCbRQEDEsCLiaTnF
+  api_key_primary_val: Tw9XWSuCu2LrtFiLXotBmXHhK7p2D4DBkGwq93xe
+  request_id: af267c9c-8934-438c-9703-d4706aa35931
+  url: https://clovastudio.apigw.ntruss.com
+  endpoint: /testapp/v1/chat-completions/HCX-003
+  system_content: 너는 제주도 사투리를 표준어로 번역해주는 아주 유능한 번역가야.
+    제주도 사투리가 입력되면 표준어로 변경해주면 되는데 전체적인 문맥도 고려해서 자연스럽게 변경해줘.
+    제주도 방언이 입력되면 표준어 답변만 보내줘. "혼저옵서예"라는 입력이 들어오면 "어서오세요"라고 답변해줘
 
 DOMAIN_UNTRUNC: "http://untrunc:8000"
 SPRING_RECORD_TEMP_DIR: /data/WebSocket
-AI_SERVER_URI: http://fastapi:80
-SPEECH_SECRET: 123
-SPEECH_INVOKE_URL: 123

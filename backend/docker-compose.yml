@@ -25,8 +25,8 @@ services:
       networks:
         - ssafy-net
       volumes:
-      - ./jejal/build/libs/*.jar:/app.jar # 이 경로에 Dockerfile과 소스 코드가 있어야 함
-      entrypoint: ["java", "-jar", "/app/app.jar"] # entrypoint는 Dockerfile 설정을 사용합니다
+      - ./jejal/build/libs/JeJal-0.0.1-SNAPSHOT.jar:/app.jar # 이 경로에 Dockerfile과 소스 코드가 있어야 함
+      entrypoint: ["java", "-jar", "/app.jar"] # entrypoint는 Dockerfile 설정을 사용합니다
 
 volumes:
   Jejaljejal:

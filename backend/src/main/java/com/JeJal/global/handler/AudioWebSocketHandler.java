@@ -1,24 +1,34 @@
 package com.JeJal.global.handler;
 
+import com.JeJal.api.clova.dto.Boosting;
+import com.JeJal.api.clova.dto.NestRequestDTO;
+import com.JeJal.api.clova.service.ClovaspeechService;
 import com.JeJal.api.translate.dto.ClovaStudioResponseDto;
 import com.JeJal.api.translate.dto.TextDto;
 import com.JeJal.api.translate.dto.TranslateResponseDto;
 import com.JeJal.api.translate.service.ClovaStudioService;
 import com.JeJal.global.util.RestAPIUtil;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.socket.BinaryMessage;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
@@ -29,6 +39,7 @@ import org.springframework.web.socket.handler.AbstractWebSocketHandler;
 // todo. 제잘제잘에 맞게 수정 필요
 // 웹소켓 통신에서 발생할 수 있는 다양한 이벤트를 처리
 @Component
+@Slf4j
 public class AudioWebSocketHandler extends AbstractWebSocketHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(AudioWebSocketHandler.class);
@@ -37,7 +48,10 @@ public class AudioWebSocketHandler extends AbstractWebSocketHandler {
     private RestAPIUtil restApiUtil;
 
     @Autowired
-    private ClovaStudioService clovaStudioService;
+    private ClovaStudioService clovaStudioService;  // clova studio (번역)
+
+    @Autowired
+    private ClovaspeechService clovaspeechService;  // clova speech (STT)
 
     // 설정값 주입
     @Value("${SPRING_RECORD_TEMP_DIR}")
@@ -93,7 +107,7 @@ public class AudioWebSocketHandler extends AbstractWebSocketHandler {
         logger.info("결과 (복원): {}", untruncResult);
         List<String> newFile = (List<String>) untruncResult.get("new_file");
         var newFilePath = RECORD_PATH + "/" + session.getId() + "/part/";
-        sendACloverServer(newFile, newFilePath, session, false);
+//        sendACloverSpeechServer(session, file);
     }
 
 
@@ -136,7 +150,7 @@ public class AudioWebSocketHandler extends AbstractWebSocketHandler {
 
                 List<String> newFile = (List<String>) untruncResult.get("new_file");
                 var newFilePath = RECORD_PATH + "/" + session.getId() + "/part/";
-                sendACloverServer(newFile, newFilePath, session, true);
+//                sendACloverSpeechServer(session, file);
                 break;
             default:
                 logger.info("error");
@@ -145,23 +159,39 @@ public class AudioWebSocketHandler extends AbstractWebSocketHandler {
     }
 
     // 새로생성된 part파일을 clover api로 전송.
-    //todo. 제잘제잘에 맞게 변경 필요
-    //Todo : clover API 로 연결하기
-    private void sendACloverServer(List<String> newFile, String newFilePath, WebSocketSession session, Boolean isFinish) throws Exception {
-        for (int i = 0; i < newFile.size(); i++) {
-            var filePath = newFilePath + newFile.get(i);
-            var myUrl = "http://localhost:8080/api/analysis/file2text";
-            var multiValueMap = new LinkedMultiValueMap<String, Object>();
-            multiValueMap.add("sessionId", session.getId());
-            multiValueMap.add("filepath", filePath);
-            multiValueMap.add("isFinish", (isFinish && i == newFile.size() - 1));
+    private void sendACloverSpeechServer(WebSocketSession session, MultipartFile file) throws Exception {
+        ObjectMapper objectMapper = new ObjectMapper();
 
-            logger.info("클로바 요청 {} 시작 {} , {}: ", i, filePath, multiValueMap);
-            var myResult = restApiUtil.requestPost(myUrl, multiValueMap);
-            myResult.put("isFinish", isFinish && i == newFile.size() - 1);
+        // 키워드 부스팅
+        Resource resource = new ClassPathResource("keyword/boosting.json");
+        JsonNode keywordJson = objectMapper.readTree(new File(String.valueOf(resource.getFile().toPath())));
+        String boostingWords = keywordJson.get("boostingWords").asText();
+        Boosting boost = new Boosting();
+        boost.setWords(boostingWords);
+        List<Boosting> boostList = new ArrayList<>();
+        boostList.add(boost);
 
-//            sendClient(session, myResult); // todo. 우리는 translate로 요청
-            logger.info("클로바 요청 {} 결과: {}", i, myResult);
+        NestRequestDTO request = new NestRequestDTO();
+        request.setBoostings(boostList);
+
+        // clova speech api 통신
+        String jsonResponse = clovaspeechService.recognizeByUpload(file, request);
+
+        try{
+            log.info("clova speech api 통신 완료");
+            JsonNode rootNode = objectMapper.readTree(jsonResponse); // 응답 JSON을 JsonNode로 변환
+            String textContent = rootNode.get("text").asText(); // 'text' 필드의 값을 추출
+
+            try {
+                log.info("번역 api 통신 시작");
+                sendTranslateServer(session, textContent);
+            } catch (Exception e) {
+                log.error("번역 api 통신 실패: " + e.getMessage(), e);
+                throw e;
+            }
+        } catch (Exception e) {
+            log.error("clova speech api 통신 실패: " + e.getMessage(), e);
+            throw e;
         }
     }
 

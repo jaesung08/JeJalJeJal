@@ -25,13 +25,15 @@ import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.AbstractWebSocketHandler;
 
+
+// 웹소켓 통신에서 발생할 수 있는 다양한 이벤트를 처리
 @Component
 public class AudioWebSocketHandler extends AbstractWebSocketHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(AudioWebSocketHandler.class);
 
     @Autowired
-    private RestAPIUtil restApiUtil; // REST API 유틸리티
+    private RestAPIUtil restApiUtil;
 
     @Autowired
     private ClovaStudioService clovaStudioService;
@@ -53,7 +55,7 @@ public class AudioWebSocketHandler extends AbstractWebSocketHandler {
         logger.info("WebSocket 연결 성공");
         createFolder(session.getId());
         // -> websocket 세션의 고유 식별자 사용하여 해당 세션에 대한 폴더 생성
-        // 클라이언트와의 통신에 필요한 데이터를 저장하기 위한 작업?
+        // 오디오 레코드 파일 저장을 위해 사용
     }
 
     // 통화연결 시작했을 때 폴더생성
@@ -72,6 +74,8 @@ public class AudioWebSocketHandler extends AbstractWebSocketHandler {
     }
 
     // BinaryMessage를 처리하는 메서드
+    // 우리 프로젝트의 경우 오디오 데이터 받았을때 호출됨
+    // 받은 오디오 데이터를 파일에 추가 저장하고 복원과 분석을 위해 외부 api에 데이터 전송
     @Override
     public void handleBinaryMessage(WebSocketSession session, BinaryMessage message) throws Exception {
         logger.info("바이너리 메시지 처리: {}", session.getId());
@@ -90,22 +94,10 @@ public class AudioWebSocketHandler extends AbstractWebSocketHandler {
         sendACloverServer(newFile, newFilePath, session, false);
     }
 
-    /*
-    * 이 메소드는 WebSocket 연결을 통해 바이너리 메시지(Binary Message)를 받았을 때 호출됩니다.
-    * WebSocket은 텍스트뿐만 아니라 바이너리 데이터도 주고받을 수 있는데, 이 메소드는 바이너리 데이터를 처리하는 역할을 합니다.
-    일반적으로 WebSocket 통신에서 바이너리 데이터는 오디오, 비디오 등의 미디어 스트리밍이나 파일 전송 등에 사용됩니다.
-    *  따라서 이 메소드는 클라이언트에서 보내는 바이너리 데이터(예: 오디오 데이터)를 받아서 처리하는 것으로 보입니다.
-    구체적인 동작을 보면:
-
-    받은 바이너리 메시지의 payload(실제 데이터)를 세션 ID로 파일에 추가합니다.
-    외부 API 서버에 복원(recover) 요청을 보내고, 결과로 받은 새 파일 목록을 가져옵니다.
-    새 파일 목록을 다른 서버(AI 서버?)로 전송합니다.
-
-    따라서 이 메소드는 클라이언트에서 보내는 오디오 스트리밍 데이터를 받아서 파일로 저장하고,
-    * 일정 시점마다 외부 API를 호출하여 새로운 파일을 생성한 뒤 다른 서버로 전달하는 역할을 하는 것으로 보입니다.
-    * */
 
     // 파일에 데이터를 추가하는 메서드
+    // ByteBuffer에서 받은 데이터를 파일에 추가
+    // 이 메서드는 바이너리 메시지 처리 중에 호출됨
     private void appendFile(ByteBuffer byteBuffer, String sessionId) throws IOException {
         try (var outputStream = new FileOutputStream(RECORD_PATH + "/" + sessionId + "/record.m4a", true)) {
             byte[] bytes = new byte[byteBuffer.remaining()];
@@ -115,6 +107,9 @@ public class AudioWebSocketHandler extends AbstractWebSocketHandler {
     }
 
     // TextMessage를 처리하는 메서드
+    // 텍스트 메시지 받았을 때 호출됨
+    // 메시지 내용에 따라 다양한 처리 수행
+    // 특정 상태 값에 따라 추가 정보(전화번호) 저장하거나 복원 작업
     @Override
     public void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
         logger.info("socket 정보 전달받음 : {}", message);
@@ -164,14 +159,13 @@ public class AudioWebSocketHandler extends AbstractWebSocketHandler {
             myResult.put("isFinish", isFinish && i == newFile.size() - 1);
 
 //            sendClient(session, myResult); // todo. 우리는 translate로 요청
-            // todo. sendTranslateServer(session, myResult); 이런식으로? 번역하는 메서드 호출
             logger.info("클로바 요청 {} 결과: {}", i, myResult);
         }
     }
 
 
     // clova speech로 stt 후 출력된 제주 방언 텍스트 -> jejuText
-    private void sendTranslateServer(WebSocketSession session, String jejuText) {
+    private void sendTranslateServer(WebSocketSession session, String jejuText) throws IOException {
         logger.info("통역 요청 시작 jejuText : {}", jejuText );
         ClovaStudioResponseDto resultDto = clovaStudioService.translateByClova(jejuText);
         String translatedText = resultDto.getResult().getMessage().content;
@@ -184,71 +178,19 @@ public class AudioWebSocketHandler extends AbstractWebSocketHandler {
         sendClient(session, translateResponseDto);
     }
 
-    // todo. 제잘제잘 에 맞게 변경 필요
-    private void sendClient(WebSocketSession session, TranslateResponseDto translateResponseDto) {
+
+    // 클라이언트에게 (웹소켓 연결을 통해) 결과 전송
+    private void sendClient(WebSocketSession session, TranslateResponseDto translateResponseDto) throws IOException {
         logger.info("sendClient 호출됨, {}, {}", translateResponseDto.getJeju(), translateResponseDto.getTranslated() );
 
-        //todo. 로직 작성
+        Gson gson = new Gson();
+        String json = gson.toJson(translateResponseDto);
+        TextMessage textMessage = new TextMessage(json);
+        logger.info("textmessage = {}", textMessage);
+
+        session.sendMessage(textMessage);
     }
 
-
-
-//    private void sendClient(WebSocketSession session, Map<String, Object> result) throws IOException {
-//        var gson = new Gson();
-//        var json = gson.toJson(result);
-//        var textMessage = new TextMessage(json);
-//
-//        var aiDTO = gson.fromJson(gson.toJson(result.get("result")), AIResponseDTO.Response.class);
-//        var isFinish = (Boolean) result.get("isFinish");
-//
-//        session.sendMessage(textMessage);
-//
-//        if (isFinish && aiDTO.getTotalCategory() != 0) { //result처리 , 60%이상인 데이터만 우선 insert
-//            var androidId = (String) session.getAttributes().get("androidId");
-//            var phoneNumber = (String) session.getAttributes().get("phoneNumber");
-//            logger.info("안드로이드 : {}  폰번호 : {}  로그기록을 시작합니다.", androidId, phoneNumber);
-//            dataInput(aiDTO, phoneNumber, androidId);
-//        }
-//    }
-
-    // 데이터를 DB에 입력하는 메서드
-    // ToDo: 안드로이드 DB 맞춰서 로직 변경
-//    private void dataInput(AIResponseDTO.Response rep, String phoneNumber, String androidId) {
-//        var res = ResultDTO.Result.builder()
-//            .androidId(androidId)
-//            .phoneNumber(phoneNumber)
-//            .category(rep.getTotalCategory())
-//            .risk(rep.getTotalCategoryScore())
-//            .build();
-//
-//        int rId = resultService.addResult(res);
-//
-//        var resultList = rep.getResults();
-//
-//        for (var r : resultList) {
-//            var keywordDTO = KeywordDTO.Keyword.builder()
-//                .keyword(r.getSentKeyword())
-//                .category(r.getSentCategory())
-//                .count(0)
-//                .build();
-//
-//            var k = keywordService.addKeywordReturn(keywordDTO);
-//
-//            var ksDTO = KeywordSentenceDTO.KeywordSentence.builder()
-//                .score(r.getKeywordScore())
-//                .keyword(k.getKeyword())
-//                .sentence(r.getSentence())
-//                .category(k.getCategory())
-//                .build();
-//            var ksb = keywordSentenceService.addKeywordSentenceReturn(ksDTO);
-//
-//            var rdDTO = ResultDetailDTO.ResultDetail.builder()
-//                .resultId(rId)
-//                .sentence(ksb.getSentence())
-//                .build();
-//            int rgd = resultDetailService.addResultDetail(rdDTO);
-//        }
-//    }
 
     // WebSocket 연결이 종료된 후 실행되는 메서드
     @Override

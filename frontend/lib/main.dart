@@ -10,7 +10,6 @@ import 'package:phone_state/phone_state.dart';
 import 'package:flutter_foreground_task/flutter_foreground_task.dart';
 import 'package:flutter/services.dart';
 import 'overlays/true_caller_overlay.dart';
-import 'package:jejal_project/screens/main_screen.dart';
 import 'package:jejal_project/home_page.dart';
 
 
@@ -43,7 +42,7 @@ class _MyAppState extends State<MyApp> {
     return const MaterialApp(
       debugShowCheckedModeBanner: false,
       //메인페이지 home_page.dart에 구현
-      home: HomePage(),
+      home: HomePage(database: widget.database),
     );
   }
 
@@ -64,24 +63,21 @@ class _MyAppState extends State<MyApp> {
     if (await FlutterOverlayWindow.isActive()) return;
 
     // 오버레이 표시
-    Future<void> _showOverlay(double heightFactor, double widthFactor) async {
-      if (await FlutterOverlayWindow.isActive()) return;
-
-      await FlutterOverlayWindow.showOverlay(
-        enableDrag: true,
-        overlayTitle: "제주 방언 번역기",
-        overlayContent: 'Overlay Enabled',
-        flag: OverlayFlag.defaultFlag,
-        positionGravity: PositionGravity.auto,
-        height: (MediaQueryData.fromWindow(WidgetsBinding.instance.window).size.height * heightFactor).toInt(),
-        width: (MediaQueryData.fromWindow(WidgetsBinding.instance.window).size.width * widthFactor).toInt(),
-        startPosition: const OverlayPosition(0, 20),
-      );
-    }
-
+    await FlutterOverlayWindow.showOverlay(
+      enableDrag: true,
+      overlayTitle: "제주 방언 번역기",
+      overlayContent: 'Overlay Enabled',
+      flag: OverlayFlag.defaultFlag,
+      // visibility 파라미터를 삭제하거나 대체함
+      positionGravity: PositionGravity.auto,
+      height: (MediaQueryData.fromWindow(WidgetsBinding.instance.window).size.height * 1.6).toInt(),
+      // width: WindowSize.matchParent,
+      width: (MediaQueryData.fromWindow(WidgetsBinding.instance.window).size.width * 2.2).toInt(),
+      startPosition: const OverlayPosition(0, 20),
+    );
   }
 
-    Future<void> _requestPermissions() async {
+  Future<void> _requestPermissions() async {
     // 통화, 저장소, 백그라운드 권한 요청
     await _requestCallPermission();
     await _requestStoragePermission();
@@ -125,4 +121,3 @@ class _MyAppState extends State<MyApp> {
     }
   }
 }
-

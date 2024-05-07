@@ -107,7 +107,7 @@ public class AudioWebSocketHandler extends AbstractWebSocketHandler {
         logger.info("결과 (복원): {}", untruncResult);
         List<String> newFile = (List<String>) untruncResult.get("new_file");
         var newFilePath = RECORD_PATH + "/" + session.getId() + "/part/";
-//        sendACloverSpeechServer(session, file);
+        sendClovaSpeechServer(newFile, newFilePath, session, true);
     }
 
 
@@ -150,7 +150,7 @@ public class AudioWebSocketHandler extends AbstractWebSocketHandler {
 
                 List<String> newFile = (List<String>) untruncResult.get("new_file");
                 var newFilePath = RECORD_PATH + "/" + session.getId() + "/part/";
-//                sendACloverSpeechServer(session, file);
+                sendClovaSpeechServer(newFile, newFilePath, session, true);
                 break;
             default:
                 logger.info("error");
@@ -159,7 +159,8 @@ public class AudioWebSocketHandler extends AbstractWebSocketHandler {
     }
 
     // 새로생성된 part파일을 clover api로 전송.
-    private void sendACloverSpeechServer(WebSocketSession session, MultipartFile file) throws Exception {
+    private void sendClovaSpeechServer(List<String> newFile, String newFilePath, WebSocketSession session, Boolean isFinish) throws Exception {
+
         ObjectMapper objectMapper = new ObjectMapper();
 
         // 키워드 부스팅
@@ -174,27 +175,43 @@ public class AudioWebSocketHandler extends AbstractWebSocketHandler {
         NestRequestDTO request = new NestRequestDTO();
         request.setBoostings(boostList);
 
-        // clova speech api 통신
-        String jsonResponse = clovaspeechService.recognizeByUpload(file, request);
+        for (int i = 0; i < newFile.size(); i++) {
 
-        try{
-            log.info("clova speech api 통신 완료");
-            JsonNode rootNode = objectMapper.readTree(jsonResponse); // 응답 JSON을 JsonNode로 변환
-            String textContent = rootNode.get("text").asText(); // 'text' 필드의 값을 추출
+            // 저장된 파일 경로
+            String filePath = newFilePath + newFile.get(i);
+            
+            // File 형식으로 변경
+            File file = new File(filePath);
 
-            try {
-                log.info("번역 api 통신 시작");
-                sendTranslateServer(session, textContent);
+            // clova speech api 통신
+            log.info("클로바 요청 {} 시작 {} , {}: ", i , filePath);
+            String jsonResponse = clovaspeechService.recognizeByFile(file, request);
+
+            try{
+                log.info("clova speech api 통신 완료");
+                JsonNode rootNode = objectMapper.readTree(jsonResponse); // 응답 JSON을 JsonNode로 변환
+                String textContent = rootNode.get("text").asText(); // 'text' 필드의 값을 추출
+
+                try {
+                    log.info("번역 api 통신 시작");
+                    sendTranslateServer(session, textContent);
+                } catch (Exception e) {
+                    log.error("번역 api 통신 실패: " + e.getMessage(), e);
+                    throw e;
+                }
+
+                // 마지막 파일 처리 시 추가적인 동작
+                if (isFinish && i == newFile.size() - 1) {
+                    // 여기에 마지막 파일 처리가 완료되었음을 알리는 로직 추가
+                    log.info("마지막 파일 처리 완료");
+                }
+
             } catch (Exception e) {
-                log.error("번역 api 통신 실패: " + e.getMessage(), e);
+                log.error("clova speech api 통신 실패: " + e.getMessage(), e);
                 throw e;
             }
-        } catch (Exception e) {
-            log.error("clova speech api 통신 실패: " + e.getMessage(), e);
-            throw e;
         }
     }
-
 
     // clova speech로 stt 후 출력된 제주 방언 텍스트 -> jejuText
     private void sendTranslateServer(WebSocketSession session, String jejuText) throws IOException {

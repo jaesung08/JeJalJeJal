@@ -1,4 +1,4 @@
-package com.JeJal.api.clova.dto;
+package com.JeJal.api.clovaspeech.dto;
 
 import lombok.Getter;
 import lombok.Setter;

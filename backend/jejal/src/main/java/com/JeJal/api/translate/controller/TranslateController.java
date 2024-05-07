@@ -1,5 +1,6 @@
 package com.JeJal.api.translate.controller;
 
+import com.JeJal.api.translate.dto.TranslateResponseDto;
 import com.JeJal.global.common.response.BaseResponse;
 import com.JeJal.api.translate.dto.ClovaStudioResponseDto;
 import com.JeJal.api.translate.dto.TextDto;
@@ -34,16 +35,17 @@ public class TranslateController {
 
     @PostMapping("/clova")
     @Operation(summary = "제주 방언 번역 - clova", description = "제주 방언을 표준어로 번역합니다.")
-    public ResponseEntity<BaseResponse<TextDto>> translateByClova(@RequestBody TextDto textDto) {
+    public ResponseEntity<BaseResponse<TranslateResponseDto>> translateByClova(@RequestBody TextDto textDto) {
         ClovaStudioResponseDto clovaStudioResponseDto = clovaStudioService.translateByClova(textDto.getText());
 
         String translatedText = clovaStudioResponseDto.getResult().getMessage().content;
-        TextDto resultTextDto = TextDto.builder()
-                .text(translatedText)
+        TranslateResponseDto translateResponseDto = TranslateResponseDto.builder()
+                .jeju(textDto.getText())
+                .translated(translatedText)
                 .build();
 
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(BaseResponse.success(200, "clova 번역 성공", resultTextDto));
+                .body(BaseResponse.success(200, "clova 번역 성공", translateResponseDto));
     }
 }

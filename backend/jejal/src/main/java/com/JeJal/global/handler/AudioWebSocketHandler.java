@@ -4,7 +4,6 @@ import com.JeJal.api.clova.dto.Boosting;
 import com.JeJal.api.clova.dto.NestRequestDTO;
 import com.JeJal.api.clova.service.ClovaspeechService;
 import com.JeJal.api.translate.dto.ClovaStudioResponseDto;
-import com.JeJal.api.translate.dto.TextDto;
 import com.JeJal.api.translate.dto.TranslateResponseDto;
 import com.JeJal.api.translate.service.ClovaStudioService;
 import com.JeJal.global.util.RestAPIUtil;
@@ -27,8 +26,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.socket.BinaryMessage;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
@@ -91,7 +88,7 @@ public class AudioWebSocketHandler extends AbstractWebSocketHandler {
     // BinaryMessage를 처리하는 메서드
     // 우리 프로젝트의 경우 오디오 데이터 받았을때 호출됨
     // 받은 오디오 데이터를 파일에 추가 저장하고 복원과 분석을 위해 외부 api에 데이터 전송
-    
+
     @Override
     public void handleBinaryMessage(WebSocketSession session, BinaryMessage message) throws Exception {
         logger.info("바이너리 메시지 처리: {}", session.getId());
@@ -180,7 +177,7 @@ public class AudioWebSocketHandler extends AbstractWebSocketHandler {
 
             // 저장된 파일 경로
             String filePath = newFilePath + newFile.get(i);
-            
+
             // File 형식으로 변경
             File file = new File(filePath);
 
@@ -221,9 +218,9 @@ public class AudioWebSocketHandler extends AbstractWebSocketHandler {
         String translatedText = resultDto.getResult().getMessage().content;
 
         TranslateResponseDto translateResponseDto = TranslateResponseDto.builder()
-                .jeju(jejuText)
-                .translated(translatedText)
-                .build();
+            .jeju(jejuText)
+            .translated(translatedText)
+            .build();
 
         sendClient(session, translateResponseDto);
     }

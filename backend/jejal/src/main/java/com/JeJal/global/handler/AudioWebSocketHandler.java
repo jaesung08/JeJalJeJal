@@ -7,6 +7,7 @@ import com.JeJal.api.translate.dto.ClovaStudioResponseDto;
 import com.JeJal.api.translate.dto.TranslateResponseDto;
 import com.JeJal.api.translate.service.ClovaStudioService;
 import com.JeJal.global.util.RestAPIUtil;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
@@ -159,20 +160,17 @@ public class AudioWebSocketHandler extends AbstractWebSocketHandler {
     // 새로생성된 part파일을 clover api로 전송.
     private void sendClovaSpeechServer(List<String> newFile, String newFilePath, WebSocketSession session, Boolean isFinish) throws Exception {
 
+        // JSON 데이터 처리를 위한 ObjectMapper 인스턴스 생성
         ObjectMapper objectMapper = new ObjectMapper();
 
         // 키워드 부스팅
         Resource resource = new ClassPathResource("keyword/boosting.json");
-        JsonNode keywordJson = objectMapper.readTree(new File(String.valueOf(resource.getFile().toPath())));
-        String boostingWords = keywordJson.get("boostingWords").asText();
-        Boosting boost = new Boosting();
-        boost.setWords(boostingWords);
-        List<Boosting> boostList = new ArrayList<>();
-        boostList.add(boost);
+        List<Boosting> boostList = objectMapper.readValue(new File(String.valueOf(resource.getFile().toPath())), new TypeReference<List<Boosting>>(){});
 
         NestRequestDTO request = new NestRequestDTO();
         request.setBoostings(boostList);
 
+        // 마지막 파일인지 확인하기 위함
         for (int i = 0; i < newFile.size(); i++) {
 
             // 저장된 파일 경로

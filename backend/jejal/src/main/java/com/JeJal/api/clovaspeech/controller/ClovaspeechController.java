@@ -7,6 +7,7 @@ import com.JeJal.api.translate.dto.ClovaStudioResponseDto;
 import com.JeJal.api.translate.service.ClovaStudioService;
 import com.JeJal.global.common.response.BaseResponse;
 import com.JeJal.api.translate.dto.TextDto;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -58,13 +59,7 @@ public class ClovaspeechController {
 
         // 키워드 부스팅
         Resource resource = new ClassPathResource("keyword/boosting.json");
-        JsonNode keywordJson = objectMapper.readTree(new File(String.valueOf(resource.getFile().toPath())));
-        String boostingWords = keywordJson.get("boostingWords").asText();
-
-        Boosting boost = new Boosting();
-        boost.setWords(boostingWords);
-        List<Boosting> boostList = new ArrayList<>();
-        boostList.add(boost);
+        List<Boosting> boostList = objectMapper.readValue(new File(String.valueOf(resource.getFile().toPath())), new TypeReference<List<Boosting>>(){});
 
         NestRequestDTO request = new NestRequestDTO();
         request.setBoostings(boostList);
@@ -116,28 +111,24 @@ public class ClovaspeechController {
     @Operation(summary = "스웨거 clova speech 전용 테스트", description = "외부에서 업로드된 음성 파일을 STT 처리")
     public ResponseEntity<BaseResponse<?>> recognizeByLocalUpload(
             @RequestParam("file") MultipartFile file) throws IOException {
-        // 기존 로직 유지
-        ObjectMapper objectMapper = new ObjectMapper();
-
-        // 키워드 부스팅
-        Resource resource = new ClassPathResource("keyword/boosting.json");
-        JsonNode keywordJson = objectMapper.readTree(new File(String.valueOf(resource.getFile().toPath())));
-        String boostingWords = keywordJson.get("boostingWords").asText();
-
-        Boosting boost = new Boosting();
-        boost.setWords(boostingWords);
-        List<Boosting> boostList = new ArrayList<>();
-        boostList.add(boost);
-
-        NestRequestDTO request = new NestRequestDTO();
-        request.setBoostings(boostList);
-
-        // clova speech api
-        String jsonResponse = clovaspeechService.recognizeByMultipartFile(file, request);
 
         try {
-            JsonNode rootNode = objectMapper.readTree(jsonResponse); // 응답 JSON을 JsonNode로 변환
-            String textContent = rootNode.get("text").asText(); // 'text' 필드의 값을 추출
+            // JSON 데이터 처리를 위한 ObjectMapper 인스턴스 생성
+            ObjectMapper objectMapper = new ObjectMapper();
+
+            // 키워드 부스팅
+            Resource resource = new ClassPathResource("keyword/boosting.json");
+            List<Boosting> boostList = objectMapper.readValue(new File(String.valueOf(resource.getFile().toPath())), new TypeReference<List<Boosting>>(){});
+
+            NestRequestDTO request = new NestRequestDTO();
+            request.setBoostings(boostList);
+
+            // clova speech api 통신
+            String jsonResponse = clovaspeechService.recognizeByMultipartFile(file, request);
+
+            // 응답 JSON을 JsonNode로 변환 후 'text' 필드의 값을 추출
+            JsonNode rootNode = objectMapper.readTree(jsonResponse);
+            String textContent = rootNode.get("text").asText();
 
             return ResponseEntity.ok(BaseResponse.success(200, "clova speech api 통신완료", textContent));
 

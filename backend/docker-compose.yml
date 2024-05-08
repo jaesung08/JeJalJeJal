@@ -25,7 +25,6 @@ services:
       networks:
         - ssafy-net
       volumes:
-      - ./jejal/build/libs/JeJal-0.0.1-SNAPSHOT.jar:/app.jar 
       - Jejaljejal:/data
       entrypoint: ["java", "-jar", "/app.jar"] # entrypoint는 Dockerfile 설정을 사용합니다
 

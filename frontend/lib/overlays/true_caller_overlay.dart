@@ -35,6 +35,9 @@ class _TrueCallerOverlayState extends State<TrueCallerOverlay> {
                   showIcon = !showIcon;
                 });
               },
+              onLongPress: () {
+                FlutterOverlayWindow.closeOverlay(); // 길게 클릭하면 오버레이를 닫음
+              },
               child: Column(
                 children: [
                   if (showIcon) TangerineIcon(),

@@ -3,12 +3,14 @@
 import 'package:flutter/material.dart';
 import 'package:jejal_project/screens/history_chat_screen.dart';
 import 'package:jejal_project/databases/database.dart' as db;
+import 'package:jejal_project/services/translation_service.dart';
 import 'package:intl/intl.dart';
 
 class HistoryScreen extends StatelessWidget {
   final db.JejalDatabase database;
+  final TranslationService translationService;
 
-  const HistoryScreen({Key? key, required this.database}) : super(key: key);
+  const HistoryScreen({Key? key, required this.database, required this.translationService}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -62,12 +64,15 @@ class HistoryScreen extends StatelessWidget {
                         ],
                       ),
                       contentPadding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 15.0),
-                      onTap: () {
+                      onTap: () async {
+                        await translationService.startConversation();
+                        final texts = await translationService.getTextsByConversationId(conversation.id);
                         Navigator.of(context).push(
                           MaterialPageRoute(
                             builder: (context) => HistoryChatScreen(
                               conversationId: conversation.id,
                               database: database,
+                              texts: texts,
                             ),
                           ),
                         );

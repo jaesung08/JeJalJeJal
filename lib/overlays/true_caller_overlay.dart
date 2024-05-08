@@ -22,8 +22,8 @@ class _TrueCallerOverlayState extends State<TrueCallerOverlay> {
       child: Stack(
         children: [
           Positioned(
-            top: 5.0,
-            right: 20.0,
+            top: 0.0,
+            right: 10.0,
             child: GestureDetector(
               onTap: () {
                 setState(() {
@@ -48,7 +48,7 @@ class _TrueCallerOverlayState extends State<TrueCallerOverlay> {
     return Container(
       margin: const EdgeInsets.only(top: 10.0),
       padding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 16.0),
-      width: 300.0,
+      width: 340.0,
       height: 480.0,
       decoration: BoxDecoration(
         color: Colors.orangeAccent.shade100,

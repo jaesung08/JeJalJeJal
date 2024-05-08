@@ -48,9 +48,9 @@ class HomePage extends StatelessWidget {
                         height: (MediaQuery
                             .of(context)
                             .size
-                            .height * 0.6).toInt(),
-                        width: WindowSize.matchParent,
-                        startPosition: const OverlayPosition(0, -259),
+                            .height * 1.6).toInt(),
+                        width: (MediaQuery.of(context).size.width * 2.3).toInt(),
+                        startPosition: const OverlayPosition(0, 25),
                       );
                     },
                     child: const Text(

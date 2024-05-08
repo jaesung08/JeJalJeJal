@@ -46,18 +46,6 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   @override
-  void initState() {
-    super.initState();
-    _initializeApp();
-  }
-
-  Future<void> _initializeApp() async {
-    await _requestPermissions();
-    await requestOverlayPermission();
-    setStream();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
@@ -66,6 +54,20 @@ class _MyAppState extends State<MyApp> {
     );
   }
 
+  @override
+  void initState() {
+    super.initState();
+    _requestPermissions();
+    _showOverlay();
+    _initializeApp();
+  }
+
+  Future<void> _initializeApp() async {
+    // await _requestPermissions();
+    // await _showOverlay();
+    await requestOverlayPermission();
+    setStream();
+  }
 
   // 오버레이 실행을 위한 메서드
   Future<void> _showOverlay() async {
@@ -73,18 +75,18 @@ class _MyAppState extends State<MyApp> {
     if (await FlutterOverlayWindow.isActive()) return;
 
     // 오버레이 표시
-    await FlutterOverlayWindow.showOverlay(
-      enableDrag: true,
-      overlayTitle: "제주 방언 번역기",
-      overlayContent: 'Overlay Enabled',
-      flag: OverlayFlag.defaultFlag,
-      // visibility 파라미터를 삭제하거나 대체함
-      positionGravity: PositionGravity.auto,
-      height: (MediaQueryData.fromWindow(WidgetsBinding.instance.window).size.height * 1.6).toInt(),
-      // width: WindowSize.matchParent,
-      width: (MediaQueryData.fromWindow(WidgetsBinding.instance.window).size.width * 2.2).toInt(),
-      startPosition: const OverlayPosition(0, 20),
-    );
+    // await FlutterOverlayWindow.showOverlay(
+    //   enableDrag: true,
+    //   overlayTitle: "제주 방언 번역기",
+    //   overlayContent: 'Overlay Enabled',
+    //   flag: OverlayFlag.defaultFlag,
+    //   // visibility 파라미터를 삭제하거나 대체함
+    //   positionGravity: PositionGravity.auto,
+    //   height: (MediaQueryData.fromWindow(WidgetsBinding.instance.window).size.height * 1.6).toInt(),
+    //   // width: WindowSize.matchParent,
+    //   width: (MediaQueryData.fromWindow(WidgetsBinding.instance.window).size.width * 2.2).toInt(),
+    //   startPosition: const OverlayPosition(0, 20),
+    // );
   }
 
   Future<void> _requestPermissions() async {

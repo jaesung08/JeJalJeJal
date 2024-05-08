@@ -62,7 +62,7 @@ dev_dependencies:
 
   # flutter 데이터베이스 관련
   build_runner: ^2.4.9
-  drift_dev: ^2.0.0
+  drift_dev: ^2.18.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

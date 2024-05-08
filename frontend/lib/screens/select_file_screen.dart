@@ -5,13 +5,14 @@ import 'package:dio/dio.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:device_info_plus/device_info_plus.dart';
-import 'result_screen_detail.dart';
+import '../widgets/head_bar.dart';
+import 'result_detail_screen.dart';
 import 'package:styled_text/tags/styled_text_tag.dart';
 import 'package:styled_text/widgets/styled_text.dart';
-import '../models/file_result_model.dart';
+import 'package:jejal_project/models/file_result_model.dart';
 
 import 'package:jejal_project/style/color_style.dart';
-// import '../../../lib/widgets/head_bar.dart';
+
 
 class SelectFileScreen extends StatefulWidget {
   const SelectFileScreen({Key? key}) : super(key: key);
@@ -49,7 +50,7 @@ class _SelectFileScreenState extends State<SelectFileScreen> {
     FilePickerResult? fileResult = await FilePicker.platform.pickFiles();
     if (fileResult != null) {
       setState(() {
-        _filePath = "/storage/emulated/0/Recordings/Call";
+        _filePath = fileResult.files.single.path;
         counter = counter + 1;
         isSend = true;
       });
@@ -62,7 +63,6 @@ class _SelectFileScreenState extends State<SelectFileScreen> {
 
     final formData = FormData.fromMap({
       'file': await MultipartFile.fromFile(file.path),
-      'androidId': androidId,
     });
 
     // Send data to backend
@@ -74,33 +74,38 @@ class _SelectFileScreenState extends State<SelectFileScreen> {
     final jsonString = jsonEncode(response.data);
     final json = jsonDecode(jsonString);
     final resultModel = FileResultModel.fromJson(json);
-
+    
+    //통신 잘 됐을 때
     if (response.statusCode == 200) {
+      //결과 화면으로 이동
       Navigator.push(
         context,
         MaterialPageRoute(
             builder: (context) =>
-                ResultScreenDetail(
-                  caseInfo: resultModel,
+                ResultDetailScreen(
+                  // fileResult: resultModel,
                 )),
       );
     }
+    setState(() {
+      result = response.toString();
+    });
   }
 
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // appBar: HeadBar(
-      //   title: const Text(
-      //     '녹음 파일 통역',
-      //     style: TextStyle(
-      //       fontSize: 18.0,
-      //       color: ColorStyles.textBlack,
-      //     ),
-      //   ),
-      //   appBar: AppBar(),
-      // ),
+      appBar: HeadBar(
+        title: const Text(
+          '음성 파일 통역',
+          style: TextStyle(
+            fontSize: 18.0,
+            color: ColorStyles.textBlack,
+          ),
+        ),
+        appBar: AppBar(),
+      ),
       body: Center(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24.0),
@@ -133,7 +138,7 @@ class _SelectFileScreenState extends State<SelectFileScreen> {
                           ),
                         ),
                         StyledText(
-                            text: isSend ? '분석 중 입니다' : '검사할 수 있습니다',
+                            text: isSend ? '통역 중 입니다' : '통역할 수 있습니다',
                             style: const TextStyle(
                               color: ColorStyles.textDarkGray,
                               fontSize: 22,
@@ -168,10 +173,11 @@ class _SelectFileScreenState extends State<SelectFileScreen> {
                 visible: isSend,
                 child: const SizedBox(
                   height: 70,
+                  width: 70,
                   child: CircularProgressIndicator(
                     strokeWidth: 18,
                     backgroundColor: Colors.black,
-                    color: ColorStyles.themeLightBlue,
+                    color: ColorStyles.themeOrange,
                   ),
                 ),
               ),

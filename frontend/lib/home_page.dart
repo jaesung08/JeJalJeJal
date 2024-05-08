@@ -3,6 +3,7 @@ import 'package:flutter_overlay_window/flutter_overlay_window.dart';
 import 'package:jejal_project/databases/database.dart' hide Text;
 import 'package:jejal_project/screens/history_screen.dart';
 import 'package:jejal_project/services/translation_service.dart';
+import 'package:jejal_project/screens/result_detail_screen.dart';
 import 'package:jejal_project/screens/select_file_screen.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
@@ -116,7 +117,7 @@ class HomePage extends StatelessWidget {
                               ),
                               Spacer(),
                               Text(
-                                '통화에서의\n제주도 사투리를\n실시간으로 번역해준다',
+                                '통화에서의\n제주도 사투리를\n실시간으로 번역해드려요',
                                 style: TextStyle(
                                   fontSize: 15,
                                   color: Colors.white,
@@ -162,7 +163,7 @@ class HomePage extends StatelessWidget {
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 30),
+                    padding: const EdgeInsets.symmetric(horizontal: 40),
                     child: Row(
                       children: [
                         Stack(
@@ -187,7 +188,7 @@ class HomePage extends StatelessWidget {
                               ),
                               Spacer(),
                               Text(
-                                '파일을 바로 \n 통역해보세요',
+                                '음성 파일을 \n 바로 통역해보세요',
                                 style: TextStyle(
                                   fontSize: 15,
                                   color: Colors.white,

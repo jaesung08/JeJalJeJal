@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_overlay_window/flutter_overlay_window.dart';
-import 'package:jejal_project/databases/database.dart';
+import 'package:jejal_project/databases/database.dart' hide Text;
 import 'package:jejal_project/screens/history_screen.dart';
 import 'package:jejal_project/screens/select_file_screen.dart';
 

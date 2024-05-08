@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_overlay_window/flutter_overlay_window.dart';
-import 'package:jejal_project/databases/database.dart';
 import 'package:jejal_project/overlays/tangerine_icon.dart';
 import 'package:jejal_project/services/translation_service.dart';
-import 'package:web_socket_channel/src/channel.dart';
 
 class TrueCallerOverlay extends StatefulWidget {
   final TranslationService translationService;
 
-  const TrueCallerOverlay({Key? key, required this.translationService}) : super(key: key);
+  const TrueCallerOverlay({Key? key, required this.translationService})
+      : super(key: key);
 
   @override
   _TrueCallerOverlayState createState() => _TrueCallerOverlayState();
@@ -17,6 +16,26 @@ class TrueCallerOverlay extends StatefulWidget {
 class _TrueCallerOverlayState extends State<TrueCallerOverlay> {
   bool showIcon = true;
   bool showBox = false;
+  List<Map<String, String>> translationPairs = []; // 제주방언과 표준어 같이 받는 배열리스트
+
+  @override
+  void initState() {
+    super.initState();
+    // TranslationService의 outputStream을 listen하여 번역 데이터를 받아오고 화면을 업데이트
+    // 웹소켓을 통해 데이터가 도착하면 자동으로 outputStream으로 전달되고, 이를 TrueCallerOverlay에서 구독하여 처리
+    widget.translationService.outputStream.listen((translationData) async {
+      // 화면 업데이트
+      setState(() {
+        translationPairs.add({
+          'jejuText': translationData.jeju,
+          'translatedText': translationData.translated,
+        });
+      });
+
+      // 백그라운드 작업자에서 데이터베이스 저장 작업 실행
+      await widget.translationService.saveTranslation(translationData);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -29,6 +48,7 @@ class _TrueCallerOverlayState extends State<TrueCallerOverlay> {
             right: 10.0,
             child: GestureDetector(
               onTap: () {
+                // 아이콘 또는 박스 표시 상태를 토글
                 setState(() {
                   showBox = !showBox;
                   showIcon = !showIcon;
@@ -58,6 +78,7 @@ class _TrueCallerOverlayState extends State<TrueCallerOverlay> {
         borderRadius: BorderRadius.circular(12.0),
       ),
       child: SingleChildScrollView(
+        reverse: true, // 최신 데이터가 맨 아래에 표시되도록 설정
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -66,28 +87,37 @@ class _TrueCallerOverlayState extends State<TrueCallerOverlay> {
               style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
             ),
             Divider(),
-            Text(
-              "어떻게 살고 있습니까?",
-              style: TextStyle(fontSize: 18.0),
-            ),
-            SizedBox(height: 8.0),
-            Text(
-              "저는 그럭저럭 지내고 있습니다.",
-              style: TextStyle(fontSize: 18.0),
-            ),
-            SizedBox(height: 8.0),
-            Text(
-              "산이영 바당이영 문딱 좋은게 마씀",
-              style: TextStyle(fontSize: 18.0),
-            ),
-            SizedBox(height: 8.0),
-            Text(
-              "산이랑 바다 모두 좋습니다",
-              style: TextStyle(fontSize: 18.0),
-            ),
+            // translationPairs를 역순으로 순회하며 말풍선 생성
+            ...translationPairs.map((pair) => _buildTranslationPair(pair['jejuText']!, pair['translatedText']!)).toList(),
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildTranslationPair(String jejuText, String translatedText) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Container(
+          padding: EdgeInsets.all(10.0),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(10.0),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(jejuText, style: TextStyle(fontSize: 18.0)),
+              if (translatedText != "제잘") ...[
+                Divider(),
+                Text(translatedText, style: TextStyle(fontSize: 18.0)),
+              ],
+            ],
+          ),
+        ),
+        SizedBox(height: 16.0),
+      ],
     );
   }
 }

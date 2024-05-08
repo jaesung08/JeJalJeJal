@@ -4,18 +4,21 @@ import 'package:drift/drift.dart';
 import 'package:flutter/material.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:jejal_project/databases/database.dart';
+import 'package:flutter/foundation.dart';
 
 class TranslationService {
   final JejalDatabase _database;
   final WebSocketChannel _channel;
   int _conversationId = 0;
 
+  // StreamController를 사용하여 번역 데이터를 스트림으로 내보냄
   final _outputStreamController = StreamController<TranslateResponseDto>.broadcast();
   Stream<TranslateResponseDto> get outputStream => _outputStreamController.stream;
 
   TranslationService(this._database, WebSocketChannel channel)
       : _channel = channel {
-    _channel.stream.listen(
+    // 웹소켓 채널에서 들어오는 데이터를 listen하고 TranslateResponseDto로 변환하여 스트림에 추가
+    _channel.stream.listen( // 웹소켓 통신으로 실시간으로 JSON 데이터 받아오는 부분
           (event) {
         final translation = TranslateResponseDto.fromJson(json.decode(event));
         _outputStreamController.sink.add(translation);
@@ -53,10 +56,23 @@ class TranslationService {
 
   // 실시간으로 받아오는 제주어 텍스트와 번역된 텍스트를 데이터베이스에 저장
   Future<void> saveTranslation(TranslateResponseDto translation) async {
+    await compute(_saveTranslationInBackground, {
+      'translation': translation,
+      'database': _database,
+      'conversationId': _conversationId,
+    });
+  }
+
+  // 백그라운드 작업자에서 실행될 데이터베이스 저장 함수
+  Future<void> _saveTranslationInBackground(Map<String, dynamic> data) async {
+    final translation = data['translation'] as TranslateResponseDto;
+    final database = data['database'] as JejalDatabase;
+    final conversationId = data['conversationId'] as int;
+
     try {
-      await _database.insertText(
+      await database.insertText(
         TextEntriesCompanion.insert(
-          conversationId: _conversationId,
+          conversationId: conversationId,
           jejuText: translation.jeju,
           translatedText: translation.translated,
           timestamp: DateTime.now(),
@@ -66,6 +82,7 @@ class TranslationService {
       print('저장 실패: $e');
     }
   }
+
 
   void dispose() {
     _outputStreamController.close();

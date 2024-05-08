@@ -41,7 +41,7 @@ class HomePage extends StatelessWidget {
                     onPressed: () async {
                       if (await FlutterOverlayWindow.isActive()) return;
                       await FlutterOverlayWindow.showOverlay(
-                        enableDrag: true,
+                        enableDrag: false,
                         overlayTitle: "X-SLAYER",
                         overlayContent: 'Overlay Enabled',
                         flag: OverlayFlag.defaultFlag,

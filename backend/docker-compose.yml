@@ -7,7 +7,7 @@ services:
     command: python3 app.py
     volumes:
       - ./untrunc/app.py:/app.py
-      - Jejal:/data
+      - Jejaljejal:/data
     networks:
       - ssafy-net
     environment:
@@ -26,7 +26,7 @@ services:
         - ssafy-net
       volumes:
       - ./jejal/build/libs/JeJal-0.0.1-SNAPSHOT.jar:/app.jar 
-      - Jejal:/data
+      - Jejaljejal:/data
       entrypoint: ["java", "-jar", "/app.jar"] # entrypoint는 Dockerfile 설정을 사용합니다
 
 volumes:

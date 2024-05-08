@@ -5,7 +5,6 @@ services:
     build: ./untrunc
     container_name: untrunc
     volumes:
-      - ./untrunc/app.py:/app.py
       - Jejaljejal:/data
     networks:
       - ssafy-net

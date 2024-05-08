@@ -9,6 +9,10 @@ import 'package:flutter_overlay_window/flutter_overlay_window.dart';
 import 'package:jejal_project/services/recent_file.dart';
 import 'package:phone_state/phone_state.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
+import 'package:contacts_service/contacts_service.dart';
+import 'package:jejal_project/databases/database.dart';
+import 'package:drift/drift.dart';
+import 'package:jejal_project/services/translation_service.dart';
 
 void setStream() async {
   WebSocketChannel? ws;
@@ -86,20 +90,20 @@ void setStream() async {
         ws?.sink.close();
       }
     } else if (event.status == PhoneStateStatus.CALL_ENDED) {
-        print("Call ended.");
+      print("Call ended.");
 
-        //통화 종료되면 위젯 끄기
-        //됐다가 안됐다가 함
-        //UX 상으로 없애는게 나을 수도 있을 듯
-        FlutterOverlayWindow.closeOverlay();
+      //통화 종료되면 위젯 끄기
+      //됐다가 안됐다가 함
+      //UX 상으로 없애는게 나을 수도 있을 듯
+      FlutterOverlayWindow.closeOverlay();
 
-        timer?.cancel();
-        Uint8List entireBytes = targetFile!.readAsBytesSync();
-        var nextOffset = entireBytes.length;
-        var splittedBytes = entireBytes.sublist(offset, nextOffset);
-        offset = nextOffset;
-        print("마지막 데이터");
-        print(splittedBytes);
+      timer?.cancel();
+      Uint8List entireBytes = targetFile!.readAsBytesSync();
+      var nextOffset = entireBytes.length;
+      var splittedBytes = entireBytes.sublist(offset, nextOffset);
+      offset = nextOffset;
+      print("마지막 데이터");
+      print(splittedBytes);
     }
   });
 }

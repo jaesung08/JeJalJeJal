@@ -2,9 +2,8 @@ version: '3.3'
 
 services:
   untrunc:
-    build: untrunc
+    build: ./untrunc
     container_name: untrunc
-    command: python3 app.py
     volumes:
       - ./untrunc/app.py:/app.py
       - Jejaljejal:/data
@@ -19,7 +18,7 @@ services:
     entrypoint: ["python3", "app.py"]
 
   backend:
-      build: jejal
+      build: ./jejal
       container_name: jejal
       ports:
         - 8000:8000

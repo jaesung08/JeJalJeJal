@@ -34,4 +34,4 @@ volumes:
 
 networks:
   ssafy-net:
-    external: true
+    external: false

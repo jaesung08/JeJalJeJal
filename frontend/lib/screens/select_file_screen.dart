@@ -98,7 +98,7 @@ class _SelectFileScreenState extends State<SelectFileScreen> {
     return Scaffold(
       appBar: HeadBar(
         title: const Text(
-          '녹음 파일 통역',
+          '음성 파일 통역',
           style: TextStyle(
             fontSize: 18.0,
             color: ColorStyles.textBlack,
@@ -138,7 +138,7 @@ class _SelectFileScreenState extends State<SelectFileScreen> {
                           ),
                         ),
                         StyledText(
-                            text: isSend ? '분석 중 입니다' : '검사할 수 있습니다',
+                            text: isSend ? '통역 중 입니다' : '통역할 수 있습니다',
                             style: const TextStyle(
                               color: ColorStyles.textDarkGray,
                               fontSize: 22,

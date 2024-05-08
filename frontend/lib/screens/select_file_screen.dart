@@ -5,13 +5,13 @@ import 'package:dio/dio.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:device_info_plus/device_info_plus.dart';
-import 'result_screen_detail.dart';
+import '../widgets/head_bar.dart';
+import 'result_detail_screen.dart';
 import 'package:styled_text/tags/styled_text_tag.dart';
 import 'package:styled_text/widgets/styled_text.dart';
 import 'package:jejal_project/models/file_result_model.dart';
 
 import 'package:jejal_project/style/color_style.dart';
-// import '../../../lib/widgets/head_bar.dart';
 
 
 class SelectFileScreen extends StatefulWidget {
@@ -50,7 +50,7 @@ class _SelectFileScreenState extends State<SelectFileScreen> {
     FilePickerResult? fileResult = await FilePicker.platform.pickFiles();
     if (fileResult != null) {
       setState(() {
-        _filePath = "/storage/emulated/0/Recordings/Call";
+        _filePath = fileResult.files.single.path;
         counter = counter + 1;
         isSend = true;
       });
@@ -63,7 +63,6 @@ class _SelectFileScreenState extends State<SelectFileScreen> {
 
     final formData = FormData.fromMap({
       'file': await MultipartFile.fromFile(file.path),
-      'androidId': androidId,
     });
 
     // Send data to backend
@@ -83,8 +82,8 @@ class _SelectFileScreenState extends State<SelectFileScreen> {
         context,
         MaterialPageRoute(
             builder: (context) =>
-                ResultScreenDetail(
-                  fileResult: resultModel,
+                ResultDetailScreen(
+                  // fileResult: resultModel,
                 )),
       );
     }
@@ -97,16 +96,16 @@ class _SelectFileScreenState extends State<SelectFileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // appBar: HeadBar(
-      //   title: const Text(
-      //     '녹음 파일 통역',
-      //     style: TextStyle(
-      //       fontSize: 18.0,
-      //       color: ColorStyles.textBlack,
-      //     ),
-      //   ),
-      //   appBar: AppBar(),
-      // ),
+      appBar: HeadBar(
+        title: const Text(
+          '녹음 파일 통역',
+          style: TextStyle(
+            fontSize: 18.0,
+            color: ColorStyles.textBlack,
+          ),
+        ),
+        appBar: AppBar(),
+      ),
       body: Center(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24.0),

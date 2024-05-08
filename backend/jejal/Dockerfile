@@ -8,5 +8,4 @@ RUN gradle build --no-daemon
 FROM openjdk:17-jdk-alpine
 EXPOSE 8000
 COPY --from=build /home/gradle/src/build/libs/JeJal-0.0.1-SNAPSHOT.jar /app.jar
-# ADD ./build/libs/JeJal-0.0.1-SNAPSHOT.jar /app.jar
 ENTRYPOINT ["java", "-jar", "/app.jar"]

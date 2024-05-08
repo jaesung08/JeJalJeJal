@@ -9,7 +9,7 @@ import 'package:web_socket_channel/web_socket_channel.dart';
 
 class HomePage extends StatelessWidget {
   final JejalDatabase database;
-
+//
   const HomePage({Key? key, required this.database}) : super(key: key);
 
   @override

@@ -10,7 +10,6 @@ import 'result_detail_screen.dart';
 import 'package:styled_text/tags/styled_text_tag.dart';
 import 'package:styled_text/widgets/styled_text.dart';
 import 'package:jejal_project/models/file_result_model.dart';
-
 import 'package:jejal_project/style/color_style.dart';
 
 
@@ -137,6 +136,8 @@ class _SelectFileScreenState extends State<SelectFileScreen> {
                             fontWeight: FontWeight.bold,
                           ),
                         ),
+
+                        //파일이 선택됐는지 여부에 따라 다르게 출력
                         StyledText(
                             text: isSend ? '통역 중 입니다' : '통역할 수 있습니다',
                             style: const TextStyle(
@@ -146,7 +147,10 @@ class _SelectFileScreenState extends State<SelectFileScreen> {
                             )),
                       ],
                     ),
+
                     const SizedBox(width: 12),
+
+                    //파일이 선택됐는지 여부에 따라 다르게 출력
                     Image.asset(
                       !isSend
                           ? 'assets/images/file.png'
@@ -157,7 +161,10 @@ class _SelectFileScreenState extends State<SelectFileScreen> {
                   ],
                 ),
               ),
+
               const SizedBox(height: 40),
+
+              //파일 선택 전 보여질 이미지
               Visibility(
                 visible: !isSend,
                 child: GestureDetector(
@@ -169,6 +176,8 @@ class _SelectFileScreenState extends State<SelectFileScreen> {
                   ),
                 ),
               ),
+
+              //파일 선택 후 보여질 로딩 스피너 (api 호출 후 요청 기다릴 때)
               Visibility(
                 visible: isSend,
                 child: const SizedBox(

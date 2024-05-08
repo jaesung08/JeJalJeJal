@@ -1,39 +1,65 @@
 class FileResultModel {
-  final double? score;
-  final String? date;
-  // category
-  final int? type;
-  final List<String>? words, sentences;
-  final String? androidId;
-  final String? phoneNumber;
+  int? status;
+  String? message;
+  Data? data;
 
-  FileResultModel.toJson(Map<String, dynamic> json)
-      : score = json['risk'] ?? 75.0,
-        type = json['category'] ?? 0,
-        date = json['createdTime'] ?? DateTime(2023).toString(),
-        words = json['keyword'] != null
-            ? List<String>.from(json['keyword'])
-            : ['단어'],
-        sentences = json['sentence'] != null
-            ? List<String>.from(json['sentence'])
-            : ['단어를 포함한 문장'],
-        androidId = json['androidId'] ?? '',
-        phoneNumber = json['phoneNumber'] ?? '';
+  FileResultModel({this.status, this.message, this.data});
 
-  FileResultModel.fromJson(Map<String, dynamic> json)
-      : score = json['result']?['totalCategoryScore'] ?? 75.0,
-        type = json['result']?['totalCategory'] ?? 0,
-        date = json['createdTime'] ?? DateTime.now().toString(),
-        words = json['result']?['results'] != null &&
-            json['result']?['results'].isNotEmpty
-            ? List<String>.from(json['result']['results']
-            .map((result) => result['sentKeyword']))
-            : ['단어'],
-        sentences = json['result']?['results'] != null &&
-            json['result']?['results'].isNotEmpty
-            ? List<String>.from(
-            json['result']['results'].map((result) => result['sentence']))
-            : ['단어를 포함한 문장'],
-        androidId = json['androidId'] ?? '',
-        phoneNumber = json['phoneNumber'] ?? '';
+  FileResultModel.fromJson(Map<String, dynamic> json) {
+    status = json['status'];
+    message = json['message'];
+    data = json['data'] != null ? new Data.fromJson(json['data']) : null;
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['status'] = this.status;
+    data['message'] = this.message;
+    if (this.data != null) {
+      data['data'] = this.data!.toJson();
+    }
+    return data;
+  }
+}
+
+class Data {
+  List<Segments>? segments;
+
+  Data({this.segments});
+
+  Data.fromJson(Map<String, dynamic> json) {
+    if (json['segments'] != null) {
+      segments = <Segments>[];
+      json['segments'].forEach((v) {
+        segments!.add(new Segments.fromJson(v));
+      });
+    }
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    if (this.segments != null) {
+      data['segments'] = this.segments!.map((v) => v.toJson()).toList();
+    }
+    return data;
+  }
+}
+
+class Segments {
+  String? jeju;
+  String? translated;
+
+  Segments({this.jeju, this.translated});
+
+  Segments.fromJson(Map<String, dynamic> json) {
+    jeju = json['jeju'];
+    translated = json['translated'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['jeju'] = this.jeju;
+    data['translated'] = this.translated;
+    return data;
+  }
 }

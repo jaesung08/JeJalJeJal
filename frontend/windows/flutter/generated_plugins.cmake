@@ -4,10 +4,7 @@
 
 list(APPEND FLUTTER_PLUGIN_LIST
   permission_handler_windows
-<<<<<<< HEAD
   sqlite3_flutter_libs
-=======
->>>>>>> 6f09919dac175feb3bd4634f1fde1deb05cd503b
 )
 
 list(APPEND FLUTTER_FFI_PLUGIN_LIST

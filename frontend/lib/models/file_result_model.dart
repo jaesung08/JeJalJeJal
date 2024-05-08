@@ -1,28 +1,65 @@
-import 'dart:convert';
-
 class FileResultModel {
-  final List<String>? sentences;
+  int? status;
+  String? message;
+  Data? data;
 
-  // 생성자
-  FileResultModel({this.sentences});
+  FileResultModel({this.status, this.message, this.data});
 
-  // JSON에서 객체로 변환하기 위한 팩토리 생성자
-  factory FileResultModel.fromJson(Map<String, dynamic> json) {
-    var segments = json['data']['segments'] as List<dynamic>?; // List<dynamic> 으로 segments를 읽음
-    List<String> sentences = segments != null
-        ? segments.map((s) => s['translated'] as String).toList()
-        : ['기본 문장을 제공합니다']; // 세그먼트가 없을 경우 기본 문장 제공
-
-    return FileResultModel(
-      sentences: sentences,
-    );
+  FileResultModel.fromJson(Map<String, dynamic> json) {
+    status = json['status'];
+    message = json['message'];
+    data = json['data'] != null ? new Data.fromJson(json['data']) : null;
   }
 
-  // 객체를 JSON으로 변환하는 메서드
   Map<String, dynamic> toJson() {
-    return {
-      'sentences': sentences,
-    };
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['status'] = this.status;
+    data['message'] = this.message;
+    if (this.data != null) {
+      data['data'] = this.data!.toJson();
+    }
+    return data;
   }
 }
 
+class Data {
+  List<Segments>? segments;
+
+  Data({this.segments});
+
+  Data.fromJson(Map<String, dynamic> json) {
+    if (json['segments'] != null) {
+      segments = <Segments>[];
+      json['segments'].forEach((v) {
+        segments!.add(new Segments.fromJson(v));
+      });
+    }
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    if (this.segments != null) {
+      data['segments'] = this.segments!.map((v) => v.toJson()).toList();
+    }
+    return data;
+  }
+}
+
+class Segments {
+  String? jeju;
+  String? translated;
+
+  Segments({this.jeju, this.translated});
+
+  Segments.fromJson(Map<String, dynamic> json) {
+    jeju = json['jeju'];
+    translated = json['translated'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['jeju'] = this.jeju;
+    data['translated'] = this.translated;
+    return data;
+  }
+}

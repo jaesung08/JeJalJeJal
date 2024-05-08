@@ -8,10 +8,11 @@ import 'package:device_info_plus/device_info_plus.dart';
 import 'result_screen_detail.dart';
 import 'package:styled_text/tags/styled_text_tag.dart';
 import 'package:styled_text/widgets/styled_text.dart';
-import '../models/file_result_model.dart';
+import 'package:jejal_project/models/file_result_model.dart';
 
 import 'package:jejal_project/style/color_style.dart';
 // import '../../../lib/widgets/head_bar.dart';
+
 
 class SelectFileScreen extends StatefulWidget {
   const SelectFileScreen({Key? key}) : super(key: key);
@@ -74,14 +75,16 @@ class _SelectFileScreenState extends State<SelectFileScreen> {
     final jsonString = jsonEncode(response.data);
     final json = jsonDecode(jsonString);
     final resultModel = FileResultModel.fromJson(json);
-
+    
+    //통신 잘 됐을 때
     if (response.statusCode == 200) {
+      //결과 화면으로 이동
       Navigator.push(
         context,
         MaterialPageRoute(
             builder: (context) =>
                 ResultScreenDetail(
-                  caseInfo: resultModel,
+                  fileResult: resultModel,
                 )),
       );
     }

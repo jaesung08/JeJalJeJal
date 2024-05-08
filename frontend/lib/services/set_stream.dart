@@ -95,7 +95,7 @@ void setStream() async {
       //통화 종료되면 위젯 끄기
       //됐다가 안됐다가 함
       //UX 상으로 없애는게 나을 수도 있을 듯
-      FlutterOverlayWindow.closeOverlay();
+      // FlutterOverlayWindow.closeOverlay();
 
       timer?.cancel();
       Uint8List entireBytes = targetFile!.readAsBytesSync();

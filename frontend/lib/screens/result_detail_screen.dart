@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:jejal_project/models/file_result_model.dart';
 
 class ResultDetailScreen extends StatelessWidget {
+  // final FileResultModel fileResult;
+
   final FileResultModel fileResult = FileResultModel.fromJson({
     "status": 200,
     "message": "clova speech 통신 완료",
@@ -40,6 +42,7 @@ class ResultDetailScreen extends StatelessWidget {
     }
   });
 
+  // ResultDetailScreen({Key? key, required this.fileResult}) : super(key: key);
   ResultDetailScreen({Key? key}) : super(key: key);
 
   @override
@@ -66,6 +69,7 @@ class ResultDetailScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                //원본 텍스트 (제주어)
                 Text(
                   segment.jeju ?? 'No Jeju Text',
                   style: TextStyle(
@@ -73,6 +77,8 @@ class ResultDetailScreen extends StatelessWidget {
                     fontSize: 16.0,
                   ),
                 ),
+
+                //원본 텍스트가 제주어가 아니면 (번역 데이터가 "제잘"이 아니면) 아래 부분 출력
                 if (!hideTranslated) ...[
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 8.0),

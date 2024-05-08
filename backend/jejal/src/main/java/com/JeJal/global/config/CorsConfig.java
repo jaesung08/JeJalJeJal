@@ -2,12 +2,9 @@ package com.JeJal.global.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.servlet.config.annotation.CorsRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @Configuration
 public class CorsConfig {
@@ -32,23 +29,3 @@ public class CorsConfig {
         return source;
     }
 }
-
-
-//@Configuration
-//public class CorsConfig implements WebMvcConfigurer {
-//
-//    @Override
-//    public void addCorsMappings(CorsRegistry registry) {
-//        registry.addMapping("/**")
-//            .allowedOriginPatterns("*")  // 모든 도메인에서의 요청을 허용 (원래의 allowedOrigins 대신 패턴 사용)
-//            .allowCredentials(false)     // 크로스 도메인 요청 시 인증 정보를 제공하지 않도록 설정
-//            .allowedHeaders("*")         // 모든 HTTP 헤더를 허용
-//            .allowedMethods(
-//                HttpMethod.GET.name(),
-//                HttpMethod.POST.name(),
-//                HttpMethod.PUT.name(),
-//                HttpMethod.DELETE.name(),
-//                HttpMethod.OPTIONS.name()
-//            ); // 지정된 HTTP 메소드를 허용
-//    }
-//}

@@ -6,6 +6,11 @@ server:
       charset: UTF-8
       enabled: true
       force: true
+# SSL 설정
+  ssl:
+    key-store: keystore.p12
+    key-store-password: dy12tnf34
+    key-store-type: PKCS12
 
 spring:
   application:
@@ -37,7 +42,7 @@ logging:
           boot: DEBUG
 
 
-#clova studio
+# clova studio
 clovastudio:
   api_key: NTA0MjU2MWZlZTcxNDJiY2W69+ukC2YzzqzaAgLATjpbH+QlZCbRQEDEsCLiaTnF
   api_key_primary_val: Tw9XWSuCu2LrtFiLXotBmXHhK7p2D4DBkGwq93xe
@@ -48,5 +53,8 @@ clovastudio:
     제주도 사투리가 입력되면 표준어로 변경해주면 되는데 전체적인 문맥도 고려해서 자연스럽게 변경해줘.
     제주도 방언이 입력되면 표준어 답변만 보내줘. "혼저옵서예"라는 입력이 들어오면 "어서오세요"라고 답변해줘
 
+# untrunc
 DOMAIN_UNTRUNC: "http://untrunc:8000"
 SPRING_RECORD_TEMP_DIR: /data/WebSocket
+
+# SSL 설정

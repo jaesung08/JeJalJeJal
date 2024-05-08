@@ -3,10 +3,14 @@ package com.JeJal.api.clovaspeech.controller;
 import com.JeJal.api.clovaspeech.dto.NestRequestDTO;
 import com.JeJal.api.clovaspeech.service.ClovaspeechService;
 import com.JeJal.api.clovaspeech.dto.Boosting;
+import com.JeJal.api.translate.dto.ClovaStudioResponseDto;
+import com.JeJal.api.translate.service.ClovaStudioService;
 import com.JeJal.global.common.response.BaseResponse;
 import com.JeJal.api.translate.dto.TextDto;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.io.File;
@@ -14,6 +18,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.coyote.Response;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
@@ -25,23 +31,23 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.reactive.function.client.WebClient;
 
 @RestController
-@RequestMapping("/clova-speech")
+@RequestMapping("/clovaspeech")
 @Tag(name = "ClovaspeechController", description = "clova speech api 연결")
 @RequiredArgsConstructor
+@Slf4j
 public class ClovaspeechController {
 
     private final ClovaspeechService clovaspeechService;
-    private final RestTemplate restTemplate;  // RestTemplate 주입
+    private final ClovaStudioService clovaStudioService;
 
-
-
-    @PostMapping("/upload")
+    @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(
-        summary = "사용자가 업로드 한 파일 STT 및 번역",
+        summary = "사용자가 업로드 한 파일 STT 및 번역 (현지꼬)",
         description = "사용자가 업로드한 음성파일 clova speech api(STT) -> clova studio(번역)")
-    public ResponseEntity<BaseResponse<?>> jejuoToStandard(@RequestParam("file") MultipartFile multipartFile) throws IOException {
+    public ResponseEntity<BaseResponse<?>> recognizeByUpload(@RequestParam("file") MultipartFile multipartFile) throws IOException {
 
         if (multipartFile.isEmpty()) {
             return ResponseEntity.badRequest().body(BaseResponse.error(400, "File is empty"));
@@ -67,28 +73,36 @@ public class ClovaspeechController {
         String jsonResponse = clovaspeechService.recognizeByMultipartFile(multipartFile, request);
 
         try {
-            JsonNode rootNode = objectMapper.readTree(jsonResponse); // 응답 JSON을 JsonNode로 변환
-            String textContent = rootNode.get("text").asText(); // 'text' 필드의 값을 추출
+            // 응답 JSON을 JsonNode로 변환
+            JsonNode rootNode = objectMapper.readTree(jsonResponse);
+            // data 안에 segment list 가져옴
+            JsonNode segments = rootNode.path("segments");
 
-            System.out.println("제주어");
-            System.out.println(textContent);
+            // 예외처리
+            if (!segments.isArray()) {
+                throw new IllegalArgumentException("Expected 'segments' to be an array");
+            }
 
-            // clova translate api로 보내보기
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_JSON);
-            HttpEntity<TextDto> requestEntity = new HttpEntity<>(new TextDto(textContent), headers);
+            ArrayNode translatedSegments = objectMapper.createArrayNode();
 
-            String translateUrl = "http://localhost:8000/api/translate/clova";  // TranslateController의 URL
-            ResponseEntity<BaseResponse<?>> response = restTemplate.exchange(
-                translateUrl,
-                HttpMethod.POST,
-                requestEntity,
-                new ParameterizedTypeReference<BaseResponse<?>>() {}); // 제네릭 타입 정확히 처리
+            // segment 수 만큼 반복
+            for (JsonNode segment : segments) {
+                String jeju = segment.path("text").asText();
+                ClovaStudioResponseDto translationResponse = clovaStudioService.translateByClova(jeju);
+                String translated = translationResponse.getResult().getMessage().content;
 
-            System.out.println("표준어");
-            System.out.println(response.getBody().getData());
+                ObjectNode textNode = objectMapper.createObjectNode();
+                textNode.put("jeju", jeju);
+                textNode.put("translated", translated);
+                translatedSegments.add(textNode);
+            }
 
-            return response;
+            ObjectNode responseNode = objectMapper.createObjectNode();
+            responseNode.set("segments", translatedSegments);
+
+            return ResponseEntity
+                .ok()
+                .body(BaseResponse.success(200, "clova speech 통신 완료", responseNode));
 
         } catch (Exception e) {
             return ResponseEntity
@@ -100,7 +114,7 @@ public class ClovaspeechController {
     // 스웨거에서 파일 업로드해서 테스트 해보는 곳
     @PostMapping(value = "/local/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(summary = "스웨거 clova speech 전용 테스트", description = "외부에서 업로드된 음성 파일을 STT 처리")
-    public ResponseEntity<BaseResponse<?>> recognizeByUpload(
+    public ResponseEntity<BaseResponse<?>> recognizeByLocalUpload(
             @RequestParam("file") MultipartFile file) throws IOException {
         // 기존 로직 유지
         ObjectMapper objectMapper = new ObjectMapper();

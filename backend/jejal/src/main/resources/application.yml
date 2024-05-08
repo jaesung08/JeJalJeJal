@@ -17,8 +17,10 @@ spring:
     database-platform: org.hibernate.community.dialect.SQLiteDialect
     hibernate:
       ddl-auto: update
-
-
+  servlet:
+    multipart:
+      max-file-size: 2MB
+      max-request-size: 2MB
 
 #logging
 logging:

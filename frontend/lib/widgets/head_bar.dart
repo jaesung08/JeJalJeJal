@@ -5,66 +5,45 @@ class HeadBar extends StatelessWidget implements PreferredSizeWidget {
   final AppBar appBar;
   final Widget? navPage;
 
-  const HeadBar(
-      {super.key, required this.title, required this.appBar, this.navPage});
+  const HeadBar({super.key, required this.title, required this.appBar, this.navPage});
 
   @override
   Widget build(BuildContext context) {
     return Hero(
       tag: 'headBar',
       child: AppBar(
-        leading: Builder(builder: (BuildContext context) {
-          return IconButton(
-            icon: const Icon(Icons.arrow_back_ios),
-            onPressed: () {
-              navPage == null
-                  ? Navigator.pop(context)
-                  : Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => navPage!,
-                ),
-              );
-            },
-          );
-        }),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios),
+          onPressed: () => _handleNavigation(context),
+        ),
         actions: [
           IconButton(
-              onPressed: () {
-                Navigator.of(context).pushNamed("/setting");
-              },
-              icon: const Icon(
-                Icons.settings,
-                size: 24,
-              ))
+            icon: const Icon(Icons.settings),
+            onPressed: () {
+              Navigator.of(context).pushNamed("/setting");
+            },
+          )
         ],
         centerTitle: true,
         elevation: 0.0,
-        backgroundColor: Colors.white.withOpacity(1),
+        backgroundColor: Colors.white,
         foregroundColor: Colors.black,
         title: title,
       ),
     );
   }
 
+  void _handleNavigation(BuildContext context) {
+    if (navPage != null) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => navPage!),
+      );
+    } else {
+      Navigator.pop(context);
+    }
+  }
+
   @override
   Size get preferredSize => Size.fromHeight(appBar.preferredSize.height);
-}
-
-Route _customRoute(Widget route) {
-  return PageRouteBuilder(
-    pageBuilder: (context, animation, secondaryAnimation) => route,
-    transitionsBuilder: (context, animation, secondaryAnimation, child) {
-      const begin = Offset(1.0, 0.0);
-      const end = Offset.zero;
-      const curve = Curves.ease;
-
-      var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-
-      return SlideTransition(
-        position: animation.drive(tween),
-        child: child,
-      );
-    },
-  );
 }

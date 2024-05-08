@@ -45,18 +45,75 @@ class ResultDetailScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Segments Detail'),
+        title: Text('음성 파일 통역 결과'),
       ),
       body: ListView.builder(
         itemCount: fileResult.data!.segments!.length,
         itemBuilder: (context, index) {
           var segment = fileResult.data!.segments![index];
-          return ListTile(
-            title: Text(segment.jeju ?? 'No Jeju Text'),
-            subtitle: Text(segment.translated ?? 'No Translation'),
+          return Container(
+            width: MediaQuery.of(context).size.width * 0.7,
+            margin: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.all(10.0),
+            decoration: BoxDecoration(
+              color: Colors.yellow[100], // Light yellow color
+              borderRadius: BorderRadius.circular(5.0),
+              border: Border.all(color: Colors.grey.withOpacity(0.5)), // Optional: adds a border
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  segment.jeju ?? 'No Jeju Text',
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 16.0, // Smaller font size for Jeju
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  child: CustomPaint(
+                    painter: DashedLinePainter(),
+                    child: Container(
+                      height: 1,
+                      width: double.infinity,
+                    ),
+                  ),
+                ),
+                Text(
+                  segment.translated ?? 'No Translation',
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 18.0, // Larger and bolder font size for translation
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
           );
         },
       ),
     );
   }
+}
+
+// Custom painter for dotted line
+class DashedLinePainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    var paint = Paint()
+      ..color = Colors.grey
+      ..strokeWidth = 1;
+    var max = size.width;
+    var dashWidth = 5.0;
+    var dashSpace = 3.0;
+    double startX = 0;
+    while (startX < max) {
+      canvas.drawLine(Offset(startX, 0), Offset(startX + dashWidth, 0), paint);
+      startX += dashWidth + dashSpace;
+    }
+  }
+
+  @override
+  bool shouldRepaint(CustomPainter oldDelegate) => false;
 }

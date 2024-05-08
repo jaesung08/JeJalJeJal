@@ -1,11 +1,12 @@
 // lib/screens/history_screen.dart
+
 import 'package:flutter/material.dart';
 import 'package:jejal_project/screens/history_chat_screen.dart';
-import 'package:jejal_project/databases/database.dart';
+import 'package:jejal_project/databases/database.dart' as db;
 import 'package:intl/intl.dart';
 
 class HistoryScreen extends StatelessWidget {
-  final JejalDatabase database;
+  final db.JejalDatabase database;
 
   const HistoryScreen({Key? key, required this.database}) : super(key: key);
 
@@ -18,10 +19,10 @@ class HistoryScreen extends StatelessWidget {
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
       ),
-      body: FutureBuilder<List<Conversation>>(
+      body: FutureBuilder<List<db.Conversation>>(
         future: database.getAllConversations().catchError((error) {
           print('fetching conversations 에러: $error');
-          return <Conversation>[];
+          return <db.Conversation>[];
         }),
         builder: (context, snapshot) {
           if (snapshot.hasData) {

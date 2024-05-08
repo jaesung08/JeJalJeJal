@@ -1,11 +1,4 @@
-<<<<<<< HEAD
 // lib/screens/history_screen.dart
-<<<<<<< HEAD
-
-=======
->>>>>>> 6f09919dac175feb3bd4634f1fde1deb05cd503b
-=======
->>>>>>> 1bfd79954438a027c997b4dd85fe5cdbdc7ff52b
 import 'package:flutter/material.dart';
 import 'package:jejal_project/screens/history_chat_screen.dart';
 import 'package:jejal_project/databases/database.dart';

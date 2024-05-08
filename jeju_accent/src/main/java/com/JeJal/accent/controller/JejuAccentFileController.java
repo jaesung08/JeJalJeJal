@@ -170,4 +170,13 @@ public class JejuAccentFileController {
         }
         return ResponseEntity.ok(results);
     }
+
+    @GetMapping("/export/keyword")
+    @Operation(summary = "boosting.json 파일 내용 추출(상위 1000 키워드)", description = "DB에 저장된 데이터 상위 1000개 키워드 가져오기 (1음절 빼야함)")
+    public ResponseEntity<String> exportKeyword() throws IOException {
+        String keyworlds = jejuAccentService.getConcatenatedJejuos();
+        System.out.println(keyworlds);
+        return ResponseEntity.ok(keyworlds);
+    }
+
 }

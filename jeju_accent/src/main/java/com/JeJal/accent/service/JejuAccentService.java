@@ -3,8 +3,15 @@ package com.JeJal.accent.service;
 import com.JeJal.accent.dto.JejuAccentDTO;
 import com.JeJal.accent.entity.*;
 import com.JeJal.accent.repository.*;
+import java.util.List;
+import java.util.StringJoiner;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -118,5 +125,33 @@ public class JejuAccentService {
                 jejuAccent60Repository.save(new JejuAccent60(dto));
             }
         }
+    }
+
+    // 키워드 부스팅 파일 내용 추출 (boosting.json)
+    public String getConcatenatedJejuos() {
+
+        List<JejuAccent> jejuAccents = jejuAccentRepository.findTop1000ByOrderByCountDesc();
+
+        // Stream API를 사용하여 jejuo 필드를 쉼표로 구분된 문자열로 합치기
+        String keywords = jejuAccents.stream()
+            .map(JejuAccent::getJejuo)
+            .map(word -> "{\"words\": \"" + word + "\"}")  // 각 단어를 JSON 객체 포맷으로 변환
+            .collect(Collectors.joining(", ", "[", "]")); // 모든 객체를 배열 형태로 합치기
+
+        return keywords;
+
+        // 1음절 처리해야함
+//        .map(JejuAccent::getJejuo)
+//            .map(word -> {
+//                if (word.length() == 1 && Character.UnicodeBlock.of(word.charAt(0)) == Character.UnicodeBlock.HANGUL_SYLLABLES) {
+//                    // 단어가 1음절 한글인 경우
+//                    return "{\"words\": \" " + word + " \"}"; // 양쪽에 공백을 추가한 JSON 객체 포맷으로 변환
+//                } else {
+//                    // 그 외의 경우
+//                    return "{\"words\": \"" + word + "\"}";
+//                }
+//            })
+//            .collect(Collectors.joining(", ", "[", "]")); // 모든 객체를 배열 형태로 합치기
+
     }
 }

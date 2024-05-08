@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_overlay_window/flutter_overlay_window.dart';
 import 'package:jejal_project/databases/database.dart' hide Text;
 import 'package:jejal_project/screens/history_screen.dart';
+import 'package:jejal_project/services/translation_service.dart';
 import 'package:jejal_project/screens/select_file_screen.dart';
+import 'package:web_socket_channel/web_socket_channel.dart';
 
 class HomePage extends StatelessWidget {
   final JejalDatabase database;
@@ -52,10 +54,8 @@ class HomePage extends StatelessWidget {
                         flag: OverlayFlag.defaultFlag,
                         visibility: NotificationVisibility.visibilityPublic,
                         positionGravity: PositionGravity.auto,
-                        height: (MediaQuery
-                            .of(context)
-                            .size
-                            .height * 0.6).toInt(),
+                        height:
+                            (MediaQuery.of(context).size.height * 0.6).toInt(),
                         width: WindowSize.matchParent,
                         startPosition: const OverlayPosition(0, -259),
                       );
@@ -80,7 +80,14 @@ class HomePage extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => HistoryScreen(database: database),
+                      builder: (context) => HistoryScreen(
+                        database: database,
+                        translationService: TranslationService(
+                          database,
+                          WebSocketChannel.connect(
+                              Uri.parse('ws://k8a607.p.ssafy.io:8080/record')),
+                        ),
+                      ),
                     ),
                   );
                 },
@@ -145,8 +152,7 @@ class HomePage extends StatelessWidget {
                   // 번역기 사용 버튼 클릭 시 동작 구현
                   Navigator.push(
                     context,
-                    MaterialPageRoute(
-                        builder: (context) => SelectFileScreen()),
+                    MaterialPageRoute(builder: (context) => SelectFileScreen()),
                   );
                 },
                 child: Container(

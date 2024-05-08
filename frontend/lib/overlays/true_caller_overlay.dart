@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_overlay_window/flutter_overlay_window.dart';
@@ -10,28 +11,36 @@ import 'package:jejal_project/overlays/tangerine_icon.dart';
 
 //메인에서 설정 눌렀을 때 호출된 위젯
 class TrueCallerOverlay extends StatefulWidget {
+  final TranslationService translationService;
 
-  final WebSocketChannel channel;
-  final JejalDatabase database;
-
-  const TrueCallerOverlay({
-    Key? key,
-    required this.channel,
-    required this.database,
-  }) : super(key: key);
+  const TrueCallerOverlay({Key? key, required this.translationService}) : super(key: key);
 
   @override
   State<TrueCallerOverlay> createState() => _TrueCallerOverlayState();
 }
 
 class _TrueCallerOverlayState extends State<TrueCallerOverlay> {
-  late TranslationService _translationService;
+  late StreamSubscription<TranslateResponseDto> _subscription;
   bool showBox = false;
 
   @override
   void initState() {
     super.initState();
-    _translationService = TranslationService(widget.channel, widget.database);
+    _subscription = widget.translationService.outputStream.listen(_handleTranslation);
+  }
+
+  @override
+  void dispose() {
+    _subscription.cancel();
+    widget.translationService.dispose();
+    super.dispose();
+  }
+
+  void _handleTranslation(TranslateResponseDto translation) {
+    // 실시간 출력 로직
+    print('제주어: ${translation.jeju}');
+    print('표준어: ${translation.translated}');
+    // 여기에 UI 업데이트 코드 추가
   }
 
   @override

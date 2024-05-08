@@ -27,14 +27,6 @@ class HomePage extends StatelessWidget {
               padding: const EdgeInsets.fromLTRB(20, 60, 20, 60),
               child: Row(
                 children: [
-                  // const Text(
-                  //   'ㅇㅇ님,',
-                  //   style: TextStyle(
-                  //     fontSize: 26,
-                  //     fontWeight: FontWeight.bold,
-                  //     color: Colors.orange, // 텍스트 색상
-                  //   ),
-                  // ),
                   const SizedBox(width: 5),
                   const Text(
                     '혼저옵서예!',
@@ -56,9 +48,10 @@ class HomePage extends StatelessWidget {
                         visibility: NotificationVisibility.visibilityPublic,
                         positionGravity: PositionGravity.auto,
                         height:
-                            (MediaQuery.of(context).size.height * 0.6).toInt(),
-                        width: WindowSize.matchParent,
-                        startPosition: const OverlayPosition(0, -259),
+                            (MediaQuery.of(context).size.height * 1.6).toInt(),
+                        width:
+                            (MediaQuery.of(context).size.width * 2.3).toInt(),
+                        startPosition: const OverlayPosition(0, 25),
                       );
                     },
                     child: const Text(

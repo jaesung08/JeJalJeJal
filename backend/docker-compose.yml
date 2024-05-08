@@ -16,6 +16,7 @@ services:
       - FLASK_FILE_DUPLICATE=0
     ports:
       - 8300:8300
+    entrypoint: ["python3", "app.py"]
 
   backend:
       build: jejal

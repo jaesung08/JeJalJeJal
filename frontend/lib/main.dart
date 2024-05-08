@@ -10,6 +10,7 @@ import 'package:phone_state/phone_state.dart';
 import 'package:flutter_foreground_task/flutter_foreground_task.dart';
 import 'package:flutter/services.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
+import 'package:jejal_project/services/translation_service.dart';
 import 'overlays/true_caller_overlay.dart';
 import 'package:jejal_project/home_page.dart';
 
@@ -26,10 +27,11 @@ void overlayMain() {
   WidgetsFlutterBinding.ensureInitialized();
   final database = JejalDatabase();
   final channel = WebSocketChannel.connect(Uri.parse('ws://k8a607.p.ssafy.io:8080/record'));
+  final translationService = TranslationService(database, channel);
   runApp(
     MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: TrueCallerOverlay(channel: channel, database: database),
+      home: TrueCallerOverlay(translationService: translationService),
     ),
   );
 }

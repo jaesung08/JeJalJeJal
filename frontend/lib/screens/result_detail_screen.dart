@@ -13,7 +13,8 @@ class ResultDetailScreen extends StatelessWidget {
         },
         {
           "jeju": "우리 큰아들하고 한 4개월 같이 4개월 5개월 같이 있었고 좋은 아들하고 2개월 같이 있어 같이 있는 거라 나 진짜 어마장장하게 바빴거든.",
-          "translated": "우리 큰 아들하고 한 4~5개월 정도 같이 있었고, 좋은 아들하고는 2개월 정도 같이 있었어요. 그래서 저는 정말 엄청나게 바빴어요."
+          "translated": "제잘",
+          // "translated": "우리 큰 아들하고 한 4~5개월 정도 같이 있었고, 좋은 아들하고는 2개월 정도 같이 있었어요. 그래서 저는 정말 엄청나게 바빴어요."
         },
         {
           "jeju": "엄청 먹어마장장 너네 큰아들 많이 먹잖아 헤드에도 돌아서면 봐 돌아서면 봐",
@@ -51,14 +52,16 @@ class ResultDetailScreen extends StatelessWidget {
         itemCount: fileResult.data!.segments!.length,
         itemBuilder: (context, index) {
           var segment = fileResult.data!.segments![index];
+          bool hideTranslated = segment.translated == "제잘";  // "제잘"일 때 true
+
           return Container(
             width: MediaQuery.of(context).size.width * 0.7,
             margin: const EdgeInsets.all(8.0),
             padding: const EdgeInsets.all(10.0),
             decoration: BoxDecoration(
-              color: Colors.yellow[100], // Light yellow color
+              color: Colors.yellow[100],
               borderRadius: BorderRadius.circular(5.0),
-              border: Border.all(color: Colors.grey.withOpacity(0.5)), // Optional: adds a border
+              border: Border.all(color: Colors.grey.withOpacity(0.5)),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -67,27 +70,29 @@ class ResultDetailScreen extends StatelessWidget {
                   segment.jeju ?? 'No Jeju Text',
                   style: TextStyle(
                     color: Colors.black,
-                    fontSize: 16.0, // Smaller font size for Jeju
+                    fontSize: 16.0,
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8.0),
-                  child: CustomPaint(
-                    painter: DashedLinePainter(),
-                    child: Container(
-                      height: 1,
-                      width: double.infinity,
+                if (!hideTranslated) ...[
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    child: CustomPaint(
+                      painter: DashedLinePainter(),
+                      child: Container(
+                        height: 1,
+                        width: double.infinity,
+                      ),
                     ),
                   ),
-                ),
-                Text(
-                  segment.translated ?? 'No Translation',
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 18.0, // Larger and bolder font size for translation
-                    fontWeight: FontWeight.bold,
+                  Text(
+                    segment.translated ?? 'No Translation',
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 18.0,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                ),
+                ]
               ],
             ),
           );
@@ -97,7 +102,6 @@ class ResultDetailScreen extends StatelessWidget {
   }
 }
 
-// Custom painter for dotted line
 class DashedLinePainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {

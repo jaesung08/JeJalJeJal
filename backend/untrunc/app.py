@@ -72,5 +72,5 @@ def recoverM4A():
 # Flask 서버 실행
 if __name__ == '__main__':
     logger.info("start_flask")
-    app.run(host="0.0.0.0", port=8000)
+    app.run(host="0.0.0.0", port=8300)
     app.run(debug=True)

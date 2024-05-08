@@ -85,6 +85,9 @@ class _SelectFileScreenState extends State<SelectFileScreen> {
                 )),
       );
     }
+    setState(() {
+      result = response.toString();
+    });
   }
 
 
@@ -168,10 +171,11 @@ class _SelectFileScreenState extends State<SelectFileScreen> {
                 visible: isSend,
                 child: const SizedBox(
                   height: 70,
+                  width: 70,
                   child: CircularProgressIndicator(
                     strokeWidth: 18,
                     backgroundColor: Colors.black,
-                    color: ColorStyles.themeLightBlue,
+                    color: ColorStyles.themeOrange,
                   ),
                 ),
               ),

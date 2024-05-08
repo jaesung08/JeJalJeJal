@@ -1,39 +1,28 @@
+import 'dart:convert';
+
 class FileResultModel {
-  final double? score;
-  final String? date;
-  // category
-  final int? type;
-  final List<String>? words, sentences;
-  final String? androidId;
-  final String? phoneNumber;
+  final List<String>? sentences;
 
-  FileResultModel.toJson(Map<String, dynamic> json)
-      : score = json['risk'] ?? 75.0,
-        type = json['category'] ?? 0,
-        date = json['createdTime'] ?? DateTime(2023).toString(),
-        words = json['keyword'] != null
-            ? List<String>.from(json['keyword'])
-            : ['단어'],
-        sentences = json['sentence'] != null
-            ? List<String>.from(json['sentence'])
-            : ['단어를 포함한 문장'],
-        androidId = json['androidId'] ?? '',
-        phoneNumber = json['phoneNumber'] ?? '';
+  // 생성자
+  FileResultModel({this.sentences});
 
-  FileResultModel.fromJson(Map<String, dynamic> json)
-      : score = json['result']?['totalCategoryScore'] ?? 75.0,
-        type = json['result']?['totalCategory'] ?? 0,
-        date = json['createdTime'] ?? DateTime.now().toString(),
-        words = json['result']?['results'] != null &&
-            json['result']?['results'].isNotEmpty
-            ? List<String>.from(json['result']['results']
-            .map((result) => result['sentKeyword']))
-            : ['단어'],
-        sentences = json['result']?['results'] != null &&
-            json['result']?['results'].isNotEmpty
-            ? List<String>.from(
-            json['result']['results'].map((result) => result['sentence']))
-            : ['단어를 포함한 문장'],
-        androidId = json['androidId'] ?? '',
-        phoneNumber = json['phoneNumber'] ?? '';
+  // JSON에서 객체로 변환하기 위한 팩토리 생성자
+  factory FileResultModel.fromJson(Map<String, dynamic> json) {
+    var segments = json['data']['segments'] as List<dynamic>?; // List<dynamic> 으로 segments를 읽음
+    List<String> sentences = segments != null
+        ? segments.map((s) => s['translated'] as String).toList()
+        : ['기본 문장을 제공합니다']; // 세그먼트가 없을 경우 기본 문장 제공
+
+    return FileResultModel(
+      sentences: sentences,
+    );
+  }
+
+  // 객체를 JSON으로 변환하는 메서드
+  Map<String, dynamic> toJson() {
+    return {
+      'sentences': sentences,
+    };
+  }
 }
+

@@ -48,9 +48,9 @@ class HomePage extends StatelessWidget {
                         visibility: NotificationVisibility.visibilityPublic,
                         positionGravity: PositionGravity.auto,
                         height:
-                            (MediaQuery.of(context).size.height * 1.6).toInt(),
+                        (MediaQuery.of(context).size.height * 1.6).toInt(),
                         width:
-                            (MediaQuery.of(context).size.width * 2.3).toInt(),
+                        (MediaQuery.of(context).size.width * 2.3).toInt(),
                         startPosition: const OverlayPosition(0, 25),
                       );
                     },

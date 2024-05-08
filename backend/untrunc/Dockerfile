@@ -2,6 +2,9 @@ FROM ubuntu:bionic AS build
 LABEL stage=intermediate
 ARG FF_VER=3.3.9
 
+# Set the repository to Kakao mirror
+RUN sed -i 's/archive.ubuntu.com/mirror.kakao.com/g' /etc/apt/sources.list
+
 # install packaged dependencies
 RUN apt-get update && \
     apt-get -y install --no-install-recommends wget yasm g++ make git ca-certificates xz-utils && \
@@ -17,6 +20,9 @@ RUN /usr/bin/make FF_VER=$FF_VER && strip untrunc
 
 FROM ubuntu:bionic
 ARG FF_VER=3.3.9
+
+# Set the repository to Kakao mirror for runtime stage
+RUN sed -i 's/archive.ubuntu.com/mirror.kakao.com/g' /etc/apt/sources.list
 
 RUN apt-get update && apt-get -y install --no-install-recommends python3-pip python3-setuptools && \
     [ "$FF_VER" = '3.3.9' ] && apt-get -y install --no-install-recommends libavformat57 libavcodec57 libavutil55 ffmpeg || true && \

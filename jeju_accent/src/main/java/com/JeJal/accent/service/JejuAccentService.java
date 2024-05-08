@@ -154,4 +154,20 @@ public class JejuAccentService {
 //            .collect(Collectors.joining(", ", "[", "]")); // 모든 객체를 배열 형태로 합치기
 
     }
+
+    public String getConcatenatedJejuosRemoveWord() {
+        // 상위 1000개 결과만 가져오기 위한 Pageable 객체 생성
+        Pageable topThousand = PageRequest.of(0, 1000);
+
+        // Pageable 객체를 쿼리 메소드에 전달
+        List<JejuAccent> jejuAccents = jejuAccentRepository.findTop1000ByJejuoLengthGreaterThanOneOrderByCountDesc(topThousand);
+
+        // Stream API를 사용하여 jejuo 필드를 쉼표로 구분된 문자열로 합치기
+        String keywords = jejuAccents.stream()
+            .map(JejuAccent::getJejuo)
+            .map(word -> "{\"words\": \"" + word + "\"}")  // 각 단어를 JSON 객체 포맷으로 변환
+            .collect(Collectors.joining(", ", "[", "]")); // 모든 객체를 배열 형태로 합치기
+
+        return keywords;
+    }
 }

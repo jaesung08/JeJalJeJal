@@ -1,8 +1,0 @@
-#ignore pycharm directory
-.idea/
-
-# Ignore virtual environment directory
-.venu/
-
-# Ignore Python compiled files directory
-__pycache__/

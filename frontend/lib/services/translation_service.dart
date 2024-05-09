@@ -18,8 +18,9 @@ class TranslationService {
   TranslationService(this._database, WebSocketChannel channel)
       : _channel = channel {
     // 웹소켓 채널에서 들어오는 데이터를 listen하고 TranslateResponseDto로 변환하여 스트림에 추가
-    _channel.stream.listen( // 웹소켓 통신으로 실시간으로 JSON 데이터 받아오는 부분
+    _channel.stream.listen(
           (event) {
+            // 웹소켓 통신으로 실시간으로 JSON 데이터 받아오는 부분
         final translation = TranslateResponseDto.fromJson(json.decode(event));
         _outputStreamController.sink.add(translation);
       },

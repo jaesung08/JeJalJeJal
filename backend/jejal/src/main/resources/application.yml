@@ -58,5 +58,3 @@ clovastudio:
 # untrunc
 DOMAIN_UNTRUNC: "http://untrunc:8300"
 SPRING_RECORD_TEMP_DIR: /data/WebSocket
-
-# SSL 설정

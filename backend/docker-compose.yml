@@ -6,6 +6,7 @@ services:
     container_name: untrunc
     volumes:
       - Jejaljejal:/data
+      - ./untrunc/ok.m4a:/data/WebSocket/ok.m4a 
     networks:
       - ssafy-net
     environment:
@@ -17,15 +18,15 @@ services:
     entrypoint: ["python3", "app.py"]
 
   backend:
-      build: ./jejal
-      container_name: jejal
-      ports:
-        - 443:8000
-      networks:
-        - ssafy-net
-      volumes:
+    build: ./jejal
+    container_name: jejal
+    ports:
+      - 443:8000
+    networks:
+      - ssafy-net
+    volumes:
       - Jejaljejal:/data
-      entrypoint: ["java", "-jar", "/app.jar"] # entrypoint는 Dockerfile 설정을 사용합니다
+    entrypoint: ["java", "-jar", "/app.jar"] # entrypoint는 Dockerfile 설정을 사용합니다
 
 volumes:
   Jejaljejal:

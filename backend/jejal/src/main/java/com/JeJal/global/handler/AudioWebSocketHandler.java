@@ -16,7 +16,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,7 +34,6 @@ import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.AbstractWebSocketHandler;
 
 
-// todo. 제잘제잘에 맞게 수정 필요
 // 웹소켓 통신에서 발생할 수 있는 다양한 이벤트를 처리
 @Component
 @Slf4j
@@ -90,7 +88,6 @@ public class AudioWebSocketHandler extends AbstractWebSocketHandler {
     // BinaryMessage를 처리하는 메서드
     // 우리 프로젝트의 경우 오디오 데이터 받았을때 호출됨
     // 받은 오디오 데이터를 파일에 추가 저장하고 복원과 분석을 위해 외부 api에 데이터 전송
-
     @Override
     public void handleBinaryMessage(WebSocketSession session, BinaryMessage message) throws Exception {
         logger.info("바이너리 메시지 처리: {}", session.getId());
@@ -115,11 +112,17 @@ public class AudioWebSocketHandler extends AbstractWebSocketHandler {
     // ByteBuffer에서 받은 데이터를 파일에 추가
     // 이 메서드는 바이너리 메시지 처리 중에 호출됨
     private void appendFile(ByteBuffer byteBuffer, String sessionId) throws IOException {
-        try (var outputStream = new FileOutputStream(RECORD_PATH + "/" + sessionId + "/record.m4a", true)) {
-            byte[] bytes = new byte[byteBuffer.remaining()];
-            byteBuffer.get(bytes);
-            outputStream.write(bytes);
-        }
+        FileOutputStream outputStream = new FileOutputStream(RECORD_PATH + "/" + sessionId + "/record.m4a", true);
+        logger.info("아웃풋 스트림1 : {} ",outputStream);
+        byte[] bytes = new byte[byteBuffer.remaining()];
+        logger.info("데이터 추가 시작 : ", bytes);
+        byteBuffer.get(bytes);
+        outputStream.write(bytes);
+        logger.info("BYTE BUFFER {}", byteBuffer);
+        logger.info("아웃풋 스트림2 : {} ",outputStream.getChannel());
+        logger.info("아웃풋 스트림3 : {} ",outputStream.getFD());
+        logger.info("아웃풋 스트림4 : {} ",outputStream.getClass());
+        outputStream.close();
     }
 
     // TextMessage를 처리하는 메서드

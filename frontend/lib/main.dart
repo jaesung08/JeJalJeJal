@@ -25,16 +25,16 @@ void main() {
 
 @pragma("vm:entry-point")
 void overlayMain() {
-  WidgetsFlutterBinding.ensureInitialized();
-  final database = JejalDatabase();
-  final channel = WebSocketChannel.connect(Uri.parse('ws://k8a607.p.ssafy.io:8080/record'));
-  final translationService = TranslationService(database, channel);
-  runApp(
-    MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: TrueCallerOverlay(translationService: translationService),
-    ),
-  );
+    WidgetsFlutterBinding.ensureInitialized();
+    final database = JejalDatabase();
+    final channel = WebSocketChannel.connect(Uri.parse('wss://k10a406.p.ssafy.io/api/record'));
+    final translationService = TranslationService(database, channel);
+    runApp(
+      MaterialApp(
+        debugShowCheckedModeBanner: false,
+        home: TrueCallerOverlay(translationService: translationService),
+      ),
+    );
 }
 
 class MyApp extends StatefulWidget {
@@ -60,7 +60,7 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      //메인페이지 home_page.dart에 구현
+      //메인 페이지 home_page.dart에 구현
       home: HomePage(database: widget.database),
     );
   }
@@ -154,44 +154,4 @@ class _MyAppState extends State<MyApp> {
       print('Error: ${e.message}');
     }
   }
-}
-
-class FileResultModel {
-  final double? score;
-  final String? date;
-  // category
-  final int? type;
-  final List<String>? words, sentences;
-  final String? androidId;
-  final String? phoneNumber;
-
-  FileResultModel.toJson(Map<String, dynamic> json)
-      : score = json['risk'] ?? 75.0,
-        type = json['category'] ?? 0,
-        date = json['createdTime'] ?? DateTime(2023).toString(),
-        words = json['keyword'] != null
-            ? List<String>.from(json['keyword'])
-            : ['단어'],
-        sentences = json['sentence'] != null
-            ? List<String>.from(json['sentence'])
-            : ['단어를 포함한 문장'],
-        androidId = json['androidId'] ?? '',
-        phoneNumber = json['phoneNumber'] ?? '';
-
-  FileResultModel.fromJson(Map<String, dynamic> json)
-      : score = json['result']?['totalCategoryScore'] ?? 75.0,
-        type = json['result']?['totalCategory'] ?? 0,
-        date = json['createdTime'] ?? DateTime.now().toString(),
-        words = json['result']?['results'] != null &&
-            json['result']?['results'].isNotEmpty
-            ? List<String>.from(json['result']['results']
-            .map((result) => result['sentKeyword']))
-            : ['단어'],
-        sentences = json['result']?['results'] != null &&
-            json['result']?['results'].isNotEmpty
-            ? List<String>.from(
-            json['result']['results'].map((result) => result['sentence']))
-            : ['단어를 포함한 문장'],
-        androidId = json['androidId'] ?? '',
-        phoneNumber = json['phoneNumber'] ?? '';
 }

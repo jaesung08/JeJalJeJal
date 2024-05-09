@@ -63,26 +63,22 @@ void setStream() async {
       print("전화온 번호"+phoneNumber);
 
       ws = WebSocketChannel.connect(
-        Uri.parse('ws://k10a406.p.ssafy.io:8000/record'),
+        Uri.parse('wss://k10a406.p.ssafy.io/api/record'),
       );
 
-      var startMessage = SendMessageModel(
-        state: 0,
-        androidId: androidId,
-      );
-      ws?.sink.add(jsonEncode(startMessage));
+      // var startMessage = SendMessageModel(
+      //   state: 0,
+      //   androidId: androidId,
+      // );
+      // ws?.sink.add(jsonEncode(startMessage));
 
       var temp = await recentFile(recordDirectory);
       targetFile = temp is FileSystemEntity ? temp as File : null;
+      offset = 0;
       if (targetFile is File) {
         print("파일 찾음");
         print(targetFile?.path);
         timer = Timer.periodic(const Duration(seconds: 6), (timer) async {
-          var temp = await recentFile(recordDirectory);
-          targetFile = temp is FileSystemEntity ? temp as File : null;
-
-          print("파일 또 찾음");
-          print(targetFile?.path);
 
           Uint8List entireBytes = targetFile!.readAsBytesSync();
           var nextOffset = entireBytes.length;
@@ -90,15 +86,18 @@ void setStream() async {
           var splittedBytes = entireBytes.sublist(offset, nextOffset);
           offset = nextOffset;
           print(splittedBytes);
-          // String encode = base64.encode(splittedBytes);
-          // print(encode);
+          String encode = base64.encode(splittedBytes);
+          print(encode);
 
           ws?.sink.add(splittedBytes);
         });
-      } else {
+      }
+
+      else {
         print("파일 못찾음");
         ws?.sink.close();
       }
+
     } else if (event.status == PhoneStateStatus.CALL_ENDED) {
       print("Call ended.");
 
@@ -112,19 +111,24 @@ void setStream() async {
       var nextOffset = entireBytes.length;
       var splittedBytes = entireBytes.sublist(offset, nextOffset);
       offset = nextOffset;
+
       print("마지막 데이터");
       print(splittedBytes);
+      var encode = base64.encode(splittedBytes);
+      print(encode);
 
-      //마지막 데이터 전송
       ws?.sink.add(splittedBytes);
 
-      //종료 메세지 전송
-      var endMessage = SendMessageModel(
-        state: 1,
-        androidId: androidId,
-        phoneNumber: phoneNumber,
-      );
-      ws?.sink.add(jsonEncode(endMessage));
+      // //마지막 데이터 전송
+      // ws?.sink.add(splittedBytes);
+
+      // //종료 메세지 전송
+      // var endMessage = SendMessageModel(
+      //   state: 1,
+      //   androidId: androidId,
+      //   phoneNumber: phoneNumber,
+      // );
+      // ws?.sink.add(jsonEncode(endMessage));
     }
   });
 }

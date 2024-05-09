@@ -1,6 +1,8 @@
+// lib/home_page.dart
+
 import 'package:flutter/material.dart';
 import 'package:flutter_overlay_window/flutter_overlay_window.dart';
-import 'package:jejal_project/databases/database.dart' hide Text;
+import 'package:jejal_project/databases/database_helper.dart' hide Text;
 import 'package:jejal_project/screens/history_screen.dart';
 import 'package:jejal_project/services/translation_service.dart';
 import 'package:jejal_project/screens/result_detail_screen.dart';
@@ -8,9 +10,9 @@ import 'package:jejal_project/screens/select_file_screen.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 class HomePage extends StatelessWidget {
-  final JejalDatabase database;
+  final TranslationService translationService;
 //
-  const HomePage({Key? key, required this.database}) : super(key: key);
+  const HomePage({Key? key, required this.translationService}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -75,12 +77,9 @@ class HomePage extends StatelessWidget {
                     context,
                     MaterialPageRoute(
                       builder: (context) => HistoryScreen(
-                        database: database,
-                        translationService: TranslationService(
-                          database,
-                          WebSocketChannel.connect(
-                              Uri.parse('ws://k8a607.p.ssafy.io:8080/record')),
-                        ),
+                        translationService: translationService
+                          // WebSocketChannel.connect(
+                          //     Uri.parse('ws://k8a607.p.ssafy.io:8080/record')),
                       ),
                     ),
                   );

@@ -2,15 +2,16 @@
 
 import 'package:flutter/material.dart';
 import 'package:jejal_project/screens/history_chat_screen.dart';
-import 'package:jejal_project/databases/database.dart' as db;
+import 'package:jejal_project/databases/database_helper.dart' as db;
+import 'package:jejal_project/models/conversation.dart';
+import 'package:jejal_project/services/database_service.dart';
 import 'package:jejal_project/services/translation_service.dart';
 import 'package:intl/intl.dart';
 
 class HistoryScreen extends StatelessWidget {
-  final db.JejalDatabase database;
   final TranslationService translationService;
 
-  const HistoryScreen({Key? key, required this.database, required this.translationService}) : super(key: key);
+  const HistoryScreen({Key? key, required this.translationService}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -21,10 +22,10 @@ class HistoryScreen extends StatelessWidget {
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
       ),
-      body: FutureBuilder<List<db.Conversation>>(
-        future: database.getAllConversations().catchError((error) {
+      body: FutureBuilder<List<Conversation>>(
+        future: DatabaseService.instance.getAllConversations().catchError((error) {
           print('fetching conversations 에러: $error');
-          return <db.Conversation>[];
+          return <Conversation>[];
         }),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
@@ -60,18 +61,17 @@ class HistoryScreen extends StatelessWidget {
                             ),
                           ),
                           SizedBox(height: 4),
-                          Text(DateFormat('yyyy-MM-dd HH:mm').format(conversation.date)),
+                          Text(DateFormat('yyyy-MM-dd').format(DateTime.now())),
                         ],
                       ),
                       contentPadding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 15.0),
                       onTap: () async {
-                        await translationService.startConversation();
-                        final texts = await translationService.getTextsByConversationId(conversation.id);
+                        await translationService.insertDummyData();
+                        final texts = await translationService.getTextsByConversationId(conversation.id!);
                         Navigator.of(context).push(
                           MaterialPageRoute(
                             builder: (context) => HistoryChatScreen(
-                              conversationId: conversation.id,
-                              database: database,
+                              conversationId: conversation.id!,
                               texts: texts,
                             ),
                           ),

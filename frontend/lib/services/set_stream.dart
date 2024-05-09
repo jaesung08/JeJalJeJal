@@ -10,7 +10,7 @@ import 'package:jejal_project/services/recent_file.dart';
 import 'package:phone_state/phone_state.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:contacts_service/contacts_service.dart';
-import 'package:jejal_project/databases/database.dart';
+import 'package:jejal_project/databases/database_helper.dart';
 import 'package:drift/drift.dart';
 import 'package:jejal_project/services/translation_service.dart';
 
@@ -63,7 +63,7 @@ void setStream() async {
       print("전화온 번호"+phoneNumber);
 
       ws = WebSocketChannel.connect(
-        Uri.parse('ws://k10a406.p.ssafy.io:8000/record'),
+        Uri.parse('wss://k10a406.p.ssafy.io/api/record'),
       );
 
       var startMessage = SendMessageModel(

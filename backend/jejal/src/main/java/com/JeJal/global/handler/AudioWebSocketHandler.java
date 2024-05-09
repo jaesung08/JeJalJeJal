@@ -126,6 +126,14 @@ public class AudioWebSocketHandler extends AbstractWebSocketHandler {
     // 텍스트 메시지 받았을 때 호출됨
     // 메시지 내용에 따라 다양한 처리 수행
     // 특정 상태 값에 따라 추가 정보(전화번호) 저장하거나 복원 작업
+    /*
+    * message에 담길 데이터
+    * {
+        'state': 0 또는 1 (0이면 통화 시작, 1이면 통화 종료)
+        'androidId': androidId,
+        'phoneNumber': phoneNumber,
+      }
+    * */
     @Override
     public void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
         logger.info("socket 정보 전달받음 : {}", message);
@@ -136,21 +144,12 @@ public class AudioWebSocketHandler extends AbstractWebSocketHandler {
         session.getAttributes().put("androidId", androidId);
         switch (stateValue) {
             case 0:
-                logger.info("Send session info : {} , androidId : {}", session.getId(), androidId);
+                logger.info("handleTextMessage() - Send sessionId : {} , androidId : {}", session.getId(), androidId);
                 break;
             case 1:
-                var phoneNumber = (String) messageMap.getOrDefault("phoneNumber", "010-1234-1234");
+                var phoneNumber = (String) messageMap.getOrDefault("phoneNumber", "01012345678");
                 session.getAttributes().put("phoneNumber", phoneNumber);
-
-                var untruncUrl = DOMAIN_UNTRUNC + "/recover";
-                var params = new HashMap<String, String>();
-                params.put("sessionId", session.getId());
-                params.put("state", "2");
-                var untruncResult = restApiUtil.requestGet(untruncUrl, params);
-
-                List<String> newFile = (List<String>) untruncResult.get("new_file");
-                var newFilePath = RECORD_PATH + "/" + session.getId() + "/part/";
-                sendClovaSpeechServer(newFile, newFilePath, session, true);
+                sendClientEndMessage(session);
                 break;
             default:
                 logger.info("error");
@@ -239,6 +238,20 @@ public class AudioWebSocketHandler extends AbstractWebSocketHandler {
         session.sendMessage(textMessage);
     }
 
+    private void sendClientEndMessage(WebSocketSession session) throws IOException {
+        logger.info("sendClientMessage 호출됨 , {}", session.getId());
+
+        Gson gson = new Gson();
+        Map<String, String> map = new HashMap<>();
+        map.put("isCallFinish", "True");
+        logger.info("sendClientMessage() - map 출력", map);
+
+        String json = gson.toJson(map);
+        TextMessage textMessage = new TextMessage(json);
+        logger.info("textMessage = {}", textMessage);
+
+        session.sendMessage(textMessage);
+    }
 
     // WebSocket 연결이 종료된 후 실행되는 메서드
     @Override

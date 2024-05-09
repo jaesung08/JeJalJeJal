@@ -39,20 +39,24 @@ class HomePage extends StatelessWidget {
                   const Spacer(),
                   TextButton(
                     onPressed: () async {
-                      if (await FlutterOverlayWindow.isActive()) return;
-                      await FlutterOverlayWindow.showOverlay(
-                        enableDrag: false,
-                        overlayTitle: "X-SLAYER",
-                        overlayContent: 'Overlay Enabled',
-                        flag: OverlayFlag.defaultFlag,
-                        visibility: NotificationVisibility.visibilityPublic,
-                        positionGravity: PositionGravity.auto,
-                        height:
-                        (MediaQuery.of(context).size.height * 1.6).toInt(),
-                        width:
-                        (MediaQuery.of(context).size.width * 2.3).toInt(),
-                        startPosition: const OverlayPosition(0, 25),
-                      );
+                      if (await FlutterOverlayWindow.isActive()) {
+                        await FlutterOverlayWindow.closeOverlay();
+                        }
+                      else {
+                        await FlutterOverlayWindow.showOverlay(
+                          enableDrag: false,
+                          overlayTitle: "X-SLAYER",
+                          overlayContent: 'Overlay Enabled',
+                          flag: OverlayFlag.defaultFlag,
+                          visibility: NotificationVisibility.visibilityPublic,
+                          positionGravity: PositionGravity.auto,
+                          height:
+                          (MediaQuery.of(context).size.height * 1.0).toInt(),
+                          width:
+                          (MediaQuery.of(context).size.width * 2.3).toInt(),
+                          startPosition: const OverlayPosition(0, 0),
+                        );
+                      }
                     },
                     child: const Text(
                       '설정',

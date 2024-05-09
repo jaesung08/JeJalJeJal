@@ -59,37 +59,48 @@ class _SelectFileScreenState extends State<SelectFileScreen> {
 
   void _sendFile() async {
     final file = File(_filePath!);
-
     final formData = FormData.fromMap({
       'file': await MultipartFile.fromFile(file.path),
+      'androidId': androidId,
     });
 
-    // Send data to backend
-    final response = await Dio().post(
-      'http://k8a607.p.ssafy.io:8080/api/analysis/file',
-      data: formData,
-    );
+    try {
+      final response = await Dio().post(
+        'https://k10a406.p.ssafy.io/api/clovaspeech/upload',
+        data: formData,
+      );
 
-    final jsonString = jsonEncode(response.data);
-    final json = jsonDecode(jsonString);
-    final resultModel = FileResultModel.fromJson(json);
-    
-    //통신 잘 됐을 때
-    if (response.statusCode == 200) {
-      //결과 화면으로 이동
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (context) =>
-                ResultDetailScreen(
-                  // fileResult: resultModel,
-                )),
+      if (response.statusCode == 200) {
+        final resultModel = FileResultModel.fromJson(response.data);
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => ResultDetailScreen(fileResult: resultModel)),
+        );
+      }
+    } on DioError catch (e) {
+      setState(() {
+        isSend = false;
+      });
+      final errorMessage = e.response != null ? e.response!.data.toString() : e.message;
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Error'),
+          content: Text('Failed to upload file: $errorMessage'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('OK'),
+            ),
+          ],
+        ),
       );
     }
-    setState(() {
-      result = response.toString();
-    });
   }
+
 
 
   @override

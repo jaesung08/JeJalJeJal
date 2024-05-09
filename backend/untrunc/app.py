@@ -42,7 +42,7 @@ def recoverM4A():
             # 손상된 파일과 참조 파일을 사용하여 untrunc 명령 실행
             logger.info("복구 시도")
             result = subprocess.run(
-                ["untrunc", "-vv", "-sm", "-dyn", "-a", "-is" "/data/WebSocket/ok.m4a", f"{DATA_PATH}/{session_id}/record.m4a"],
+                ["untrunc", "-f", "/data/WebSocket/ok.m4a", f"{DATA_PATH}/{session_id}/record.m4a"],
                 text=True, capture_output=True
             )
 

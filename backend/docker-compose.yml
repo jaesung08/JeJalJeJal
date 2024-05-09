@@ -20,7 +20,7 @@ services:
       build: ./jejal
       container_name: jejal
       ports:
-        - 8000:8000
+        - 443:8000
       networks:
         - ssafy-net
       volumes:

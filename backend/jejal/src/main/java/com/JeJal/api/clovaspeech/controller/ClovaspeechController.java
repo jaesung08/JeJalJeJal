@@ -16,6 +16,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -59,7 +60,9 @@ public class ClovaspeechController {
 
         // 키워드 부스팅
         Resource resource = new ClassPathResource("keyword/boosting.json");
-        List<Boosting> boostList = objectMapper.readValue(new File(String.valueOf(resource.getFile().toPath())), new TypeReference<List<Boosting>>(){});
+        InputStream inputStream = resource.getInputStream(); // 파일을 InputStream으로 읽기
+        List<Boosting> boostList = objectMapper.readValue(inputStream, new TypeReference<List<Boosting>>(){}); // InputStream에서 직접 읽기
+        inputStream.close(); // 스트림을 명시적으로 닫아줍니다.
 
         NestRequestDTO request = new NestRequestDTO();
         request.setBoostings(boostList);
@@ -118,7 +121,9 @@ public class ClovaspeechController {
 
             // 키워드 부스팅
             Resource resource = new ClassPathResource("keyword/boosting.json");
-            List<Boosting> boostList = objectMapper.readValue(new File(String.valueOf(resource.getFile().toPath())), new TypeReference<List<Boosting>>(){});
+            InputStream inputStream = resource.getInputStream(); // 파일을 InputStream으로 읽기
+            List<Boosting> boostList = objectMapper.readValue(inputStream, new TypeReference<List<Boosting>>(){}); // InputStream에서 직접 읽기
+            inputStream.close(); // 스트림을 명시적으로 닫아줍니다.
 
             NestRequestDTO request = new NestRequestDTO();
             request.setBoostings(boostList);

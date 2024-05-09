@@ -14,6 +14,7 @@ import com.google.gson.Gson;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -165,7 +166,9 @@ public class AudioWebSocketHandler extends AbstractWebSocketHandler {
 
         // 키워드 부스팅
         Resource resource = new ClassPathResource("keyword/boosting.json");
-        List<Boosting> boostList = objectMapper.readValue(new File(String.valueOf(resource.getFile().toPath())), new TypeReference<List<Boosting>>(){});
+        InputStream inputStream = resource.getInputStream(); // 파일을 InputStream으로 읽기
+        List<Boosting> boostList = objectMapper.readValue(inputStream, new TypeReference<List<Boosting>>(){}); // InputStream에서 직접 읽기
+        inputStream.close(); // 스트림을 명시적으로 닫아줍니다.
 
         NestRequestDTO request = new NestRequestDTO();
         request.setBoostings(boostList);

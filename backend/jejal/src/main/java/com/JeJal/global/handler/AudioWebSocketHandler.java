@@ -262,7 +262,7 @@ public class AudioWebSocketHandler extends AbstractWebSocketHandler {
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
         var directoryToDelete = new File(RECORD_PATH + "/" + session.getId());
         if (directoryToDelete.exists()) {
-            deleteDirectory(directoryToDelete);
+//            deleteDirectory(directoryToDelete);
             logger.info("디렉터리 삭제 완료");
         } else {
             logger.info("삭제할 디렉터리가 존재하지 않습니다.");

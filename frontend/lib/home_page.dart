@@ -92,7 +92,7 @@ class HomePage extends StatelessWidget {
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 30),
+                    padding: const EdgeInsets.symmetric(horizontal: 40),
                     child: Row(
                       children: [
                         Padding(
@@ -167,7 +167,7 @@ class HomePage extends StatelessWidget {
                         ),
                         const Spacer(), // 이미지와 텍스트 사이의 공간을 분리
                         Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 40),
+                          padding: const EdgeInsets.symmetric(vertical: 50),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: const [

@@ -80,6 +80,8 @@ class ResultDetailScreen extends StatelessWidget {
 
                 //원본 텍스트가 제주어가 아니면 (번역 데이터가 "제잘"이 아니면) 아래 부분 출력
                 if (!hideTranslated) ...[
+
+                  //점선
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 8.0),
                     child: CustomPaint(
@@ -90,6 +92,7 @@ class ResultDetailScreen extends StatelessWidget {
                       ),
                     ),
                   ),
+
                   Text(
                     segment.translated ?? 'No Translation',
                     style: TextStyle(
@@ -108,6 +111,7 @@ class ResultDetailScreen extends StatelessWidget {
   }
 }
 
+//점선 구현
 class DashedLinePainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {

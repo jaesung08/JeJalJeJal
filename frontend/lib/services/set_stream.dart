@@ -14,9 +14,11 @@ import 'package:jejal_project/databases/database.dart';
 import 'package:drift/drift.dart';
 import 'package:jejal_project/services/translation_service.dart';
 
+import '../models/send_message_model.dart';
+
 void setStream() async {
   WebSocketChannel? ws;
-  String phoneNumber;
+  late String phoneNumber;
   late Directory recordDirectory;
   late String androidId;
   const String recordDirectoryPath = "/storage/emulated/0/Recordings/Call";
@@ -64,6 +66,12 @@ void setStream() async {
         Uri.parse('ws://k10a406.p.ssafy.io:8000/record'),
       );
 
+      var startMessage = SendMessageModel(
+        state: 0,
+        androidId: androidId,
+      );
+      ws?.sink.add(jsonEncode(startMessage));
+
       var temp = await recentFile(recordDirectory);
       targetFile = temp is FileSystemEntity ? temp as File : null;
       if (targetFile is File) {
@@ -79,11 +87,13 @@ void setStream() async {
           Uint8List entireBytes = targetFile!.readAsBytesSync();
           var nextOffset = entireBytes.length;
 
-
           var splittedBytes = entireBytes.sublist(offset, nextOffset);
           offset = nextOffset;
-          String encode = base64.encode(splittedBytes);
-          print(encode);
+          print(splittedBytes);
+          // String encode = base64.encode(splittedBytes);
+          // print(encode);
+
+          ws?.sink.add(splittedBytes);
         });
       } else {
         print("파일 못찾음");
@@ -104,6 +114,17 @@ void setStream() async {
       offset = nextOffset;
       print("마지막 데이터");
       print(splittedBytes);
+
+      //마지막 데이터 전송
+      ws?.sink.add(splittedBytes);
+
+      //종료 메세지 전송
+      var endMessage = SendMessageModel(
+        state: 1,
+        androidId: androidId,
+        phoneNumber: phoneNumber,
+      );
+      ws?.sink.add(jsonEncode(endMessage));
     }
   });
 }

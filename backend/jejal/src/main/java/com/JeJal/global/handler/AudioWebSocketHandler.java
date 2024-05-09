@@ -136,7 +136,7 @@ public class AudioWebSocketHandler extends AbstractWebSocketHandler {
         'androidId': androidId,
         'phoneNumber': phoneNumber,
       }
-    * */
+    */
     @Override
     public void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
         logger.info("socket 정보 전달받음 : {}", message);

@@ -83,7 +83,7 @@ class HomePage extends StatelessWidget {
                         translationService: TranslationService(
                           database,
                           WebSocketChannel.connect(
-                              Uri.parse('ws://k8a607.p.ssafy.io:8080/record')),
+                              Uri.parse('wss://k10a406.p.ssafy.io/api/record')),
                         ),
                       ),
                     ),

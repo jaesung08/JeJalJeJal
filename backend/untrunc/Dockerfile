@@ -8,9 +8,15 @@ RUN sed -i 's/archive.ubuntu.com/mirror.kakao.com/g' /etc/apt/sources.list
 
 # Install packaged dependencies
 RUN apt-get update && \
-    apt-get -y install --no-install-recommends wget yasm g++ make git ca-certificates xz-utils && \
+    apt-get -y install --no-install-recommends wget yasm g++ make git ca-certificates xz-utils python3.7 python3.7-distutils && \
     [ "$FF_VER" = '3.3.9' ] && apt-get -y install --no-install-recommends libavformat-dev libavcodec-dev libavutil-dev || true && \
     rm -rf /var/lib/apt/lists/*
+
+# Make Python 3.7 the default Python
+RUN update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.7 1
+
+# Install pip for Python 3.7
+RUN wget https://bootstrap.pypa.io/get-pip.py && python3.7 get-pip.py && rm get-pip.py
 
 # Copy code
 ADD . /untrunc-src

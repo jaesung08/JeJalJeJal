@@ -34,7 +34,9 @@ def recoverM4A():
             
             # 손상된 파일과 참조 파일을 사용하여 untrunc 명령 실행
             logger.info("복구 시도")
-            subprocess.run(["untrunc", "-vv", "-sm", "-dyn", f"{DATA_PATH}/ok.m4a", f"{DATA_PATH}/{session_id}/record.m4a"], check=True)
+            result = subprocess.run(["untrunc", "-vv", "-sm", "-dyn", f"{DATA_PATH}/ok.m4a", f"{DATA_PATH}/{session_id}/record.m4a"], check=True)
+            logger.info("STDOUT: %s", result.stdout.decode())
+            logger.error("STDERR: %s", result.stderr.decode())
             logger.info("이름 변경")
             # 복구된 파일 이름 변경
             subprocess.run(["mv", f"{DATA_PATH}/{session_id}/record.m4a_fixed.m4a", f"{DATA_PATH}/{session_id}/recover.m4a"], check=True)

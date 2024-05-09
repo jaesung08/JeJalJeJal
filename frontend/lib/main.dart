@@ -43,6 +43,15 @@ class MyApp extends StatefulWidget {
   const MyApp({Key? key, required this.database}) : super(key: key);
 
   @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      theme: ThemeData(
+          fontFamily: "Pretendard"
+      ),
+    );
+  }
+
+  @override
   State<MyApp> createState() => _MyAppState();
 }
 

@@ -34,12 +34,21 @@ def recoverM4A():
             
             # 손상된 파일과 참조 파일을 사용하여 untrunc 명령 실행
             logger.info("복구 시도")
-            result = subprocess.run(["untrunc", "-vv", "-sm", "-dyn", f"{DATA_PATH}/ok.m4a", f"{DATA_PATH}/{session_id}/record.m4a"], check=True)
-            logger.info("STDOUT: %s", result.stdout.decode())
-            logger.error("STDERR: %s", result.stderr.decode())
+            result = subprocess.run(
+                ["untrunc", "-vv", "-sm", "-dyn", "/data/WebSocket/ok.m4a", f"{DATA_PATH}/{session_id}/record.m4a"],
+                text=True, capture_output=True
+            )
+
+            if result.returncode != 0:
+                logger.error("Untrunc 실패: %s", result.stderr)
+            else:
+                logger.info("Untrunc 성공: %s", result.stdout)
+
+
             logger.info("이름 변경")
             # 복구된 파일 이름 변경
             subprocess.run(["mv", f"{DATA_PATH}/{session_id}/record.m4a_fixed.m4a", f"{DATA_PATH}/{session_id}/recover.m4a"], check=True)
+        
             logger.info("moov 복구")
             # # ffmpeg 명령어를 사용하여 'moov' 원자 복구
             # subprocess.run(["ffmpeg", "-i", f"{DATA_PATH}/{session_id}/recover.m4a", "-c", "copy", "-movflags", "faststart", f"{DATA_PATH}/{session_id}/recovered.m4a"], check=True)

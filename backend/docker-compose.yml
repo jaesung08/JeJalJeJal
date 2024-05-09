@@ -10,6 +10,7 @@ services:
     networks:
       - ssafy-net
     environment:
+      - TZ=Asia/Seoul
       - FLASK_DATA_PATH=/data/WebSocket
       - FLASK_FILE_PERIOD=15000
       - FLASK_FILE_DUPLICATE=0
@@ -24,6 +25,8 @@ services:
       - 443:8000
     networks:
       - ssafy-net
+    environment:
+      - TZ=Asia/Seoul
     volumes:
       - Jejaljejal:/data
     entrypoint: ["java", "-jar", "/app.jar"] # entrypoint는 Dockerfile 설정을 사용합니다

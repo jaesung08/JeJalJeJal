@@ -34,7 +34,7 @@ def recoverM4A():
             
             # 손상된 파일과 참조 파일을 사용하여 untrunc 명령 실행
             logger.info("복구 시도")
-            subprocess.run(["untrunc", f"{DATA_PATH}/ok.m4a", f"{DATA_PATH}/{session_id}/record.m4a"], check=True)
+            subprocess.run(["untrunc", "-vv", "-sm", "-dyn", f"{DATA_PATH}/ok.m4a", f"{DATA_PATH}/{session_id}/record.m4a"], check=True)
             logger.info("이름 변경")
             # 복구된 파일 이름 변경
             subprocess.run(["mv", f"{DATA_PATH}/{session_id}/record.m4a_fixed.m4a", f"{DATA_PATH}/{session_id}/recover.m4a"], check=True)
@@ -60,11 +60,19 @@ def recoverM4A():
                         new_file.append(f"{cnt}.mp3")
                 cnt += 1
                 logger.info(f"카운트 + 1, 현재 카운트: {cnt}")
+                
+            recovered_file = f"{DATA_PATH}/{session_id}/recover.m4a"
+            if os.path.exists(recovered_file) and os.path.getsize(recovered_file) > 0:
+                logger.info("파일 복구 성공")
+            else:
+                logger.error("복구된 파일이 비어 있거나 생성되지 않음")
+                return make_response({"msg": "복구된 파일 오류"}, 500)
+
             return {"msg": "success", "new_file": new_file}
-        except subprocess.CalledProcessError:
-            # 외부 명령 실행 중 에러 발생
-            logger.error("복구 실패", exc_info=True)
-            return make_response({"msg": "fail"}, 500)
+        except subprocess.CalledProcessError as e:
+            # 외부 명령 실행중 에러 발생
+            logger.error(f"untrunc 명령 실패: {e}", exc_info=True)
+            return make_response({"msg": f"복구 실패: {e}"}, 500)
     else:
         # 세션 ID가 없는 경우 에러 메시지 반환
         return make_response({"msg": "No session"}, 400)

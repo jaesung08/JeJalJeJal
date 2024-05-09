@@ -1,4 +1,4 @@
-package com.JeJal.accent.dto;
+package com.JeJal.api.export.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

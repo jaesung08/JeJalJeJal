@@ -1,9 +1,7 @@
-package com.JeJal.accent.repository;
+package com.JeJal.api.export.repository;
 
-import com.JeJal.accent.entity.JejuAccent;
-import com.JeJal.accent.entity.JejuAccent10;
+import com.JeJal.api.export.entity.JejuAccent;
 import java.util.List;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

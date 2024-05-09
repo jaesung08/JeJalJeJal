@@ -1,7 +1,7 @@
-package com.JeJal.accent.controller;
+package com.JeJal.api.export.controller;
 
-import com.JeJal.accent.dto.JejuAccentDTO;
-import com.JeJal.accent.service.JejuAccentService;
+import com.JeJal.api.export.dto.JejuAccentDTO;
+import com.JeJal.api.export.service.JejuAccentService;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -12,7 +12,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -173,7 +172,7 @@ public class JejuAccentFileController {
 
     // 1음절 제외한 상위 1000개 키워드
     @GetMapping("/export/keyword/remove")
-    @Operation(summary = "boosting.json 파일 내용 추출(상위 1000 키워드)", description = "DB에 저장된 데이터 상위 1000개 키워드 가져오기 (1음절 빼야함)")
+    @Operation(summary = "boosting.json 파일 내용 추출(상위 1000 키워드)", description = "DB에 저장된 데이터 상위 1000개 키워드 가져오기 (1음절 뺌)")
     public ResponseEntity<String> exportKeywordRemoveWord() throws IOException {
         String keyworlds = jejuAccentService.getConcatenatedJejuosRemoveWord();
         System.out.println(keyworlds);
@@ -182,7 +181,7 @@ public class JejuAccentFileController {
 
     // 상위 1000개 키워드
     @GetMapping("/export/keyword")
-    @Operation(summary = "boosting.json 파일 내용 추출(상위 1000 키워드)", description = "DB에 저장된 데이터 상위 1000개 키워드 가져오기 (1음절 빼야함)")
+    @Operation(summary = "boosting.json 파일 내용 추출(상위 1000 키워드)", description = "DB에 저장된 데이터 상위 1000개 키워드 가져오기 (1음절 안뺌)")
     public ResponseEntity<String> exportKeyword() throws IOException {
         String keyworlds = jejuAccentService.getConcatenatedJejuos();
         System.out.println(keyworlds);

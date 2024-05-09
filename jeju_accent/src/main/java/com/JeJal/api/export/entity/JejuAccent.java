@@ -1,7 +1,12 @@
-package com.JeJal.accent.entity;
+package com.JeJal.api.export.entity;
 
-import com.JeJal.accent.dto.JejuAccentDTO;
-import jakarta.persistence.*;
+import com.JeJal.api.export.dto.JejuAccentDTO;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,10 +15,10 @@ import lombok.Setter;
 @Entity
 @Setter
 @Getter
-@Table(name = "jeju_accent20")
+@Table(name = "jeju_accent")
 @AllArgsConstructor
 @NoArgsConstructor
-public class JejuAccent20 {
+public class JejuAccent {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,7 +33,7 @@ public class JejuAccent20 {
     @Column
     private int count;
 
-    public JejuAccent20(JejuAccentDTO dto) {
+    public JejuAccent(JejuAccentDTO dto) {
         this.jejuo = dto.getJejuo();
         this.standard = dto.getStandard();
         this.count = dto.getCount();

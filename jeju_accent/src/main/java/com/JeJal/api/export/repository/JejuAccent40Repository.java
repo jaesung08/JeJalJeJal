@@ -1,6 +1,6 @@
-package com.JeJal.accent.repository;
+package com.JeJal.api.export.repository;
 
-import com.JeJal.accent.entity.JejuAccent40;
+import com.JeJal.api.export.entity.JejuAccent40;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

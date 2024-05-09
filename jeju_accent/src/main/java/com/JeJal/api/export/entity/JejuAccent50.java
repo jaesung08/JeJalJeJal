@@ -1,6 +1,6 @@
-package com.JeJal.accent.entity;
+package com.JeJal.api.export.entity;
 
-import com.JeJal.accent.dto.JejuAccentDTO;
+import com.JeJal.api.export.dto.JejuAccentDTO;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

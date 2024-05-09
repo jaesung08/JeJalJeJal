@@ -1,17 +1,26 @@
-package com.JeJal.accent.service;
+package com.JeJal.api.export.service;
 
-import com.JeJal.accent.dto.JejuAccentDTO;
-import com.JeJal.accent.entity.*;
-import com.JeJal.accent.repository.*;
+import com.JeJal.api.export.dto.JejuAccentDTO;
+import com.JeJal.api.export.entity.JejuAccent;
+import com.JeJal.api.export.entity.JejuAccent10;
+import com.JeJal.api.export.entity.JejuAccent20;
+import com.JeJal.api.export.entity.JejuAccent30;
+import com.JeJal.api.export.entity.JejuAccent40;
+import com.JeJal.api.export.entity.JejuAccent50;
+import com.JeJal.api.export.entity.JejuAccent60;
+import com.JeJal.api.export.repository.JejuAccent10Repository;
+import com.JeJal.api.export.repository.JejuAccent20Repository;
+import com.JeJal.api.export.repository.JejuAccent30Repository;
+import com.JeJal.api.export.repository.JejuAccent40Repository;
+import com.JeJal.api.export.repository.JejuAccent50Repository;
+import com.JeJal.api.export.repository.JejuAccent60Repository;
+import com.JeJal.api.export.repository.JejuAccentRepository;
 import java.util.List;
-import java.util.StringJoiner;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 @Service

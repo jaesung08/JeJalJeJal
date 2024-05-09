@@ -26,9 +26,12 @@ ARG FF_VER=3.3.9
 # Set the repository to Kakao mirror for runtime stage
 RUN sed -i 's/archive.ubuntu.com/mirror.kakao.com/g' /etc/apt/sources.list
 
-RUN apt-get update && apt-get -y install --no-install-recommends python3-pip python3-setuptools && \
+RUN apt-get update && apt-get -y install --no-install-recommends python3.7 python3.7-distutils && \
     [ "$FF_VER" = '3.3.9' ] && apt-get -y install --no-install-recommends libavformat57 libavcodec57 libavutil55 ffmpeg || true && \
     rm -rf /var/lib/apt/lists/*
+
+# Make Python 3.7 the default Python
+RUN update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.7 1
 
 # Copy built untrunc
 COPY --from=build /untrunc-src/untrunc /bin/untrunc

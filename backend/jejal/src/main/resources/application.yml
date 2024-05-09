@@ -56,7 +56,7 @@ clovastudio:
     "혼저옵서예"라는 입력이 들어오면 "어서오세요"라고 답변해줘.
 
 # untrunc
-DOMAIN_UNTRUNC: "http://untrunc:8000"
+DOMAIN_UNTRUNC: "http://untrunc:8300"
 SPRING_RECORD_TEMP_DIR: /data/WebSocket
 
 # SSL 설정

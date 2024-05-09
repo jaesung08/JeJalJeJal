@@ -44,16 +44,14 @@ class HomePage extends StatelessWidget {
                         }
                       else {
                         await FlutterOverlayWindow.showOverlay(
-                          enableDrag: false,
-                          overlayTitle: "X-SLAYER",
-                          overlayContent: 'Overlay Enabled',
+                          enableDrag: true,
+                          overlayTitle: "제잘제잘",
+                          overlayContent: "제주 방언 번역기",
                           flag: OverlayFlag.defaultFlag,
                           visibility: NotificationVisibility.visibilityPublic,
                           positionGravity: PositionGravity.auto,
-                          height:
-                          (MediaQuery.of(context).size.height * 1.0).toInt(),
-                          width:
-                          (MediaQuery.of(context).size.width * 2.3).toInt(),
+                          height: 170,
+                          width: 200,
                           startPosition: const OverlayPosition(0, 0),
                         );
                       }

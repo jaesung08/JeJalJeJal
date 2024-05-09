@@ -6,7 +6,6 @@ services:
     container_name: untrunc
     volumes:
       - Jejaljejal:/data
-      - ./untrunc/ok.m4a:/data/WebSocket/ok.m4a 
     networks:
       - ssafy-net
     environment:

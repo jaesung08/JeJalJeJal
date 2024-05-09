@@ -32,6 +32,13 @@ def recoverM4A():
             FLASK_FILE_PERIOD = int(os.environ.get("FLASK_FILE_PERIOD", "10000"))
             FLASK_FILE_DUPLICATE = int(os.environ.get("FLASK_FILE_DUPLICATE", "1000"))
             
+            # ok.m4a 권한 검사
+            file_path = '/data/WebSocket/ok.m4a'
+            file_stat = os.stat(file_path)
+            logger.info(f"파일 경로: {file_path}")
+            logger.info(f"파일 권한: {oct(file_stat.st_mode)}")
+            logger.info(f"파일 크기: {file_stat.st_size} bytes")
+
             # 손상된 파일과 참조 파일을 사용하여 untrunc 명령 실행
             logger.info("복구 시도")
             result = subprocess.run(

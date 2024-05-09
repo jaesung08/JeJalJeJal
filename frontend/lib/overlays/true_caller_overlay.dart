@@ -298,4 +298,30 @@ class _TrueCallerOverlayState extends State<TrueCallerOverlay> {
       ),
     );
   }
+
+  Widget _buildTranslationPair(String jejuText, String translatedText) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Container(
+          padding: EdgeInsets.all(10.0),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(10.0),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(jejuText, style: TextStyle(fontSize: 18.0)),
+              if (translatedText != "제잘") ...[
+                Divider(),
+                Text(translatedText, style: TextStyle(fontSize: 18.0)),
+              ],
+            ],
+          ),
+        ),
+        SizedBox(height: 16.0),
+      ],
+    );
+  }
 }

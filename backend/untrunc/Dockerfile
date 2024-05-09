@@ -1,3 +1,4 @@
+# Stage 1: Build stage
 FROM ubuntu:bionic AS build
 LABEL stage=intermediate
 ARG FF_VER=3.3.9
@@ -18,6 +19,7 @@ WORKDIR /untrunc-src
 # Build untrunc
 RUN /usr/bin/make FF_VER=$FF_VER && strip untrunc
 
+# Stage 2: Runtime stage
 FROM ubuntu:bionic
 ARG FF_VER=3.3.9
 

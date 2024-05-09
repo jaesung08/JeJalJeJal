@@ -112,18 +112,32 @@ public class AudioWebSocketHandler extends AbstractWebSocketHandler {
     // ByteBuffer에서 받은 데이터를 파일에 추가
     // 이 메서드는 바이너리 메시지 처리 중에 호출됨
     private void appendFile(ByteBuffer byteBuffer, String sessionId) throws IOException {
-        FileOutputStream outputStream = new FileOutputStream(RECORD_PATH + "/" + sessionId + "/record.m4a", true);
-        logger.info("아웃풋 스트림1 : {} ",outputStream);
-        byte[] bytes = new byte[byteBuffer.remaining()];
-        logger.info("데이터 추가 시작 : ", bytes);
-        byteBuffer.get(bytes);
-        outputStream.write(bytes);
-        logger.info("BYTE BUFFER {}", byteBuffer);
-        logger.info("아웃풋 스트림2 : {} ",outputStream.getChannel());
-        logger.info("아웃풋 스트림3 : {} ",outputStream.getFD());
-        logger.info("아웃풋 스트림4 : {} ",outputStream.getClass());
-        outputStream.close();
+        // 파일 경로 설정
+        String filePath = RECORD_PATH + "/" + sessionId + "/record.m4a";
+        // 파일 출력 스트림 생성
+        try (FileOutputStream outputStream = new FileOutputStream(filePath, true)) {
+            logger.info("파일 아웃 스트림 및 m4a 파일 데이터 삽입하기 위해 진입");
+            logger.info("바이트 버퍼 크기 : {}", byteBuffer);
+            // ByteBuffer가 읽기 모드로 전환될 수 있도록 flip() 호출
+            byteBuffer.flip();  // 데이터를 읽을 준비
+    
+            // 남은 데이터가 있는지 확인
+            if (byteBuffer.hasRemaining()) {
+                byte[] bytes = new byte[byteBuffer.remaining()];  // 남은 데이터 크기만큼 배열 생성
+                byteBuffer.get(bytes);  // ByteBuffer에서 byte 배열로 데이터 읽기
+                outputStream.write(bytes);  // 파일에 데이터 쓰기
+            } else {
+                logger.info("No data to write for session: {}", sessionId);
+            }
+    
+            // 로그 출력
+            logger.info("Data written to file for session: {}", sessionId);
+        } catch (IOException e) {
+            logger.error("Failed to write data to file for session: {}", sessionId, e);
+            throw e;
+        }
     }
+    
 
     // TextMessage를 처리하는 메서드
     // 텍스트 메시지 받았을 때 호출됨

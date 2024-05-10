@@ -10,7 +10,7 @@ import 'package:jejal_project/services/recent_file.dart';
 import 'package:phone_state/phone_state.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:contacts_service/contacts_service.dart';
-import 'package:jejal_project/databases/database.dart';
+import 'package:jejal_project/databases/database_helper.dart';
 import 'package:drift/drift.dart';
 import 'package:jejal_project/services/translation_service.dart';
 

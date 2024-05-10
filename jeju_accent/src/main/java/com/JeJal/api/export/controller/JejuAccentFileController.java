@@ -103,7 +103,7 @@ public class JejuAccentFileController {
                     }
                 });
         }
-        return ResponseEntity.ok(results);
+        return ResponseEntity.ok(results); 
     }
 
 

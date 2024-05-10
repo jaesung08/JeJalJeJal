@@ -119,8 +119,8 @@ public class AudioWebSocketHandler extends AbstractWebSocketHandler {
         try (FileOutputStream outputStream = new FileOutputStream(filePath, true)) {
             logger.info("파일 아웃 스트림 및 m4a 파일 데이터 삽입하기 위해 진입");
             logger.info("바이트 버퍼 크기 : {}", byteBuffer);
-//            // ByteBuffer가 읽기 모드로 전환될 수 있도록 flip() 호출
-//            byteBuffer.flip();  // 데이터를 읽을 준비
+            // ByteBuffer가 읽기 모드로 전환될 수 있도록 flip() 호출
+            byteBuffer.flip();  // 데이터를 읽을 준비
     
             // 남은 데이터가 있는지 확인
             if (byteBuffer.hasRemaining()) {

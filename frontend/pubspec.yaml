@@ -102,6 +102,8 @@ flutter:
     - assets/images/select_file.png
     - assets/images/file.png
     - assets/images/translating.png
+    - assets/images/call_list.png
+    - assets/images/jejal_logo.png
   # To add assets to your application, add an assets section, like this:
   # assets:
   #   - images/a_dot_burr.jpeg

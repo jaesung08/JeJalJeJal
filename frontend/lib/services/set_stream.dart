@@ -13,6 +13,7 @@ import 'package:contacts_service/contacts_service.dart';
 import 'package:jejal_project/databases/database_helper.dart';
 import 'package:drift/drift.dart';
 import 'package:jejal_project/services/translation_service.dart';
+import 'package:jejal_project/overlays/true_caller_overlay.dart';
 
 import '../models/send_message_model.dart';
 
@@ -65,6 +66,10 @@ void setStream() async {
       ws = WebSocketChannel.connect(
         Uri.parse('wss://k10a406.p.ssafy.io/api/record'),
       );
+      print('WebSocket connected');
+
+      // TrueCallerOverlay에 웹소켓 채널 전달
+      TrueCallerOverlay.startWebSocketStream(ws!);
 
       // var startMessage = SendMessageModel(
       //   state: 0,

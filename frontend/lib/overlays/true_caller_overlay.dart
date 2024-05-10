@@ -1,17 +1,16 @@
-// true_caller_overlay.dart
-import 'dart:isolate'; // 별도의 Isolate를 사용하기 위한 import
+import 'dart:async';
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_overlay_window/flutter_overlay_window.dart';
 import 'package:jejal_project/overlays/tangerine_icon.dart';
-import 'package:jejal_project/services/translation_service.dart';
-import 'package:jejal_project/widgets/text_segment_box.dart';
-
+import 'package:web_socket_channel/web_socket_channel.dart';
 
 class TrueCallerOverlay extends StatefulWidget {
-  // 오버레이 위젯은 TranslationService를 주입받아 번역 데이터를 처리합니다
-  final TranslationService translationService;
+  const TrueCallerOverlay({Key? key}) : super(key: key);
 
-  const TrueCallerOverlay({Key? key, required this.translationService}) : super(key: key);
+  static void startWebSocketStream(WebSocketChannel wss) {
+    _TrueCallerOverlayState._startWebSocketStream(wss);
+  }
 
   @override
   _TrueCallerOverlayState createState() => _TrueCallerOverlayState();
@@ -20,33 +19,69 @@ class TrueCallerOverlay extends StatefulWidget {
 class _TrueCallerOverlayState extends State<TrueCallerOverlay> {
   bool showIcon = true;
   bool showBox = false;
+  final List<Map<String, String>> translationList = [];
+  static WebSocketChannel? _webSocketChannel;
 
-  // 말풍선 리스트
-  final List<Map<String, String>> translationPairs = [];
+  static void _startWebSocketStream(WebSocketChannel wss) {
+    _webSocketChannel = wss;
+    print('wss 호출 성공!');
+
+    _webSocketChannel?.stream.listen(
+          (message) {
+        print('Received message: $message');
+
+        if (message is String) {
+          final jsonData = jsonDecode(message);
+          if (jsonData['isCallFinish'] == true) {
+            _stopWebSocketStream();
+          } else {
+            try {
+              final jejuText = jsonData['jeju'];
+              final translatedText = jsonData['translated'];
+              print('제주어: $jejuText, 번역된 텍스트: $translatedText');
+
+              _TrueCallerOverlayState._instance?._addTranslation(
+                {'jeju': jejuText, 'translated': translatedText},
+              );
+            } catch (e) {
+              print('JSON 데이터 파싱 오류: $e');
+            }
+          }
+        } else {
+          print('예상치 못한 데이터 타입: ${message.runtimeType}');
+        }
+      },
+      onError: (error) {
+        print('웹소켓 스트림 오류: $error');
+      },
+      onDone: () {
+        print('웹소켓 스트림 종료');
+      },
+    );
+  }
+
+  static _TrueCallerOverlayState? _instance;
 
   @override
   void initState() {
     super.initState();
-    // TranslationService의 outputStream을 구독합니다
-    widget.translationService.outputStream.listen((translationData) async {
-      setState(() {
-        translationPairs.add({
-          'jejuText': translationData.jeju,
-          'translatedText': translationData.translated,
-        });
-      });
-      await widget.translationService.saveTranslation(translationData);
+    _instance = this;
+  }
+
+  void _addTranslation(Map<String, String> translation) {
+    setState(() {
+      translationList.add(translation);
     });
+  }
+
+  static void _stopWebSocketStream() {
+    _webSocketChannel?.sink.close();
   }
 
   @override
   void dispose() {
+    _stopWebSocketStream();
     super.dispose();
-    widget.translationService.stopWebSocketStream();
-  }
-
-  void stopWebSocketStream() {
-    widget.translationService.stopWebSocketStream();
   }
 
   @override
@@ -87,8 +122,8 @@ class _TrueCallerOverlayState extends State<TrueCallerOverlay> {
 
   Widget _buildBox() {
     return Positioned(
-      top: 20.0, // 원하는 위치 조정 가능
-      right: 10.0, // 원하는 위치 조정 가능
+      top: 20.0,
+      right: 10.0,
       child: Container(
         margin: const EdgeInsets.only(top: 10.0),
         padding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 16.0),
@@ -98,34 +133,35 @@ class _TrueCallerOverlayState extends State<TrueCallerOverlay> {
           color: Colors.orangeAccent.shade100,
           borderRadius: BorderRadius.circular(12.0),
         ),
-        child: SingleChildScrollView(
-          reverse: true, // 최신 메시지를 맨 아래에 위치시키기 위해 reverse 사용
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                "실시간 통역 중",
-                style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
-              ),
-              Divider(),
-              ...translationPairs.map((pair) => _buildTranslationPair(pair['jejuText']!, pair['translatedText']!)).toList(),
-            ],
-          ),
-        ),
+        child: buildTranslationList(),
       ),
     );
   }
 
-  Widget _buildTranslationPair(String jejuText, String translatedText) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        TextSegmentBox(
-          jejuText: jejuText,
-          translatedText: translatedText,
-        ),
-        SizedBox(height: 16.0),
-      ],
+  Widget buildTranslationList() {
+    return SingleChildScrollView(
+      reverse: true,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            "실시간 통역 중",
+            style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
+          ),
+          const Divider(),
+          ...translationList.map((translation) {
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(translation['jeju']!),
+                if (translation['translated']! != "제잘")
+                  Text(translation['translated']!),
+                const SizedBox(height: 16.0),
+              ],
+            );
+          }).toList(),
+        ],
+      ),
     );
   }
 
@@ -140,7 +176,6 @@ class _TrueCallerOverlayState extends State<TrueCallerOverlay> {
         overlayContent: "제주 방언 번역기",
         flag: OverlayFlag.defaultFlag,
         visibility: NotificationVisibility.visibilityPublic,
-        // positionGravity: PositionGravity.auto,
         startPosition: const OverlayPosition(0, 25),
       );
     }

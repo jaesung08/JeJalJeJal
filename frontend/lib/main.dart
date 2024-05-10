@@ -30,7 +30,7 @@ void overlayMain() {
   runApp(
     MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: TrueCallerOverlay(translationService: translationService),
+      home: TrueCallerOverlay(),
     ),
   );
 }

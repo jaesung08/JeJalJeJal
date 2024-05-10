@@ -23,19 +23,22 @@ class HistoryScreen extends StatelessWidget {
         ),
       ),
       body: FutureBuilder<List<Conversation>>( // 대화 목록을 가져오는 FutureBuilder
+        // 대화 가져오기 오류 발생 시
         future: DatabaseService.instance.getAllConversations().catchError((error) {
           print('fetching conversations 에러: $error');
           return <Conversation>[]; // 에러 발생 시 빈 리스트 반환
         }),
+        // FutureBuilder 위젯은 비동기 작업이 완료될 때까지 대기하고, 그 결과를 snapshot 객체에 저장
         builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            final conversations = snapshot.data!;
+          if (snapshot.hasData) { // 스냅샷에 데이터가 있는 경우. 비동기 작업이 완료되고 데이터가 있는지 확인
+            final conversations = snapshot.data!; // 대화 목록을 가져오기
             return ListView.builder(
-              itemCount: conversations.length,
+              itemCount: conversations.length, // 대화 목록의 길이에 따라 리스트 항목 생성
               itemBuilder: (context, index) {
-                final conversation = conversations[index];
+                final conversation = conversations[index]; // 대화 가져오기
                 return Column(
                   children: [
+                    // 프로필 사진
                     ListTile(
                       leading: Container( // 아이콘 컨테이너
                         decoration: BoxDecoration(
@@ -52,27 +55,28 @@ class HistoryScreen extends StatelessWidget {
                       title: Column( // 전화번호와 날짜 표시
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
+                          // 상대방 전화번호
                           Text(
-                            conversation.phoneNumber,
+                            conversation.phoneNumber, // 대화 상대방 전화번호 출력
                             style: TextStyle(
-                              color: Colors.orange,
+                              color: Colors.orange, // 오렌지색
                               fontWeight: FontWeight.bold,
                               fontSize: 18,
                             ),
                           ),
                           SizedBox(height: 4),
-                          Text(DateFormat('yyyy-MM-dd').format(DateTime.now())),
+                          Text(DateFormat('yyyy-MM-dd').format(DateTime.now())), // 현재는 시스템의 현재 날짜 포맷 출력
                         ],
                       ),
                       contentPadding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 15.0),
                       onTap: () async { // ListTile 탭 시 실행될 코드
                         await translationService.insertDummyData(); // 더미 데이터 삽입
-                        final texts = await translationService.getTextsByConversationId(conversation.id!);
+                        final texts = await translationService.getTextsByConversationId(conversation.id!); // 대화 ID로 텍스트 가져오기
                         Navigator.of(context).push(
                           MaterialPageRoute(
                             builder: (context) => HistoryChatScreen(
-                              conversationId: conversation.id!,
-                              texts: texts,
+                              conversationId: conversation.id!, // 대화 ID 전달
+                              texts: texts, // 텍스트 데이터 전달
                             ),
                           ),
                         );

@@ -19,7 +19,9 @@ import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.kafka.common.protocol.types.Field.Str;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -105,7 +107,28 @@ public class AudioWebSocketHandler extends AbstractWebSocketHandler {
         // 초단위 추가 파일
         List<String> newFile = (List<String>) untruncResult.get("new_file");
         String newFilePath = RECORD_PATH + "/" + session.getId() + "/part/";
-        sendClovaSpeechServer(newFile, newFilePath, session, false);
+//        sendClovaSpeechServer(newFile, newFilePath, session, false);
+
+        // 임시 텍스트 날리는 기능
+        Random random = new Random();
+
+        // 랜덤하게 0 또는 1 선택
+        int choice = random.nextInt(2);
+
+        // 선택된 번호에 따라 다른 텍스트 설정
+        String jejuText, translatedText;
+        if (choice == 0) {
+            jejuText = "임시 텍스트 ( 제주말 )";
+            translatedText = "임시 텍스트 ( 통역 된 말 )";
+        } else {
+            jejuText = "임시 텍스트 ( 표준말 )";
+            translatedText = "제잘";
+        }
+        TranslateResponseDto translateResponseDto = TranslateResponseDto.builder()
+            .jeju(jejuText)
+            .translated(translatedText)
+            .build();
+        sendClient(session, translateResponseDto);
     }
 
 

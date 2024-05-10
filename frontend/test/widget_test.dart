@@ -7,14 +7,15 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:jejal_project/databases/database.dart';
+import 'package:jejal_project/databases/database_helper.dart';
 import 'package:jejal_project/main.dart';
+import 'package:jejal_project/services/translation_service.dart';
 
 void main() {
   testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    final database = JejalDatabase();
+    final translationService = TranslationService();
     // Build our app and trigger a frame.
-    await tester.pumpWidget(MyApp(database: database));
+    await tester.pumpWidget(MyApp(translationService: translationService));
 
 
     // Verify that our counter starts at 0.

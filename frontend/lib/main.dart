@@ -1,14 +1,10 @@
+// lib/main.dart
+
 import 'package:flutter/material.dart';
-import 'dart:io';
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter_overlay_window/flutter_overlay_window.dart';
-import 'package:jejal_project/databases/database.dart';
+import 'package:jejal_project/services/database_service.dart';
 import 'package:jejal_project/services/set_stream.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:easy_folder_picker/FolderPicker.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:phone_state/phone_state.dart';
-import 'package:flutter_foreground_task/flutter_foreground_task.dart';
 import 'package:flutter/services.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:jejal_project/services/translation_service.dart';
@@ -16,31 +12,33 @@ import 'package:jejal_project/overlays/true_caller_overlay.dart';
 import 'package:jejal_project/home_page.dart';
 
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  final database = JejalDatabase();
+  final translationService = TranslationService();
+
+  // 더미데이터 삽입
+  await translationService.insertDummyData();
   // 앱 실행 시 MyApp 위젯 실행
-  runApp(MyApp(database: database));
+  runApp(MyApp(translationService: translationService));
 }
 
 @pragma("vm:entry-point")
 void overlayMain() {
-    WidgetsFlutterBinding.ensureInitialized();
-    final database = JejalDatabase();
-    final channel = WebSocketChannel.connect(Uri.parse('wss://k10a406.p.ssafy.io/api/record'));
-    final translationService = TranslationService(database, channel);
-    runApp(
-      MaterialApp(
-        debugShowCheckedModeBanner: false,
-        home: TrueCallerOverlay(translationService: translationService),
-      ),
-    );
+  WidgetsFlutterBinding.ensureInitialized();
+  final translationService = TranslationService();
+  final channel = WebSocketChannel.connect(Uri.parse('ws://k10a406.p.ssafy.io/api/record'));
+  runApp(
+    MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: TrueCallerOverlay(translationService: translationService),
+    ),
+  );
 }
 
 class MyApp extends StatefulWidget {
-  final JejalDatabase database;
+  final TranslationService translationService;
 
-  const MyApp({Key? key, required this.database}) : super(key: key);
+  const MyApp({Key? key, required this.translationService}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -48,6 +46,7 @@ class MyApp extends StatefulWidget {
       theme: ThemeData(
           fontFamily: "Pretendard"
       ),
+      home: HomePage(translationService: translationService),
     );
   }
 
@@ -60,8 +59,8 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      //메인 페이지 home_page.dart에 구현
-      home: HomePage(database: widget.database),
+      //메인페이지 home_page.dart에 구현
+      home: HomePage(translationService: TranslationService()),
     );
   }
 

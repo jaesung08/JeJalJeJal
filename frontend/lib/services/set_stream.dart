@@ -17,12 +17,15 @@ import 'package:jejal_project/services/translation_service.dart';
 import '../models/send_message_model.dart';
 
 void setStream() async {
+  const String testfilePath = "/storage/emulated/0/Recordings/test";;
   WebSocketChannel? ws;
   late String phoneNumber;
   late Directory recordDirectory;
+  late Directory testDirectory;
   late String androidId;
   const String recordDirectoryPath = "/storage/emulated/0/Recordings/Call";
   File? targetFile;
+  File? testFile;
   Timer? timer;
   int offset = 0;
   PhoneState phoneStatus = PhoneState.nothing();
@@ -32,6 +35,7 @@ void setStream() async {
   androidId = androidInfo.id;
 
   recordDirectory = Directory(recordDirectoryPath);
+  testDirectory = Directory(testfilePath);
 
   PhoneState.stream.listen((event) async {
     phoneStatus = event as PhoneState;
@@ -40,7 +44,6 @@ void setStream() async {
     }
 
     else if (event.status == PhoneStateStatus.CALL_STARTED) {
-
       //전화 시작되면 위젯 띄우기
       //지금 실행 안되고 있음
       if (!await FlutterOverlayWindow.isActive()) {
@@ -66,14 +69,27 @@ void setStream() async {
         Uri.parse('wss://k10a406.p.ssafy.io/api/record'),
       );
 
-      // var startMessage = SendMessageModel(
-      //   state: 0,
-      //   androidId: androidId,
-      // );
-      // ws?.sink.add(jsonEncode(startMessage));
+      var startMessage = SendMessageModel(
+        state: 0,
+        androidId: androidId,
+      );
+      ws?.sink.add(jsonEncode(startMessage));
+
 
       var temp = await recentFile(recordDirectory);
       targetFile = temp is FileSystemEntity ? temp as File : null;
+
+      // var temp2 = await recentFile(testDirectory);
+      // testFile = temp2 is FileSystemEntity ? temp2 as File : null;
+      // print(testFile?.path);
+      //
+      // // 파일 읽기
+      // Uint8List entireBytes = testFile!.readAsBytesSync();
+      //
+      // // 파일 전송
+      // ws?.sink.add(entireBytes);
+      // print(entireBytes);
+
       offset = 0;
       if (targetFile is File) {
         print("파일 찾음");
@@ -86,8 +102,8 @@ void setStream() async {
           var splittedBytes = entireBytes.sublist(offset, nextOffset);
           offset = nextOffset;
           print(splittedBytes);
-          String encode = base64.encode(splittedBytes);
-          print(encode);
+          // String encode = base64.encode(splittedBytes);
+          // print(encode);
 
           ws?.sink.add(splittedBytes);
         });
@@ -114,21 +130,19 @@ void setStream() async {
 
       print("마지막 데이터");
       print(splittedBytes);
-      var encode = base64.encode(splittedBytes);
-      print(encode);
+      // var encode = base64.encode(splittedBytes);
+      // print(encode);
 
+      // 마지막 데이터 전송
       ws?.sink.add(splittedBytes);
 
-      // //마지막 데이터 전송
-      // ws?.sink.add(splittedBytes);
-
-      // //종료 메세지 전송
-      // var endMessage = SendMessageModel(
-      //   state: 1,
-      //   androidId: androidId,
-      //   phoneNumber: phoneNumber,
-      // );
-      // ws?.sink.add(jsonEncode(endMessage));
+      //종료 메세지 전송
+      var endMessage = SendMessageModel(
+        state: 1,
+        androidId: androidId,
+        phoneNumber: phoneNumber,
+      );
+      ws?.sink.add(jsonEncode(endMessage));
     }
   });
 }

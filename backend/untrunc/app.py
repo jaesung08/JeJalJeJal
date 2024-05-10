@@ -58,9 +58,8 @@ def recoverM4A():
             else:
                 logger.error("복구된 파일이 존재하지 않습니다: %s", recovered_file_path)
 
-
-            logger.info("이름 변경")
             # 복구된 파일 이름 변경
+            logger.info("이름 변경")
             subprocess.run(["mv", f"{DATA_PATH}/{session_id}/record.m4a_fixed.m4a", f"{DATA_PATH}/{session_id}/recover.m4a"], check=True)
             
             logger.info("recover 파일 내용 확인")
@@ -78,9 +77,9 @@ def recoverM4A():
             logger.info("분할할 오디오 파일 준비")
             partition_folder = f"{DATA_PATH}/{session_id}/part"
             audio_file = AudioSegment.from_file(f"{DATA_PATH}/{session_id}/recover.m4a", format="m4a")
-            logger.info("audio_file 확인 : " , audio_file)
+            logger.info("audio_file 확인 : %s" , audio_file)
             window_size = FLASK_FILE_PERIOD
-            logger.info("windowSize 확인 : ", window_size)
+            logger.info("windowSize 확인 : %s", window_size)
             cnt = 0
 
             new_file = []

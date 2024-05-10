@@ -1,11 +1,13 @@
+// true_caller_overlay.dart
+import 'dart:isolate'; // 별도의 Isolate를 사용하기 위한 import
 import 'package:flutter/material.dart';
 import 'package:flutter_overlay_window/flutter_overlay_window.dart';
-import 'package:jejal_project/databases/database.dart';
 import 'package:jejal_project/overlays/tangerine_icon.dart';
 import 'package:jejal_project/services/translation_service.dart';
 import 'package:jejal_project/overlays/tangerine_icon.dart';
 
 class TrueCallerOverlay extends StatefulWidget {
+  // 오버레이 위젯은 TranslationService를 주입받아 번역 데이터를 처리합니다
   final TranslationService translationService;
 
   const TrueCallerOverlay({Key? key, required this.translationService}) : super(key: key);
@@ -19,10 +21,13 @@ class _TrueCallerOverlayState extends State<TrueCallerOverlay> {
   bool showBox = false;
 
   List<Map<String, String>> translationPairs = [];
+  final _databaseSavePort = ReceivePort(); // 데이터베이스 저장 작업을 위한 ReceivePort
 
   @override
   void initState() {
     super.initState();
+    // widget.translationService.startWebSocketStream();
+    // TranslationService의 outputStream을 구독합니다
     widget.translationService.outputStream.listen((translationData) async {
       setState(() {
         translationPairs.add({
@@ -32,6 +37,16 @@ class _TrueCallerOverlayState extends State<TrueCallerOverlay> {
       });
       await widget.translationService.saveTranslation(translationData);
     });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    widget.translationService.stopWebSocketStream();
+  }
+
+  void stopWebSocketStream() {
+    widget.translationService.stopWebSocketStream();
   }
 
   @override

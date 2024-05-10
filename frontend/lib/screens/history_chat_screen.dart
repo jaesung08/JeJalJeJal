@@ -1,18 +1,19 @@
 // lib/screens/history_chat_screen.dart
 
-import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:jejal_project/databases/database.dart' as db;
+import 'package:intl/intl.dart';
+import 'package:jejal_project/models/conversation.dart';
+import 'package:jejal_project/models/text_entry.dart';
+import 'package:jejal_project/services/database_service.dart';
+
 
 class HistoryChatScreen extends StatelessWidget {
   final int conversationId;
-  final db.JejalDatabase database;
-  final List<db.TextEntry> texts;
+  final List<TextEntry> texts;
 
   const HistoryChatScreen({
     Key? key,
     required this.conversationId,
-    required this.database,
     required this.texts,
   }) : super(key: key);
 
@@ -20,8 +21,8 @@ class HistoryChatScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: FutureBuilder<db.Conversation>(
-          future: database.getConversationById(conversationId),
+        title: FutureBuilder<Conversation>(
+          future: DatabaseService.instance.getConversationById(conversationId),
           builder: (context, snapshot) {
             if (snapshot.hasData) {
               final conversation = snapshot.data!;
@@ -30,7 +31,7 @@ class HistoryChatScreen extends StatelessWidget {
                 children: [
                   Text('${conversation.phoneNumber}의 통화 번역 기록'),
                   Text(
-                    '${conversation.date} 통화',
+                    '${DateFormat('yyyy-MM-dd').format(DateTime.now())} 통화',
                     style: TextStyle(fontSize: 14, color: Colors.orange),
                   ),
                 ],

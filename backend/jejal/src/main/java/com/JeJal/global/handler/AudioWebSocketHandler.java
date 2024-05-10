@@ -119,8 +119,6 @@ public class AudioWebSocketHandler extends AbstractWebSocketHandler {
         try (FileOutputStream outputStream = new FileOutputStream(filePath, true)) {
             logger.info("파일 아웃 스트림 및 m4a 파일 데이터 삽입하기 위해 진입");
             logger.info("바이트 버퍼 크기 : {}", byteBuffer);
-            // ByteBuffer가 읽기 모드로 전환될 수 있도록 flip() 호출
-            byteBuffer.flip();  // 데이터를 읽을 준비
     
             // 남은 데이터가 있는지 확인
             if (byteBuffer.hasRemaining()) {
@@ -265,7 +263,7 @@ public class AudioWebSocketHandler extends AbstractWebSocketHandler {
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
         File directoryToDelete = new File(RECORD_PATH + "/" + session.getId());
         if (directoryToDelete.exists()) {
-//            deleteDirectory(directoryToDelete);
+            deleteDirectory(directoryToDelete);
             logger.info("디렉터리 삭제 완료");
         } else {
             logger.info("삭제할 디렉터리가 존재하지 않습니다.");

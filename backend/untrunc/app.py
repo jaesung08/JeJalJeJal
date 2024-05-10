@@ -3,6 +3,7 @@ from pydub import AudioSegment
 import subprocess
 import os
 import logging
+from datetime import datetime
 
 # 로깅 설정
 logging.basicConfig(level=logging.INFO)
@@ -19,6 +20,7 @@ def aliveTest():
 # 손상된 M4A 파일 복구 경로
 @app.route('/recover', methods=['GET'])
 def recoverM4A():
+    logger.info(f"복구 시작 시간: {datetime.now()}")
     params = request.args.to_dict()  # 쿼리 파라미터를 딕셔너리로 변환
     session_id = params.get("sessionId")  # 세션 ID 추출
     state = params.get("state", "1")  # 상태 코드, 기본값 1
@@ -33,6 +35,7 @@ def recoverM4A():
             FLASK_FILE_DUPLICATE = int(os.environ.get("FLASK_FILE_DUPLICATE","1000"))
             
             # ok.m4a 권한 검사
+            logger.info(f"파일 권한 확인 시간: {datetime.now()}")
             file_path = f'{DATA_PATH}/ok.m4a'
             file_stat = os.stat(file_path)
             logger.info(f"파일 경로: {file_path}")
@@ -41,8 +44,9 @@ def recoverM4A():
 
             # 손상된 파일과 참조 파일을 사용하여 untrunc 명령 실행
             logger.info("복구 시도")
+            logger.info(f"복구 명령 실행 전 시간: {datetime.now()}")
             result = subprocess.run(["untrunc", f"{DATA_PATH}/ok.m4a", f"{DATA_PATH}/{session_id}/record.m4a"], check=True, text=True, capture_output=True)
-
+            logger.info(f"복구 명령 실행 후 시간: {datetime.now()}")    
             if result.returncode != 0:
                 logger.error("Untrunc 실패: %s", result.stderr)
             else:
@@ -50,6 +54,7 @@ def recoverM4A():
 
             # 복구된 파일이 생성되었는지 확인
             recovered_file_path = f"{DATA_PATH}/{session_id}/record.m4a_fixed.m4a"
+            logger.info(f"파일 생성 확인 시간: {datetime.now()}")
             if os.path.exists(recovered_file_path):
                 logger.info("복구된 파일 확인: %s", recovered_file_path)
             else:
@@ -57,8 +62,10 @@ def recoverM4A():
 
             # 복구된 파일 이름 변경
             logger.info("이름 변경")
+            logger.info(f"파일 이동 전 시간: {datetime.now()}")
             subprocess.run(["mv", f"{DATA_PATH}/{session_id}/record.m4a_fixed.m4a", f"{DATA_PATH}/{session_id}/recover.m4a"], check=True)
-            
+            logger.info(f"파일 이동 후 시간: {datetime.now()}")
+
             logger.info("recover 파일 내용 확인")
             file_path = f"{DATA_PATH}/{session_id}/recover.m4a"
             if os.path.exists(file_path) and os.path.getsize(file_path) > 0:
@@ -72,6 +79,7 @@ def recoverM4A():
 
             # 분할할 오디오 파일 준비
             logger.info("분할할 오디오 파일 준비")
+            logger.info(f"분할할 오디오 파일 준비: {datetime.now()}")
             partition_folder = f"{DATA_PATH}/{session_id}/part"
             audio_file = AudioSegment.from_file(f"{DATA_PATH}/{session_id}/recover.m4a", format="m4a")
             logger.info("audio_file 확인 : %s" , audio_file)
@@ -82,21 +90,25 @@ def recoverM4A():
             new_file = []
             # 오디오 파일을 지정된 크기로 분할
             logger.info("지정 크기로 분할")
+            logger.info(f"분할 시간: {datetime.now()}")
             for i in range(0, len(audio_file), window_size):
-                logger.info("분할 1")
+                logger.info(f"분할 1: {datetime.now()}")
                 if not os.path.isfile(f"{partition_folder}/{cnt}.mp3"):
+                    logger.info(f"분할 및 파일 생성 시간: {datetime.now()} - 파일 {cnt}.mp3")
                     logger.info("분할 2")
                     target = audio_file[i:i + window_size + FLASK_FILE_DUPLICATE]
                     if len(target) == (window_size + FLASK_FILE_DUPLICATE) or state == "2":
-                        logger.info("분할 3")
+                        logger.info(f"분할 3: {datetime.now()}")
                         target.export(f"{partition_folder}/{cnt}.mp3", format="mp3")
                         new_file.append(f"{cnt}.mp3")
                 cnt += 1
                 logger.info(f"카운트 + 1, 현재 카운트: {cnt}")
+                logger.info(f"카운트 시간: {datetime.now()}")
                 
             recovered_file = f"{DATA_PATH}/{session_id}/recover.m4a"
             if os.path.exists(recovered_file) and os.path.getsize(recovered_file) > 0:
                 logger.info("파일 복구 성공")
+                logger.info(f"파일 복구 완료 시간: {datetime.now()}")
             else:
                 logger.error("복구된 파일이 비어 있거나 생성되지 않음")
                 return make_response({"msg": "복구된 파일 오류"}, 500)
@@ -105,6 +117,7 @@ def recoverM4A():
         except subprocess.CalledProcessError as e:
             # 외부 명령 실행중 에러 발생
             logger.error(f"untrunc 명령 실패: {e}", exc_info=True)
+            logger.info(f"실패 시간: {datetime.now()}")
             return make_response({"msg": f"복구 실패: {e}"}, 500)
     else:
         # 세션 ID가 없는 경우 에러 메시지 반환
@@ -113,4 +126,5 @@ def recoverM4A():
 # Flask 서버 실행
 if __name__ == '__main__':
     print("start_flask")
+    print("Flask 서버 시작 시간: ", datetime.now())
     app.run(host="0.0.0.0", port=8300, debug=True)

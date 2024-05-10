@@ -1,21 +1,21 @@
-// lib/screens/history_chat_screen.dart
-
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:jejal_project/models/conversation.dart';
 import 'package:jejal_project/models/text_entry.dart';
 import 'package:jejal_project/services/database_service.dart';
+import 'package:jejal_project/widgets/text_segment_box.dart';
 
+import '../widgets/text_segment_box.dart'; // TextSegmentBox 위젯 가져오기
 
 class HistoryChatScreen extends StatelessWidget {
   final int conversationId;
   final List<TextEntry> texts;
 
   const HistoryChatScreen({
-    Key? key,
+    super.key,
     required this.conversationId,
     required this.texts,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -46,37 +46,25 @@ class HistoryChatScreen extends StatelessWidget {
         itemCount: texts.length,
         itemBuilder: (context, index) {
           final text = texts[index];
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                margin: EdgeInsets.symmetric(vertical: 4.0),
-                padding: EdgeInsets.all(12.0),
-                decoration: BoxDecoration(
-                  color: Colors.orange,
-                  borderRadius: BorderRadius.circular(10.0),
-                ),
-                child: Text(
-                  text.jejuText,
-                  style: TextStyle(color: Colors.white),
-                ),
-              ),
-              Container(
-                margin: EdgeInsets.symmetric(vertical: 4.0),
-                padding: EdgeInsets.all(12.0),
-                decoration: BoxDecoration(
-                  color: Colors.grey[200],
-                  borderRadius: BorderRadius.circular(10.0),
-                ),
-                child: Text(
-                  text.translatedText,
-                  style: TextStyle(color: Colors.black),
-                ),
-              ),
-            ],
+          return Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+            child: _buildTranslationPair(text.jejuText, text.translatedText),
           );
         },
       ),
+    );
+  }
+
+  Widget _buildTranslationPair(String jejuText, String translatedText) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        TextSegmentBox(
+          jejuText: jejuText,
+          translatedText: translatedText,
+        ),
+        SizedBox(height: 16.0),
+      ],
     );
   }
 }

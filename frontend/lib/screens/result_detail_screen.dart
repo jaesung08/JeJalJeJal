@@ -48,7 +48,10 @@ class ResultDetailScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('음성 파일 통역 결과'),
+        title: Text(
+            '음성 파일 통역 결과',
+            style: TextStyle(fontWeight: FontWeight.bold)
+        ),
       ),
       body: ListView.builder(
         itemCount: fileResult.data!.segments!.length,
@@ -77,8 +80,30 @@ class ResultDetailScreen extends StatelessWidget {
                   ),
                 ),
 
+                if(hideTranslated) ...[
+                  //점선
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    child: CustomPaint(
+                      painter: DashedLinePainter(),
+                      child: Container(
+                        height: 1,
+                        width: double.infinity,
+                      ),
+                    ),
+                  ),
+                  Text(
+                    '통역할 제주어가 인식되지 않았습니다.',
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 18.0,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ]
+
                 //원본 텍스트가 제주어가 아니면 (번역 데이터가 "제잘"이 아니면) 아래 부분 출력
-                if (!hideTranslated) ...[
+                else if (!hideTranslated) ...[
 
                   //점선
                   Padding(
@@ -91,13 +116,21 @@ class ResultDetailScreen extends StatelessWidget {
                       ),
                     ),
                   ),
+                  Text(
+                    '통역 결과',
+                    style: TextStyle(
+                      color: Colors.orange,
+                      fontSize: 20.0,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
 
                   Text(
                     segment.translated ?? 'No Translation',
                     style: TextStyle(
                       color: Colors.black,
                       fontSize: 18.0,
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
                 ]

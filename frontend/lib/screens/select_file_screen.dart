@@ -106,15 +106,11 @@ class _SelectFileScreenState extends State<SelectFileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: HeadBar(
-        title: const Text(
-          '음성 파일 통역',
-          style: TextStyle(
-            fontSize: 18.0,
-            color: ColorStyles.textBlack,
-          ),
+      appBar: AppBar(
+        title: Text(
+            '음성 파일 통역',
+            style: TextStyle(fontWeight: FontWeight.bold)
         ),
-        appBar: AppBar(),
       ),
       body: Center(
         child: Padding(

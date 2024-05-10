@@ -74,9 +74,11 @@ class TranslationService {
   }
 
   // 번역 결과를 저장하는 메서드
+  // DB에 저장
+  // import set_stream 해서 phoneNumber와 name을 가져와서 DB 칼럼에 추가해야 함
   Future<void> saveTranslation(TranslateResponseDto translation) async {
     final textEntry = TextEntry(
-      conversationId: _conversationId,
+      conversationId: _conversationId, // 통화 ID
       jejuText: translation.jeju,
       translatedText: translation.translated,
       timestamp: DateFormat('HH:mm').format(DateTime.now()), // 'HH:mm' 형식으로 변환

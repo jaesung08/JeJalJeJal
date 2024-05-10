@@ -60,6 +60,7 @@ void setStream() async {
 
       //전화번호 받아오기
       phoneNumber = phoneStatus.number.toString();
+      //핸드폰 주소록에 접근해서 받아온 전화번호와 일치하는 사람의 이름을 name이라는 변수에 저장
       print("전화온 번호"+phoneNumber);
 
       ws = WebSocketChannel.connect(

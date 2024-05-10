@@ -79,11 +79,7 @@ class HomePage extends StatelessWidget {
                     context,
                     MaterialPageRoute(
                       builder: (context) => HistoryScreen(
-                        database: database,
                         translationService: TranslationService(
-                          database,
-                          WebSocketChannel.connect(
-                              Uri.parse('wss://k10a406.p.ssafy.io/api/record')),
                         ),
                       ),
                     ),

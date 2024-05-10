@@ -2,7 +2,6 @@
 import 'dart:isolate'; // 별도의 Isolate를 사용하기 위한 import
 import 'package:flutter/material.dart';
 import 'package:flutter_overlay_window/flutter_overlay_window.dart';
-import 'package:jejal_project/databases/database.dart';
 import 'package:jejal_project/overlays/tangerine_icon.dart';
 import 'package:jejal_project/services/translation_service.dart';
 import 'package:jejal_project/overlays/tangerine_icon.dart';

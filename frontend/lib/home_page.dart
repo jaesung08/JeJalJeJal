@@ -41,20 +41,22 @@ class HomePage extends StatelessWidget {
                   const Spacer(),
                   TextButton(
                     onPressed: () async {
-                      if (await FlutterOverlayWindow.isActive()) return;
-                      await FlutterOverlayWindow.showOverlay(
-                        enableDrag: false,
-                        overlayTitle: "X-SLAYER",
-                        overlayContent: 'Overlay Enabled',
-                        flag: OverlayFlag.defaultFlag,
-                        visibility: NotificationVisibility.visibilityPublic,
-                        positionGravity: PositionGravity.auto,
-                        height:
-                        (MediaQuery.of(context).size.height * 1.6).toInt(),
-                        width:
-                        (MediaQuery.of(context).size.width * 2.3).toInt(),
-                        startPosition: const OverlayPosition(0, 25),
-                      );
+                      if (await FlutterOverlayWindow.isActive()) {
+                        await FlutterOverlayWindow.closeOverlay();
+                        }
+                      else {
+                        await FlutterOverlayWindow.showOverlay(
+                          enableDrag: true,
+                          overlayTitle: "제잘제잘",
+                          overlayContent: "제주 방언 번역기",
+                          flag: OverlayFlag.defaultFlag,
+                          visibility: NotificationVisibility.visibilityPublic,
+                          positionGravity: PositionGravity.auto,
+                          height: 170,
+                          width: 200,
+                          startPosition: const OverlayPosition(0, 0),
+                        );
+                      }
                     },
                     child: const Text(
                       '설정',
@@ -77,9 +79,12 @@ class HomePage extends StatelessWidget {
                     context,
                     MaterialPageRoute(
                       builder: (context) => HistoryScreen(
-                          translationService: translationService
-                        // WebSocketChannel.connect(
-                        //     Uri.parse('ws://k8a607.p.ssafy.io:8080/record')),
+                        database: database,
+                        translationService: TranslationService(
+                          database,
+                          WebSocketChannel.connect(
+                              Uri.parse('wss://k10a406.p.ssafy.io/api/record')),
+                        ),
                       ),
                     ),
                   );
@@ -91,7 +96,7 @@ class HomePage extends StatelessWidget {
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 30),
+                    padding: const EdgeInsets.symmetric(horizontal: 40),
                     child: Row(
                       children: [
                         Padding(
@@ -166,7 +171,7 @@ class HomePage extends StatelessWidget {
                         ),
                         const Spacer(), // 이미지와 텍스트 사이의 공간을 분리
                         Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 40),
+                          padding: const EdgeInsets.symmetric(vertical: 50),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: const [

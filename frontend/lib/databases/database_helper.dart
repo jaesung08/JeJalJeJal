@@ -2,29 +2,33 @@ import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
 class DatabaseHelper {
+  // 싱글톤 인스턴스 생성
   static final DatabaseHelper _instance = DatabaseHelper._internal();
   factory DatabaseHelper() => _instance;
 
-  static Database? _database;
+  static Database? _database; // 데이터베이스 인스턴스 변수
   DatabaseHelper._internal();
 
+  // 데이터베이스 인스턴스를 반환하는 게터
   Future<Database> get database async {
     if (_database != null) return _database!;
-    _database = await _initDatabase();
+    _database = await _initDatabase(); // 데이터베이스가 없으면 초기화
     return _database!;
   }
 
+  // 데이터베이스를 초기화하는 메서드
   Future<Database> _initDatabase() async {
-    final path = await getDatabasesPath();
-    final databasePath = join(path, 'jejal_database.db');
+    final path = await getDatabasesPath(); // 데이터베이스 경로 가져오기
+    final databasePath = join(path, 'jejal_database.db'); // 데이터베이스 파일 경로 및 생성
 
     return await openDatabase(
       databasePath,
-      version: 1,
-      onCreate: _onCreate,
+      version: 1, // 데이터베이스 버전
+      onCreate: _onCreate, // 데이터베이스 생성 시 실행될 함수
     );
   }
 
+  // 데이터베이스 생성 시 실행될 함수
   Future<void> _onCreate(Database db, int version) async {
     await db.execute('''
       CREATE TABLE conversations(
@@ -33,7 +37,7 @@ class DatabaseHelper {
         name TEXT,
         date TEXT
       )
-    ''');
+    '''); // conversations 테이블 생성
 
     await db.execute('''
       CREATE TABLE text_entries(
@@ -44,6 +48,6 @@ class DatabaseHelper {
         timestamp TEXT,
         FOREIGN KEY (conversation_id) REFERENCES conversations (id)
       )
-    ''');
+    '''); // text_entries 테이블 생성
   }
 }

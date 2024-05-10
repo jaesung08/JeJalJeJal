@@ -5,14 +5,14 @@ import 'package:flutter_overlay_window/flutter_overlay_window.dart';
 import 'package:jejal_project/databases/database_helper.dart' hide Text;
 import 'package:jejal_project/screens/history_screen.dart';
 import 'package:jejal_project/services/translation_service.dart';
-import 'package:jejal_project/screens/result_detail_screen.dart';
 import 'package:jejal_project/screens/select_file_screen.dart';
-import 'package:web_socket_channel/web_socket_channel.dart';
 
 class HomePage extends StatelessWidget {
   final TranslationService translationService;
+
 //
-  const HomePage({Key? key, required this.translationService}) : super(key: key);
+  const HomePage({Key? key, required this.translationService})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -43,8 +43,7 @@ class HomePage extends StatelessWidget {
                     onPressed: () async {
                       if (await FlutterOverlayWindow.isActive()) {
                         await FlutterOverlayWindow.closeOverlay();
-                        }
-                      else {
+                      } else {
                         await FlutterOverlayWindow.showOverlay(
                           enableDrag: true,
                           overlayTitle: "제잘제잘",
@@ -79,11 +78,7 @@ class HomePage extends StatelessWidget {
                     context,
                     MaterialPageRoute(
                       builder: (context) => HistoryScreen(
-                        database: database,
                         translationService: TranslationService(
-                          database,
-                          WebSocketChannel.connect(
-                              Uri.parse('wss://k10a406.p.ssafy.io/api/record')),
                         ),
                       ),
                     ),

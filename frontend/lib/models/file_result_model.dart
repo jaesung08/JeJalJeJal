@@ -5,18 +5,18 @@ class FileResultModel {
 
   FileResultModel({this.status, this.message, this.data});
 
-  FileResultModel.fromJson(Map<String, dynamic> json) {
+  FileResultModel.fromJson(Map<String, dynamic> json) { // JSON에서 객체 생성
     status = json['status'];
     message = json['message'];
     data = json['data'] != null ? new Data.fromJson(json['data']) : null;
   }
 
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
+  Map<String, dynamic> toJson() { // 객체를 JSON으로 변환
+    final Map<String, dynamic> data = new Map<String, dynamic>(); // 데이터 맵 생성
     data['status'] = this.status;
     data['message'] = this.message;
     if (this.data != null) {
-      data['data'] = this.data!.toJson();
+      data['data'] = this.data!.toJson(); // 데이터를 JSON으로 변환하여 추가
     }
     return data;
   }

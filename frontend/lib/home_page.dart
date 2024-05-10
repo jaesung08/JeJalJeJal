@@ -23,7 +23,7 @@ class HomePage extends StatelessWidget {
       body: Container(
         width: double.infinity,
         decoration: BoxDecoration(
-          color: const Color(0xFFFFF5E0), // 배경색
+          color: const Color(0xFFFFFFFF), // 배경색
         ),
         child: Column(
           children: [
@@ -89,17 +89,19 @@ class HomePage extends StatelessWidget {
                     labels: const ['On', 'Off'],
                     onToggle: (index) async {
                       if (index == 0) {
-                        // "번역 On" state
-                        await FlutterOverlayWindow.showOverlay(
-                          enableDrag: true,
-                          overlayTitle: "제잘제잘",
-                          overlayContent: "제주 방언 번역기",
-                          flag: OverlayFlag.defaultFlag,
-                          visibility: NotificationVisibility.visibilityPublic,
-                          height: 170,
-                          width: 200,
-                          startPosition: const OverlayPosition(0, 0),
-                        );
+                        if (!(await FlutterOverlayWindow.isActive())) {
+                          // "번역 On" state
+                          await FlutterOverlayWindow.showOverlay(
+                            enableDrag: true,
+                            overlayTitle: "제잘제잘",
+                            overlayContent: "제주 방언 번역기",
+                            flag: OverlayFlag.defaultFlag,
+                            visibility: NotificationVisibility.visibilityPublic,
+                            height: 170,
+                            width: 200,
+                            startPosition: const OverlayPosition(0, 0),
+                          );
+                        }
                       } else {
                         // "번역 Off" state
                         if (await FlutterOverlayWindow.isActive()) {

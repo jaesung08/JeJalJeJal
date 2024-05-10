@@ -95,16 +95,18 @@ public class AudioWebSocketHandler extends AbstractWebSocketHandler {
         appendFile(message.getPayload(), session.getId());
 
         logger.info("GET 요청 (복원): {}", DOMAIN_UNTRUNC + "/recover");
-        var untruncUrl = DOMAIN_UNTRUNC + "/recover";
-        var params = new HashMap<String, String>();
+        String untruncUrl = DOMAIN_UNTRUNC + "/recover";
+        Map<String, String> params = new HashMap<>();
         params.put("sessionId", session.getId());
         params.put("state", "1");
-        var untruncResult = restApiUtil.requestGet(untruncUrl, params);
+        Map<String, Object> untruncResult = restApiUtil.requestGet(untruncUrl, params);
 
         logger.info("결과 (복원): {}", untruncResult);
+        
+        // 초단위 추가 파일
         List<String> newFile = (List<String>) untruncResult.get("new_file");
-        var newFilePath = RECORD_PATH + "/" + session.getId() + "/part/";
-        sendClovaSpeechServer(newFile, newFilePath, session, true);
+        String newFilePath = RECORD_PATH + "/" + session.getId() + "/part/";
+        sendClovaSpeechServer(newFile, newFilePath, session, false);
     }
 
 
@@ -127,10 +129,11 @@ public class AudioWebSocketHandler extends AbstractWebSocketHandler {
                 byte[] bytes = new byte[byteBuffer.remaining()];  // 남은 데이터 크기만큼 배열 생성
                 byteBuffer.get(bytes);  // ByteBuffer에서 byte 배열로 데이터 읽기
                 outputStream.write(bytes);  // 파일에 데이터 쓰기
+                outputStream.close();
             } else {
                 logger.info("No data to write for session: {}", sessionId);
             }
-    
+
             // 로그 출력
             logger.info("Data written to file for session: {}", sessionId);
         } catch (IOException e) {
@@ -261,7 +264,7 @@ public class AudioWebSocketHandler extends AbstractWebSocketHandler {
     // WebSocket 연결이 종료된 후 실행되는 메서드
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
-        var directoryToDelete = new File(RECORD_PATH + "/" + session.getId());
+        File directoryToDelete = new File(RECORD_PATH + "/" + session.getId());
         if (directoryToDelete.exists()) {
 //            deleteDirectory(directoryToDelete);
             logger.info("디렉터리 삭제 완료");

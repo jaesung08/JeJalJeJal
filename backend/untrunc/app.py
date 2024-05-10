@@ -27,13 +27,13 @@ def recoverM4A():
     if session_id:
         try:
             # 환경 변수로부터 데이터 경로와 설정값 가져오기
-            DATA_PATH = os.environ.get("FLASK_DATA_PATH", "/data/WebSocket")
+            DATA_PATH = os.environ.get("FLASK_DATA_PATH","/data/WebSocket")
             logger.info(f"데이터 경로: {DATA_PATH}")
-            FLASK_FILE_PERIOD = int(os.environ.get("FLASK_FILE_PERIOD", "10000"))
-            FLASK_FILE_DUPLICATE = int(os.environ.get("FLASK_FILE_DUPLICATE", "1000"))
+            FLASK_FILE_PERIOD = int(os.environ.get("FLASK_FILE_PERIOD","10000"))
+            FLASK_FILE_DUPLICATE = int(os.environ.get("FLASK_FILE_DUPLICATE","1000"))
             
             # ok.m4a 권한 검사
-            file_path = '/data/WebSocket/ok.m4a'
+            file_path = '{DATA_PATH}/ok.m4a'
             file_stat = os.stat(file_path)
             logger.info(f"파일 경로: {file_path}")
             logger.info(f"파일 권한: {oct(file_stat.st_mode)}")
@@ -41,10 +41,7 @@ def recoverM4A():
 
             # 손상된 파일과 참조 파일을 사용하여 untrunc 명령 실행
             logger.info("복구 시도")
-            result = subprocess.run(
-                ["untrunc", "/data/WebSocket/ok.m4a", f"{DATA_PATH}/{session_id}/record.m4a"],
-                text=True, capture_output=True
-            )
+            result = subprocess.run(["untrunc", f"{DATA_PATH}/ok.m4a", f"{DATA_PATH}/{session_id}/record.m4a"], check=True, text=True, capture_output=True)
 
             if result.returncode != 0:
                 logger.error("Untrunc 실패: %s", result.stderr)
@@ -115,6 +112,5 @@ def recoverM4A():
 
 # Flask 서버 실행
 if __name__ == '__main__':
-    logger.info("start_flask")
-    app.run(host="0.0.0.0", port=8300)
-    app.run(debug=True)
+    print("start_flask")
+    app.run(host="0.0.0.0", port=8300, debug=True)

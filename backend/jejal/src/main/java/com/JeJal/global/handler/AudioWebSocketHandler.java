@@ -91,7 +91,6 @@ public class AudioWebSocketHandler extends AbstractWebSocketHandler {
     @Override
     public void handleBinaryMessage(WebSocketSession session, BinaryMessage message) throws Exception {
         logger.info("바이너리 메시지 처리: {}", session.getId());
-        logger.info("파일에 데이터 추가 : {}", message.getPayload().get());
         appendFile(message.getPayload(), session.getId());
 
         logger.info("GET 요청 (복원): {}", DOMAIN_UNTRUNC + "/recover");
@@ -126,9 +125,9 @@ public class AudioWebSocketHandler extends AbstractWebSocketHandler {
             // 남은 데이터가 있는지 확인
             if (byteBuffer.hasRemaining()) {
                 logger.info("파일에 데이터 작성");
-                byte[] bytes = new byte[byteBuffer.remaining()];  // 남은 데이터 크기만큼 배열 생성
-                byteBuffer.get(bytes);  // ByteBuffer에서 byte 배열로 데이터 읽기
-                outputStream.write(bytes);  // 파일에 데이터 쓰기
+                byte[] bytes = new byte[byteBuffer.remaining()];
+                byteBuffer.get(bytes);
+                outputStream.write(bytes);
                 outputStream.close();
             } else {
                 logger.info("No data to write for session: {}", sessionId);

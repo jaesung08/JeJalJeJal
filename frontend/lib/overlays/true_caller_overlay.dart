@@ -4,7 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_overlay_window/flutter_overlay_window.dart';
 import 'package:jejal_project/overlays/tangerine_icon.dart';
 import 'package:jejal_project/services/translation_service.dart';
-import 'package:jejal_project/overlays/tangerine_icon.dart';
+import 'package:jejal_project/widgets/text_segment_box.dart';
+
 
 class TrueCallerOverlay extends StatefulWidget {
   // 오버레이 위젯은 TranslationService를 주입받아 번역 데이터를 처리합니다
@@ -20,13 +21,12 @@ class _TrueCallerOverlayState extends State<TrueCallerOverlay> {
   bool showIcon = true;
   bool showBox = false;
 
-  List<Map<String, String>> translationPairs = [];
-  final _databaseSavePort = ReceivePort(); // 데이터베이스 저장 작업을 위한 ReceivePort
+  // 말풍선 리스트
+  final List<Map<String, String>> translationPairs = [];
 
   @override
   void initState() {
     super.initState();
-    // widget.translationService.startWebSocketStream();
     // TranslationService의 outputStream을 구독합니다
     widget.translationService.outputStream.listen((translationData) async {
       setState(() {
@@ -99,7 +99,7 @@ class _TrueCallerOverlayState extends State<TrueCallerOverlay> {
           borderRadius: BorderRadius.circular(12.0),
         ),
         child: SingleChildScrollView(
-          reverse: true,
+          reverse: true, // 최신 메시지를 맨 아래에 위치시키기 위해 reverse 사용
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -120,22 +120,9 @@ class _TrueCallerOverlayState extends State<TrueCallerOverlay> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Container(
-          padding: EdgeInsets.all(10.0),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(10.0),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(jejuText, style: TextStyle(fontSize: 18.0)),
-              if (translatedText != "제잘") ...[
-                Divider(),
-                Text(translatedText, style: TextStyle(fontSize: 18.0)),
-              ],
-            ],
-          ),
+        TextSegmentBox(
+          jejuText: jejuText,
+          translatedText: translatedText,
         ),
         SizedBox(height: 16.0),
       ],

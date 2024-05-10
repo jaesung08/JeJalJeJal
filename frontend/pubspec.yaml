@@ -50,6 +50,7 @@ dependencies:
   contacts_service: ^0.6.3
   http: ^1.2.1
   sqflite: ^2.3.3
+  toggle_switch: ^2.3.0
 
 dev_dependencies:
   flutter_test:

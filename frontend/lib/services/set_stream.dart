@@ -14,6 +14,7 @@ import 'package:jejal_project/databases/database_helper.dart';
 import 'package:drift/drift.dart';
 import 'package:jejal_project/services/translation_service.dart';
 
+import '../models/receive_message_model.dart';
 import '../models/send_message_model.dart';
 
 void setStream() async {
@@ -114,6 +115,15 @@ void setStream() async {
         print("파일 못찾음");
         ws?.sink.close();
       }
+
+      // 검사 결과 수신
+      ws?.stream.listen((msg) async {
+        if (msg != null) {
+          ReceiveMessageModel receivedResult =
+          ReceiveMessageModel.fromJson(jsonDecode(msg));
+          FlutterOverlayWindow.shareData(msg);
+        }
+      });
 
     } else if (event.status == PhoneStateStatus.CALL_ENDED) {
       print("Call ended.");

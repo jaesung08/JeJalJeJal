@@ -25,12 +25,10 @@ void main() async {
 @pragma("vm:entry-point")
 void overlayMain() {
   WidgetsFlutterBinding.ensureInitialized();
-  final translationService = TranslationService();
-  final channel = WebSocketChannel.connect(Uri.parse('ws://k10a406.p.ssafy.io/api/record'));
-  runApp(
+    runApp(
     MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: TrueCallerOverlay(translationService: translationService),
+      home: TrueCallerOverlay(),
     ),
   );
 }

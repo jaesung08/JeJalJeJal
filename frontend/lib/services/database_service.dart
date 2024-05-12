@@ -33,7 +33,6 @@ class DatabaseService {
     final List<Map<String, dynamic>> maps = await db.query('conversations');
     return List.generate(maps.length, (i) {
       print('59');
-
       return Conversation.fromMap(maps[i]); // Map을 Conversation 객체로 변환
     });
   }

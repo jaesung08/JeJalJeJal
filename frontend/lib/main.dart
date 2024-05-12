@@ -145,7 +145,6 @@ Future<void> requestOverlayPermission() async {
     }
   } on PlatformException catch (e) {
     print('118');
-
     print('Error: ${e.message}');
   }
 }

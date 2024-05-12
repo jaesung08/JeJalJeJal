@@ -17,12 +17,16 @@ class HistoryChatScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print('29');
+
     return Scaffold(
       appBar: AppBar(
         title: FutureBuilder<Conversation>(
           future: DatabaseService.instance.getConversationById(conversationId),
           builder: (context, snapshot) {
             if (snapshot.hasData) {
+              print('30');
+
               final conversation = snapshot.data!;
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -35,6 +39,8 @@ class HistoryChatScreen extends StatelessWidget {
                 ],
               );
             } else {
+              print('31');
+
               return Text('Loading...');
             }
           },

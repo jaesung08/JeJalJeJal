@@ -46,6 +46,8 @@ class ResultDetailScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print('38');
+
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -58,6 +60,7 @@ class ResultDetailScreen extends StatelessWidget {
         itemBuilder: (context, index) {
           var segment = fileResult.data!.segments![index];
           bool hideTranslated = segment.translated == "제잘";  // "제잘"일 때 true
+          print('39');
 
           return Container(
             width: MediaQuery.of(context).size.width * 0.7,
@@ -147,6 +150,8 @@ class ResultDetailScreen extends StatelessWidget {
 class DashedLinePainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
+    print('40');
+
     var paint = Paint()
       ..color = Colors.grey
       ..strokeWidth = 1;
@@ -155,6 +160,8 @@ class DashedLinePainter extends CustomPainter {
     var dashSpace = 3.0;
     double startX = 0;
     while (startX < max) {
+      print('41');
+
       canvas.drawLine(Offset(startX, 0), Offset(startX + dashWidth, 0), paint);
       startX += dashWidth + dashSpace;
     }

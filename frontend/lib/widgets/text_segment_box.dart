@@ -12,6 +12,8 @@ class TextSegmentBox extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print('93');
+
     return Align(
       // alignment: translatedText == "제잘" ? Alignment.centerRight : Alignment.centerLeft, // translatedText가 "제잘"인 경우 오른쪽 정렬
       alignment: Alignment.center, // 모든 텍스트를 가운데 정렬

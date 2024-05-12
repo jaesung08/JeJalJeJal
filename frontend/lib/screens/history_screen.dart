@@ -2,10 +2,8 @@
 
 import 'package:flutter/material.dart';
 import 'package:jejal_project/screens/history_chat_screen.dart';
-import 'package:jejal_project/databases/database_helper.dart' as db;
 import 'package:jejal_project/models/conversation.dart';
 import 'package:jejal_project/services/database_service.dart';
-import 'package:jejal_project/models/receive_message_model.dart';
 import 'package:intl/intl.dart';// 날짜 포맷팅을 위한 패키지
 
 class HistoryScreen extends StatelessWidget {
@@ -60,10 +58,10 @@ class HistoryScreen extends StatelessWidget {
                           height: 37,
                         ),
                       ),
-                      title: Column( // 전화번호와 날짜 표시
+                      title: Column( // 상대방 이름과 전화번호 표시
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          // 상대방 전화번호
+                          // 상대방 이름
                           Text(
                             conversation.name, // 대화 상대방 전화번호 출력
                             style: TextStyle(

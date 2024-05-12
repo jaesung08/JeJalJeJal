@@ -14,6 +14,8 @@ class TextEntry {
   });
 
   Map<String, dynamic> toMap() {
+    print('19');
+
     return {
       'id': id,
       'conversation_id': conversationId,
@@ -24,6 +26,8 @@ class TextEntry {
   }
 
   factory TextEntry.fromMap(Map<String, dynamic> map) {
+    print('20');
+
     return TextEntry(
       id: map['id'],
       conversationId: map['conversation_id'],

@@ -17,6 +17,8 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print('94');
+
     return Scaffold(
       body: Container(
         width: double.infinity,
@@ -87,8 +89,12 @@ class HomePage extends StatelessWidget {
                     labels: const ['On', 'Off'],
                     onToggle: (index) async {
                       if (index == 0) {
+                        print('95');
+
                         if (!(await FlutterOverlayWindow.isActive())) {
                           // "번역 On" state
+                          print('96');
+
                           await FlutterOverlayWindow.showOverlay(
                             enableDrag: true,
                             overlayTitle: "제잘제잘",
@@ -101,8 +107,12 @@ class HomePage extends StatelessWidget {
                           );
                         }
                       } else {
+                        print('97');
+
                         // "번역 Off" state
                         if (await FlutterOverlayWindow.isActive()) {
+                          print('98');
+
                           await FlutterOverlayWindow.closeOverlay();
                         }
                       }
@@ -116,6 +126,8 @@ class HomePage extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 25),
               child: GestureDetector(
                 onTap: () {
+                  print('99');
+
                   Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -184,6 +196,8 @@ class HomePage extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 25),
               child: GestureDetector(
                 onTap: () {
+                  print('100');
+
                   // 번역기 사용 버튼 클릭 시 동작 구현
                   Navigator.push(
                     context,
@@ -242,6 +256,8 @@ class HomePage extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 5),
               child: GestureDetector(
                 onTap: () {
+                  print('101');
+
                   // 번역기 사용 버튼 클릭 시 동작 구현
                   Navigator.push(
                     context,

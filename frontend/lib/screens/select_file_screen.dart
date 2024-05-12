@@ -30,34 +30,56 @@ class _SelectFileScreenState extends State<SelectFileScreen> {
 
   @override
   void initState() {
+    print('42');
+
     super.initState();
+    print('43');
+
     initializer();
+    print('44');
+
   }
 
   void initializer() async {
+    print('45');
+
     // Get Android ID
     DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+    print('46');
+
     AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
     androidId = androidInfo.id;
 
     setState(() {
+      print('47');
+
       isSend = false;
     });
   }
 
   Future<void> _openFilePicker() async {
+    print('48');
+
     FilePickerResult? fileResult = await FilePicker.platform.pickFiles();
     if (fileResult != null) {
+      print('49');
+
       setState(() {
+        print('50');
+
         _filePath = fileResult.files.single.path;
         counter = counter + 1;
         isSend = true;
       });
       _sendFile();
+      print('51');
+
     }
   }
 
   void _sendFile() async {
+    print('52');
+
     final file = File(_filePath!);
     final formData = FormData.fromMap({
       'file': await MultipartFile.fromFile(file.path),
@@ -65,12 +87,16 @@ class _SelectFileScreenState extends State<SelectFileScreen> {
     });
 
     try {
+      print('53');
+
       final response = await Dio().post(
         'https://k10a406.p.ssafy.io/api/clovaspeech/upload',
         data: formData,
       );
 
       if (response.statusCode == 200) {
+        print('54');
+
         final resultModel = FileResultModel.fromJson(response.data);
         Navigator.push(
           context,
@@ -80,6 +106,8 @@ class _SelectFileScreenState extends State<SelectFileScreen> {
       }
     } on DioError catch (e) {
       setState(() {
+        print('55');
+
         isSend = false;
       });
       final errorMessage = e.response != null ? e.response!.data.toString() : e.message;
@@ -105,6 +133,8 @@ class _SelectFileScreenState extends State<SelectFileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    print('56');
+
     return Scaffold(
       appBar: AppBar(
         title: Text(

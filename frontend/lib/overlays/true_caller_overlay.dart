@@ -41,9 +41,9 @@ class _TrueCallerOverlayState extends State<TrueCallerOverlay> {
       print('Received data from overlay window:');
       print('Jeju: ${decodedResult['jeju']}');
       print('Translated: ${decodedResult['translated']}');
+      print('conversationId: $_conversationId' );
       print('---');
 
-      await _databaseService.insertMessage(message, _conversationId);
     });
   }
 

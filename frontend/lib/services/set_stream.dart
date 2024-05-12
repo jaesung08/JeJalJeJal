@@ -16,7 +16,6 @@ import 'database_service.dart';
 
 void setStream() async {
   const String testfilePath = "/storage/emulated/0/Recordings/test";
-  bool _isListening = false; // 메서드 한번만 실행되게(listen 콜백 한번만 실행되게)
   WebSocketChannel? ws;
   late String phoneNumber;
   late Directory recordDirectory;
@@ -30,9 +29,6 @@ void setStream() async {
   PhoneState phoneStatus = PhoneState.nothing();
   DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
   AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
-
-  if (_isListening) return;
-  _isListening = true;
 
   androidId = androidInfo.id;
 
@@ -48,18 +44,18 @@ void setStream() async {
     else if (event.status == PhoneStateStatus.CALL_STARTED) {
       //전화 시작되면 위젯 띄우기
       //지금 실행 안되고 있음
-      if (!await FlutterOverlayWindow.isActive()) {
-        await FlutterOverlayWindow.showOverlay(
-          enableDrag: true,
-          overlayTitle: "Overlay Title",
-          overlayContent: 'Overlay Content',
-          flag: OverlayFlag.defaultFlag,
-          visibility: NotificationVisibility.visibilityPublic,
-          positionGravity: PositionGravity.auto,
-          height: WindowSize.matchParent,
-          width: WindowSize.matchParent,
-        );
-      }
+      // if (!await FlutterOverlayWindow.isActive()) {
+      //   await FlutterOverlayWindow.showOverlay(
+      //     enableDrag: true,
+      //     overlayTitle: "Overlay Title",
+      //     overlayContent: 'Overlay Content',
+      //     flag: OverlayFlag.defaultFlag,
+      //     visibility: NotificationVisibility.visibilityPublic,
+      //     positionGravity: PositionGravity.auto,
+      //     height: WindowSize.matchParent,
+      //     width: WindowSize.matchParent,
+      //   );
+      // }
 
       print("Call started.");
 
@@ -95,17 +91,6 @@ void setStream() async {
       var temp = await recentFile(recordDirectory);
       targetFile = temp is FileSystemEntity ? temp as File : null;
 
-      // var temp2 = await recentFile(testDirectory);
-      // testFile = temp2 is FileSystemEntity ? temp2 as File : null;
-      // print(testFile?.path);
-      //
-      // // 파일 읽기
-      // Uint8List entireBytes = testFile!.readAsBytesSync();
-      //
-      // // 파일 전송
-      // ws?.sink.add(entireBytes);
-      // print(entireBytes);
-
       offset = 0;
       if (targetFile is File) {
         print("파일 찾음");
@@ -118,8 +103,6 @@ void setStream() async {
           var splittedBytes = entireBytes.sublist(offset, nextOffset);
           offset = nextOffset;
           print(splittedBytes);
-          // String encode = base64.encode(splittedBytes);
-          // print(encode);
 
           ws?.sink.add(splittedBytes);
         });

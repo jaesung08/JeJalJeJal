@@ -4,7 +4,7 @@ import 'dart:isolate'; // 별도의 Isolate를 사용하기 위한 import
 import 'package:flutter/material.dart';
 import 'package:flutter_overlay_window/flutter_overlay_window.dart';
 import 'package:jejal_project/overlays/tangerine_icon.dart';
-import 'package:jejal_project/services/translation_service.dart';
+import 'package:jejal_project/services/database_service.dart';
 import 'package:jejal_project/widgets/text_segment_box.dart';
 import 'package:jejal_project/models/receive_message_model.dart';
 
@@ -17,6 +17,9 @@ class TrueCallerOverlay extends StatefulWidget {
 }
 
 class _TrueCallerOverlayState extends State<TrueCallerOverlay> {
+  final DatabaseService _databaseService = DatabaseService();
+  int _conversationId = 0;
+
   bool showIcon = true;
   bool showBox = false;
 
@@ -25,17 +28,30 @@ class _TrueCallerOverlayState extends State<TrueCallerOverlay> {
   @override
   void initState() {
     super.initState();
-    // TranslationService의 outputStream을 구독합니다
-    FlutterOverlayWindow.overlayListener.listen((newResult) {
+    //
+    FlutterOverlayWindow.overlayListener.listen((newResult) async {
+      var decodedResult = json.decode(newResult); // JSON 문자열을 디코드
+      // 새 메시지를 리스트 앞에 추가
+      ReceiveMessageModel message = ReceiveMessageModel.fromJson(decodedResult);
       setState(() {
-        var decodedResult = json.decode(newResult); // JSON 문자열을 디코드
-        messages.insert(0, ReceiveMessageModel.fromJson(decodedResult)); // 새 메시지를 리스트 앞에 추가
+        messages.insert(0, message);
       });
+
+      // 콘솔에 받아온 데이터 출력
+      print('Received data from overlay window:');
+      print('Jeju: ${decodedResult['jeju']}');
+      print('Translated: ${decodedResult['translated']}');
+      print('conversationId: $_conversationId' );
+      print('---');
+
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    // 오버레이 위젯 UI Rntjd
+    // 1. 아이콘 표시 (탭하면 박스 표시/숨김)
+    // 2. 박스 표시 시 _buildBox() 호출
     return Material(
       color: Colors.transparent,
       borderRadius: BorderRadius.circular(12.0),
@@ -71,6 +87,9 @@ class _TrueCallerOverlayState extends State<TrueCallerOverlay> {
   }
 
   Widget _buildBox() {
+    // 실시간 통역 결과를 보여주는 박스 UI 구성
+    // 1. 제주 방언 텍스트 표시
+    // 2. 번역된 표준어 텍스트 표시
     return Positioned(
       top: 20.0, // 원하는 위치 조정 가능
       right: 10.0, // 원하는 위치 조정 가능
@@ -93,26 +112,30 @@ class _TrueCallerOverlayState extends State<TrueCallerOverlay> {
                 style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
               ),
               Divider(),
-              for (var message in messages) ...[ // 모든 메시지를 반복적으로 표시
-                Text(
-                  'Jeju: ${message.jeju ?? "No data"}',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                SizedBox(height: 8),
-                Text(
-                  'Translated: ${message.translated ?? "No data"}',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 14,
-                    fontWeight: FontWeight.normal,
-                  ),
-                ),
-                SizedBox(height: 20),
-              ],
+              // for (var message in messages) ...[ // 모든 메시지를 반복적으로 표시
+              //   Text(
+              //     'Jeju: ${message.jeju ?? "No data"}',
+              //     style: TextStyle(
+              //       color: Colors.white,
+              //       fontSize: 16,
+              //       fontWeight: FontWeight.bold,
+              //     ),
+              //   ),
+              //   SizedBox(height: 8),
+              //   Text(
+              //     'Translated: ${message.translated ?? "No data"}',
+              //     style: TextStyle(
+              //       color: Colors.white,
+              //       fontSize: 14,
+              //       fontWeight: FontWeight.normal,
+              //     ),
+              //   ),
+              //   SizedBox(height: 20),
+              // ],
+              ...messages.map((message) => TextSegmentBox(
+                jejuText: message.jeju ?? "No data",
+                translatedText: message.translated ?? "No data",
+              )).toList(),
             ],
           ),
         ),
@@ -122,6 +145,7 @@ class _TrueCallerOverlayState extends State<TrueCallerOverlay> {
 
 
   void updateOverlaySettings(bool showIcon) async {
+    // 오버레이 설정 업데이트(아이콘 표시 여부에 따라 크기 조정)
     if (await FlutterOverlayWindow.isActive()) {
       await FlutterOverlayWindow.closeOverlay();
       await FlutterOverlayWindow.showOverlay(

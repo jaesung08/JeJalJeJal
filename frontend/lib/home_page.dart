@@ -2,19 +2,17 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_overlay_window/flutter_overlay_window.dart';
-import 'package:jejal_project/databases/database_helper.dart' hide Text;
 import 'package:jejal_project/screens/history_screen.dart';
-import 'package:jejal_project/services/translation_service.dart';
+import 'package:jejal_project/services/database_service.dart';
 import 'package:jejal_project/screens/select_file_screen.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:jejal_project/screens/guide_screen.dart';
 import 'package:toggle_switch/toggle_switch.dart';
 
 class HomePage extends StatelessWidget {
-  final TranslationService translationService;
 
 //
-  const HomePage({Key? key, required this.translationService})
+  const HomePage({Key? key, required DatabaseService databaseService})
       : super(key: key);
 
   @override
@@ -122,7 +120,7 @@ class HomePage extends StatelessWidget {
                     context,
                     MaterialPageRoute(
                       builder: (context) => HistoryScreen(
-                        translationService: TranslationService(
+                        databaseService: DatabaseService(
                         ),
                       ),
                     ),

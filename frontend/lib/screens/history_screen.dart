@@ -5,13 +5,13 @@ import 'package:jejal_project/screens/history_chat_screen.dart';
 import 'package:jejal_project/databases/database_helper.dart' as db;
 import 'package:jejal_project/models/conversation.dart';
 import 'package:jejal_project/services/database_service.dart';
-import 'package:jejal_project/services/translation_service.dart';
+import 'package:jejal_project/models/receive_message_model.dart';
 import 'package:intl/intl.dart';// 날짜 포맷팅을 위한 패키지
 
 class HistoryScreen extends StatelessWidget {
-  final TranslationService translationService;
+  final DatabaseService databaseService;
 
-  const HistoryScreen({Key? key, required this.translationService}) : super(key: key);
+  const HistoryScreen({Key? key, required this.databaseService}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -70,13 +70,12 @@ class HistoryScreen extends StatelessWidget {
                       ),
                       contentPadding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 15.0),
                       onTap: () async { // ListTile 탭 시 실행될 코드
-                        await translationService.insertDummyData(); // 더미 데이터 삽입
-                        final texts = await translationService.getTextsByConversationId(conversation.id!); // 대화 ID로 텍스트 가져오기
+                        final messages = await databaseService.getMessagesByConversationId(conversation.id!); // 대화 ID로 텍스트 가져오기
                         Navigator.of(context).push(
                           MaterialPageRoute(
                             builder: (context) => HistoryChatScreen(
                               conversationId: conversation.id!, // 대화 ID 전달
-                              texts: texts, // 텍스트 데이터 전달
+                              messages: messages, // 텍스트 데이터 전달
                             ),
                           ),
                         );

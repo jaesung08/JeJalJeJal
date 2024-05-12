@@ -48,7 +48,11 @@ android {
         targetSdkVersion flutter.targetSdkVersion
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
+<<<<<<< HEAD
         minSdkVersion 21
+=======
+        minSdkVersion 26
+>>>>>>> 38e27a1 (fix: overlay & database twice serve solved)
     }
 
     buildTypes {

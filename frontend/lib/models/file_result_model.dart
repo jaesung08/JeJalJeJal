@@ -33,6 +33,7 @@ class Data {
     print('8');
     if (json['segments'] != null) {
       print('9');
+
       segments = <Segments>[];
       json['segments'].forEach((v) {
         segments!.add(new Segments.fromJson(v));

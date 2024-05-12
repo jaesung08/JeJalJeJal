@@ -47,8 +47,8 @@ public class ClovaspeechController {
 
     @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(
-        summary = "사용자가 업로드 한 파일 STT 및 번역 (현지꼬)",
-        description = "사용자가 업로드한 음성파일 clova speech api(STT) -> clova studio(번역)")
+            summary = "사용자가 업로드 한 파일 STT 및 번역 (현지꼬)",
+            description = "사용자가 업로드한 음성파일 clova speech api(STT) -> clova studio(번역)")
     public ResponseEntity<BaseResponse<?>> recognizeByUpload(@RequestParam("file") MultipartFile multipartFile) throws IOException {
 
         if (multipartFile.isEmpty()) {
@@ -84,14 +84,33 @@ public class ClovaspeechController {
             ArrayNode translatedSegments = objectMapper.createArrayNode();
 
             // segment 수 만큼 반복
+            // prevSentence : 이전에 출력 된 문장
+            String prevSentence = "";
             for (JsonNode segment : segments) {
+
                 String jeju = segment.path("text").asText();
-                ClovaStudioResponseDto translationResponse = clovaStudioService.translateByClova(jeju);
+                String sentences = "\"" + jeju + "\" \"" + prevSentence + "\"";
+
+//                System.out.println("번역 보내는 문장 확인");
+//                System.out.println(sentences);
+
+                ClovaStudioResponseDto translationResponse = clovaStudioService.translateByClova(sentences);
                 String translated = translationResponse.getResult().getMessage().content;
 
                 ObjectNode textNode = objectMapper.createObjectNode();
                 textNode.put("jeju", jeju);
                 textNode.put("translated", translated);
+
+                if (translated.equals("제잘")){
+                    prevSentence = jeju;
+                } else {
+                    prevSentence = translated;
+                }
+
+                log.info("jeju : " + jeju);
+                log.info("translated : " + translated);
+                log.info("prevSentence : " + prevSentence);
+
                 translatedSegments.add(textNode);
             }
 
@@ -99,13 +118,13 @@ public class ClovaspeechController {
             responseNode.set("segments", translatedSegments);
 
             return ResponseEntity
-                .ok()
-                .body(BaseResponse.success(200, "clova speech 통신 완료", responseNode));
+                    .ok()
+                    .body(BaseResponse.success(200, "clova speech 통신 완료", responseNode));
 
         } catch (Exception e) {
             return ResponseEntity
-                .badRequest()
-                .body(BaseResponse.error(400, "Failed to process the file: " + e.getMessage()));
+                    .badRequest()
+                    .body(BaseResponse.error(400, "Failed to process the file: " + e.getMessage()));
         }
     }
 

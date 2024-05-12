@@ -27,13 +27,21 @@ class _TrueCallerOverlayState extends State<TrueCallerOverlay> {
 
   @override
   void initState() {
+    print('21');
+
     super.initState();
+    print('22');
+
     //
     FlutterOverlayWindow.overlayListener.listen((newResult) async {
       var decodedResult = json.decode(newResult); // JSON 문자열을 디코드
+      print('23');
+
       // 새 메시지를 리스트 앞에 추가
       ReceiveMessageModel message = ReceiveMessageModel.fromJson(decodedResult);
       setState(() {
+        print('24');
+
         messages.insert(0, message);
       });
 
@@ -49,6 +57,8 @@ class _TrueCallerOverlayState extends State<TrueCallerOverlay> {
 
   @override
   Widget build(BuildContext context) {
+    print('25');
+
     // 오버레이 위젯 UI Rntjd
     // 1. 아이콘 표시 (탭하면 박스 표시/숨김)
     // 2. 박스 표시 시 _buildBox() 호출
@@ -87,6 +97,8 @@ class _TrueCallerOverlayState extends State<TrueCallerOverlay> {
   }
 
   Widget _buildBox() {
+    print('26');
+
     // 실시간 통역 결과를 보여주는 박스 UI 구성
     // 1. 제주 방언 텍스트 표시
     // 2. 번역된 표준어 텍스트 표시
@@ -145,8 +157,12 @@ class _TrueCallerOverlayState extends State<TrueCallerOverlay> {
 
 
   void updateOverlaySettings(bool showIcon) async {
+    print('27');
+
     // 오버레이 설정 업데이트(아이콘 표시 여부에 따라 크기 조정)
     if (await FlutterOverlayWindow.isActive()) {
+      print('28');
+
       await FlutterOverlayWindow.closeOverlay();
       await FlutterOverlayWindow.showOverlay(
         enableDrag: showIcon,

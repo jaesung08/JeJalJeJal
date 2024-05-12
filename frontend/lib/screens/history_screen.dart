@@ -15,6 +15,8 @@ class HistoryScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print('32');
+
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -25,12 +27,18 @@ class HistoryScreen extends StatelessWidget {
       body: FutureBuilder<List<Conversation>>( // 대화 목록을 가져오는 FutureBuilder
         // 대화 가져오기 오류 발생 시
         future: DatabaseService.instance.getAllConversations().catchError((error) {
+          print('33');
+
           print('fetching conversations 에러: $error');
           return <Conversation>[]; // 에러 발생 시 빈 리스트 반환
         }),
         // FutureBuilder 위젯은 비동기 작업이 완료될 때까지 대기하고, 그 결과를 snapshot 객체에 저장
         builder: (context, snapshot) {
+          print('34');
+
           if (snapshot.hasData) { // 스냅샷에 데이터가 있는 경우. 비동기 작업이 완료되고 데이터가 있는지 확인
+            print('35');
+
             final conversations = snapshot.data!; // 대화 목록을 가져오기
             return ListView.builder(
               itemCount: conversations.length, // 대화 목록의 길이에 따라 리스트 항목 생성
@@ -70,6 +78,8 @@ class HistoryScreen extends StatelessWidget {
                       ),
                       contentPadding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 15.0),
                       onTap: () async { // ListTile 탭 시 실행될 코드
+                        print('36');
+
                         final messages = await databaseService.getMessagesByConversationId(conversation.id!); // 대화 ID로 텍스트 가져오기
                         Navigator.of(context).push(
                           MaterialPageRoute(
@@ -87,6 +97,8 @@ class HistoryScreen extends StatelessWidget {
               },
             );
           } else {
+            print('37');
+
             return Center(child: CircularProgressIndicator()); // 로딩 중 표시
           }
         },

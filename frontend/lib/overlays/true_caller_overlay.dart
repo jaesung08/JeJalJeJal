@@ -112,26 +112,30 @@ class _TrueCallerOverlayState extends State<TrueCallerOverlay> {
                 style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
               ),
               Divider(),
-              for (var message in messages) ...[ // 모든 메시지를 반복적으로 표시
-                Text(
-                  'Jeju: ${message.jeju ?? "No data"}',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                SizedBox(height: 8),
-                Text(
-                  'Translated: ${message.translated ?? "No data"}',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 14,
-                    fontWeight: FontWeight.normal,
-                  ),
-                ),
-                SizedBox(height: 20),
-              ],
+              // for (var message in messages) ...[ // 모든 메시지를 반복적으로 표시
+              //   Text(
+              //     'Jeju: ${message.jeju ?? "No data"}',
+              //     style: TextStyle(
+              //       color: Colors.white,
+              //       fontSize: 16,
+              //       fontWeight: FontWeight.bold,
+              //     ),
+              //   ),
+              //   SizedBox(height: 8),
+              //   Text(
+              //     'Translated: ${message.translated ?? "No data"}',
+              //     style: TextStyle(
+              //       color: Colors.white,
+              //       fontSize: 14,
+              //       fontWeight: FontWeight.normal,
+              //     ),
+              //   ),
+              //   SizedBox(height: 20),
+              // ],
+              ...messages.map((message) => TextSegmentBox(
+                jejuText: message.jeju ?? "No data",
+                translatedText: message.translated ?? "No data",
+              )).toList(),
             ],
           ),
         ),

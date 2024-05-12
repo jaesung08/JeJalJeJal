@@ -20,6 +20,7 @@ class TextSegmentBox extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 16.0),
         width: MediaQuery.of(context).size.width * 0.7,
         decoration: BoxDecoration(
+          color: Colors.black12,
           // color: translatedText == "제잘" ? Colors.black12 : Color(0xFFF9A03A), // translatedText가 "제잘"인 경우 흰색 박스
           borderRadius: BorderRadius.circular(12),
         ),

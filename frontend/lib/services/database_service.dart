@@ -16,12 +16,12 @@ class DatabaseService {
 
     final db = await _databaseHelper.database; // 데이터베이스 인스턴스 가져오기
     return await db.insert(
-        'conversations', // 테이블 이름
-        {
-          'phone_number': phoneNumber,
-          'name': name,
-          'date': DateTime.now().toString(),
-        }
+      'conversations', // 테이블 이름
+      {
+        'phone_number': phoneNumber,
+        'name': name,
+        'date': DateTime.now().toString(),
+      }
     );
   }
 

@@ -61,7 +61,6 @@ class ResultDetailScreen extends StatelessWidget {
           var segment = fileResult.data!.segments![index];
           bool hideTranslated = segment.translated == "제잘";  // "제잘"일 때 true
           print('39');
-
           return Container(
             width: MediaQuery.of(context).size.width * 0.7,
             margin: const EdgeInsets.all(8.0),

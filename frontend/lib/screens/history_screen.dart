@@ -2,10 +2,8 @@
 
 import 'package:flutter/material.dart';
 import 'package:jejal_project/screens/history_chat_screen.dart';
-import 'package:jejal_project/databases/database_helper.dart' as db;
 import 'package:jejal_project/models/conversation.dart';
 import 'package:jejal_project/services/database_service.dart';
-import 'package:jejal_project/models/receive_message_model.dart';
 import 'package:intl/intl.dart';// 날짜 포맷팅을 위한 패키지
 
 class HistoryScreen extends StatelessWidget {
@@ -60,12 +58,12 @@ class HistoryScreen extends StatelessWidget {
                           height: 37,
                         ),
                       ),
-                      title: Column( // 전화번호와 날짜 표시
+                      title: Column( // 상대방 이름과 전화번호 표시
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          // 상대방 전화번호
+                          // 상대방 이름
                           Text(
-                            conversation.phoneNumber, // 대화 상대방 전화번호 출력
+                            conversation.name, // 대화 상대방 전화번호 출력
                             style: TextStyle(
                               color: Colors.orange, // 오렌지색
                               fontWeight: FontWeight.bold,
@@ -73,13 +71,25 @@ class HistoryScreen extends StatelessWidget {
                             ),
                           ),
                           SizedBox(height: 4),
-                          Text(DateFormat('yyyy-MM-dd').format(DateTime.now())), // 현재는 시스템의 현재 날짜 포맷 출력
+                          Text(
+                            conversation.phoneNumber, // 대화 상대방 전화번호 출력
+                            style: TextStyle(
+                              color: Colors.grey, // 회색
+                              fontSize: 14,
+                            ),
+                          ),
                         ],
+                      ),
+                      trailing: Text(
+                        DateFormat('MM-dd HH:mm').format(DateTime.parse(conversation.date)), // 월/일 시:분 형식으로 날짜 출력
+                        style: TextStyle(
+                          color: Colors.grey, // 회색
+                          fontSize: 14,
+                        ),
                       ),
                       contentPadding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 15.0),
                       onTap: () async { // ListTile 탭 시 실행될 코드
                         print('36');
-
                         final messages = await databaseService.getMessagesByConversationId(conversation.id!); // 대화 ID로 텍스트 가져오기
                         Navigator.of(context).push(
                           MaterialPageRoute(
@@ -98,7 +108,6 @@ class HistoryScreen extends StatelessWidget {
             );
           } else {
             print('37');
-
             return Center(child: CircularProgressIndicator()); // 로딩 중 표시
           }
         },

@@ -41,7 +41,6 @@ Future<void> setStream() async {
   AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
   print('72');
 
-
   androidId = androidInfo.id;
 
   recordDirectory = Directory(recordDirectoryPath);

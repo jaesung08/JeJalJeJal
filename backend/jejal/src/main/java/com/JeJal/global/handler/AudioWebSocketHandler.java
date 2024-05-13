@@ -245,7 +245,7 @@ public class AudioWebSocketHandler extends AbstractWebSocketHandler {
 //            .build();
 //
 //        sendClient(session, translateResponseDto);
-//    }
+//    }//
 
 
     private void sendTranslateServer(WebSocketSession session, String jejuText, Boolean isFinish) throws IOException {

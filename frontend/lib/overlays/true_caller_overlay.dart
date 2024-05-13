@@ -1,91 +1,67 @@
-import 'dart:async';
+// true_caller_overlay.dart
 import 'dart:convert';
+import 'dart:isolate'; // 별도의 Isolate를 사용하기 위한 import
 import 'package:flutter/material.dart';
 import 'package:flutter_overlay_window/flutter_overlay_window.dart';
 import 'package:jejal_project/overlays/tangerine_icon.dart';
-import 'package:web_socket_channel/web_socket_channel.dart';
+import 'package:jejal_project/services/database_service.dart';
+import 'package:jejal_project/widgets/text_segment_box.dart';
+import 'package:jejal_project/models/receive_message_model.dart';
 
 class TrueCallerOverlay extends StatefulWidget {
-  const TrueCallerOverlay({Key? key}) : super(key: key);
 
-  static void startWebSocketStream(WebSocketChannel wss) {
-    _TrueCallerOverlayState._startWebSocketStream(wss);
-  }
+  const TrueCallerOverlay({Key? key}) : super(key: key);
 
   @override
   _TrueCallerOverlayState createState() => _TrueCallerOverlayState();
 }
 
 class _TrueCallerOverlayState extends State<TrueCallerOverlay> {
+  final DatabaseService _databaseService = DatabaseService();
+  int _conversationId = 0;
+
   bool showIcon = true;
   bool showBox = false;
-  final List<Map<String, String>> translationList = [];
-  static WebSocketChannel? _webSocketChannel;
 
-  static void _startWebSocketStream(WebSocketChannel wss) {
-    _webSocketChannel = wss;
-    print('wss 호출 성공!');
-
-    _webSocketChannel?.stream.listen(
-          (message) {
-        print('Received message: $message');
-
-        if (message is String) {
-          final jsonData = jsonDecode(message);
-          if (jsonData['isCallFinish'] == true) {
-            _stopWebSocketStream();
-          } else {
-            try {
-              final jejuText = jsonData['jeju'];
-              final translatedText = jsonData['translated'];
-              print('제주어: $jejuText, 번역된 텍스트: $translatedText');
-
-              _TrueCallerOverlayState._instance?._addTranslation(
-                {'jeju': jejuText, 'translated': translatedText},
-              );
-            } catch (e) {
-              print('JSON 데이터 파싱 오류: $e');
-            }
-          }
-        } else {
-          print('예상치 못한 데이터 타입: ${message.runtimeType}');
-        }
-      },
-      onError: (error) {
-        print('웹소켓 스트림 오류: $error');
-      },
-      onDone: () {
-        print('웹소켓 스트림 종료');
-      },
-    );
-  }
-
-  static _TrueCallerOverlayState? _instance;
+  List<ReceiveMessageModel> messages = [];
 
   @override
   void initState() {
+    print('21');
+
     super.initState();
-    _instance = this;
-  }
+    print('22');
 
-  void _addTranslation(Map<String, String> translation) {
-    setState(() {
-      translationList.add(translation);
+    //
+    FlutterOverlayWindow.overlayListener.listen((newResult) async {
+      var decodedResult = json.decode(newResult); // JSON 문자열을 디코드
+      print('23');
+
+      // 새 메시지를 리스트 앞에 추가
+      ReceiveMessageModel message = ReceiveMessageModel.fromJson(decodedResult);
+      setState(() {
+        print('24');
+
+        messages.insert(0, message);
+      });
+
+      // 콘솔에 받아온 데이터 출력
+      print('Received data from overlay window:');
+      print('Jeju: ${decodedResult['jeju']}');
+      print('Translated: ${decodedResult['translated']}');
+      print('conversationId: $_conversationId' );
+      print('---');
+
     });
-  }
-
-  static void _stopWebSocketStream() {
-    _webSocketChannel?.sink.close();
-  }
-
-  @override
-  void dispose() {
-    _stopWebSocketStream();
-    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    print('25');
+
+    // 오버레이 위젯 UI Rntjd
+    // 1. 아이콘 표시 (탭하면 박스 표시/숨김)
+    // 2. 박스 표시 시 _buildBox() 호출
     return Material(
       color: Colors.transparent,
       borderRadius: BorderRadius.circular(12.0),
@@ -121,9 +97,14 @@ class _TrueCallerOverlayState extends State<TrueCallerOverlay> {
   }
 
   Widget _buildBox() {
+    print('26');
+
+    // 실시간 통역 결과를 보여주는 박스 UI 구성
+    // 1. 제주 방언 텍스트 표시
+    // 2. 번역된 표준어 텍스트 표시
     return Positioned(
-      top: 20.0,
-      right: 10.0,
+      top: 20.0, // 원하는 위치 조정 가능
+      right: 10.0, // 원하는 위치 조정 가능
       child: Container(
         margin: const EdgeInsets.only(top: 10.0),
         padding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 16.0),
@@ -133,40 +114,55 @@ class _TrueCallerOverlayState extends State<TrueCallerOverlay> {
           color: Colors.orangeAccent.shade100,
           borderRadius: BorderRadius.circular(12.0),
         ),
-        child: buildTranslationList(),
+        child: SingleChildScrollView(
+          reverse: true, // 최신 메시지를 맨 아래에 위치시키기 위해 reverse 사용
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                "실시간 통역 중",
+                style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
+              ),
+              Divider(),
+              // for (var message in messages) ...[ // 모든 메시지를 반복적으로 표시
+              //   Text(
+              //     'Jeju: ${message.jeju ?? "No data"}',
+              //     style: TextStyle(
+              //       color: Colors.white,
+              //       fontSize: 16,
+              //       fontWeight: FontWeight.bold,
+              //     ),
+              //   ),
+              //   SizedBox(height: 8),
+              //   Text(
+              //     'Translated: ${message.translated ?? "No data"}',
+              //     style: TextStyle(
+              //       color: Colors.white,
+              //       fontSize: 14,
+              //       fontWeight: FontWeight.normal,
+              //     ),
+              //   ),
+              //   SizedBox(height: 20),
+              // ],
+              ...messages.map((message) => TextSegmentBox(
+                jejuText: message.jeju ?? "No data",
+                translatedText: message.translated ?? "No data",
+              )).toList(),
+            ],
+          ),
+        ),
       ),
     );
   }
 
-  Widget buildTranslationList() {
-    return SingleChildScrollView(
-      reverse: true,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            "실시간 통역 중",
-            style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
-          ),
-          const Divider(),
-          ...translationList.map((translation) {
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(translation['jeju']!),
-                if (translation['translated']! != "제잘")
-                  Text(translation['translated']!),
-                const SizedBox(height: 16.0),
-              ],
-            );
-          }).toList(),
-        ],
-      ),
-    );
-  }
 
   void updateOverlaySettings(bool showIcon) async {
+    print('27');
+
+    // 오버레이 설정 업데이트(아이콘 표시 여부에 따라 크기 조정)
     if (await FlutterOverlayWindow.isActive()) {
+      print('28');
+
       await FlutterOverlayWindow.closeOverlay();
       await FlutterOverlayWindow.showOverlay(
         enableDrag: showIcon,
@@ -176,6 +172,7 @@ class _TrueCallerOverlayState extends State<TrueCallerOverlay> {
         overlayContent: "제주 방언 번역기",
         flag: OverlayFlag.defaultFlag,
         visibility: NotificationVisibility.visibilityPublic,
+        // positionGravity: PositionGravity.auto,
         startPosition: const OverlayPosition(0, 25),
       );
     }

@@ -13,6 +13,7 @@ class DatabaseHelper {
   Future<Database> get database async {
     if (_database != null) return _database!;
     _database = await _initDatabase(); // 데이터베이스가 없으면 초기화
+    print('1');
     return _database!;
   }
 
@@ -21,15 +22,18 @@ class DatabaseHelper {
     final path = await getDatabasesPath(); // 데이터베이스 경로 가져오기
     final databasePath = join(path, 'jejal_database.db'); // 데이터베이스 파일 경로 및 생성
 
+    print('2');
     return await openDatabase(
       databasePath,
-      version: 1, // 데이터베이스 버전
+      version: 2, // 데이터베이스 버전
       onCreate: _onCreate, // 데이터베이스 생성 시 실행될 함수
+      onUpgrade: _onUpgrade,
     );
   }
 
   // 데이터베이스 생성 시 실행될 함수
   Future<void> _onCreate(Database db, int version) async {
+    print('3');
     await db.execute('''
       CREATE TABLE conversations(
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -40,7 +44,7 @@ class DatabaseHelper {
     '''); // conversations 테이블 생성
 
     await db.execute('''
-      CREATE TABLE text_entries(
+      CREATE TABLE messages(
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         conversation_id INTEGER,
         jeju_text TEXT,
@@ -49,5 +53,23 @@ class DatabaseHelper {
         FOREIGN KEY (conversation_id) REFERENCES conversations (id)
       )
     '''); // text_entries 테이블 생성
+  }
+
+  Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
+    if (oldVersion == 1) {
+      print('4');
+
+      // 버전이 1에서 2로 변경될 때 실행될 코드
+      await db.execute('''
+      CREATE TABLE messages(
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        conversation_id INTEGER,
+        jeju_text TEXT,
+        translated_text TEXT,
+        timestamp TEXT,
+        FOREIGN KEY (conversation_id) REFERENCES conversations (id)
+      )
+    ''');
+    }
   }
 }

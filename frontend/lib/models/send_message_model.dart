@@ -10,6 +10,8 @@ class SendMessageModel {
   });
 
   factory SendMessageModel.fromJson(Map<String, dynamic> jsonData) {
+    print('17');
+
     return SendMessageModel(
       state: jsonData['state'],
       androidId: jsonData['androidId'],
@@ -18,6 +20,8 @@ class SendMessageModel {
   }
 
   Map<String, dynamic> toJson() {
+    print('18');
+
     return {
       'state': state,
       'androidId': androidId,

@@ -2,28 +2,28 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_overlay_window/flutter_overlay_window.dart';
-import 'package:jejal_project/databases/database_helper.dart' hide Text;
 import 'package:jejal_project/screens/history_screen.dart';
-import 'package:jejal_project/services/translation_service.dart';
+import 'package:jejal_project/services/database_service.dart';
 import 'package:jejal_project/screens/select_file_screen.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:jejal_project/screens/guide_screen.dart';
 import 'package:toggle_switch/toggle_switch.dart';
 
 class HomePage extends StatelessWidget {
-  final TranslationService translationService;
 
 //
-  const HomePage({Key? key, required this.translationService})
+  const HomePage({Key? key, required DatabaseService databaseService})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    print('94');
+
     return Scaffold(
       body: Container(
         width: double.infinity,
         decoration: BoxDecoration(
-          color: const Color(0xFFFFF5E0), // 배경색
+          color: const Color(0xFFFFFFFF), // 배경색
         ),
         child: Column(
           children: [
@@ -89,20 +89,30 @@ class HomePage extends StatelessWidget {
                     labels: const ['On', 'Off'],
                     onToggle: (index) async {
                       if (index == 0) {
-                        // "번역 On" state
-                        await FlutterOverlayWindow.showOverlay(
-                          enableDrag: true,
-                          overlayTitle: "제잘제잘",
-                          overlayContent: "제주 방언 번역기",
-                          flag: OverlayFlag.defaultFlag,
-                          visibility: NotificationVisibility.visibilityPublic,
-                          height: 170,
-                          width: 200,
-                          startPosition: const OverlayPosition(0, 0),
-                        );
+                        print('95');
+
+                        if (!(await FlutterOverlayWindow.isActive())) {
+                          // "번역 On" state
+                          print('96');
+
+                          await FlutterOverlayWindow.showOverlay(
+                            enableDrag: true,
+                            overlayTitle: "제잘제잘",
+                            overlayContent: "제주 방언 번역기",
+                            flag: OverlayFlag.defaultFlag,
+                            visibility: NotificationVisibility.visibilityPublic,
+                            height: 170,
+                            width: 200,
+                            startPosition: const OverlayPosition(0, 0),
+                          );
+                        }
                       } else {
+                        print('97');
+
                         // "번역 Off" state
                         if (await FlutterOverlayWindow.isActive()) {
+                          print('98');
+
                           await FlutterOverlayWindow.closeOverlay();
                         }
                       }
@@ -116,11 +126,13 @@ class HomePage extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 25),
               child: GestureDetector(
                 onTap: () {
+                  print('99');
+
                   Navigator.push(
                     context,
                     MaterialPageRoute(
                       builder: (context) => HistoryScreen(
-                        translationService: TranslationService(
+                        databaseService: DatabaseService(
                         ),
                       ),
                     ),
@@ -184,6 +196,8 @@ class HomePage extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 25),
               child: GestureDetector(
                 onTap: () {
+                  print('100');
+
                   // 번역기 사용 버튼 클릭 시 동작 구현
                   Navigator.push(
                     context,
@@ -242,6 +256,8 @@ class HomePage extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 5),
               child: GestureDetector(
                 onTap: () {
+                  print('101');
+
                   // 번역기 사용 버튼 클릭 시 동작 구현
                   Navigator.push(
                     context,

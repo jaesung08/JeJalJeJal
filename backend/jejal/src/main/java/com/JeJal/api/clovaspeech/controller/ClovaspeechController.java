@@ -89,12 +89,16 @@ public class ClovaspeechController {
             for (JsonNode segment : segments) {
 
                 String jeju = segment.path("text").asText();
+
+
+                //todo 지우야 이거 지워야해 (여기서 부터)
                 String sentences = "\"" + jeju + "\" \"" + prevSentence + "\"";
-
-//                System.out.println("번역 보내는 문장 확인");
-//                System.out.println(sentences);
-
                 ClovaStudioResponseDto translationResponse = clovaStudioService.translateByClova(sentences);
+                // 지워야해 (여기 까지)
+
+                //todo 이거써야해 (String, String)
+//                ClovaStudioResponseDto translationResponse = clovaStudioService.translateByClova(jeju, prevSentence);
+
                 String translated = translationResponse.getResult().getMessage().content;
 
                 ObjectNode textNode = objectMapper.createObjectNode();

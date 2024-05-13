@@ -107,28 +107,7 @@ public class AudioWebSocketHandler extends AbstractWebSocketHandler {
         // 초단위 추가 파일
         List<String> newFile = (List<String>) untruncResult.get("new_file");
         String newFilePath = RECORD_PATH + "/" + session.getId() + "/part/";
-//        sendClovaSpeechServer(newFile, newFilePath, session, false);
-
-        // 임시 텍스트 날리는 기능
-        Random random = new Random();
-
-        // 랜덤하게 0 또는 1 선택
-        int choice = random.nextInt(2);
-
-        // 선택된 번호에 따라 다른 텍스트 설정
-        String jejuText, translatedText;
-        if (choice == 0) {
-            jejuText = "임시 텍스트 ( 제주말 )";
-            translatedText = "임시 텍스트 ( 통역 된 말 )";
-        } else {
-            jejuText = "임시 텍스트 ( 표준말 )";
-            translatedText = "제잘";
-        }
-        TranslateResponseDto translateResponseDto = TranslateResponseDto.builder()
-            .jeju(jejuText)
-            .translated(translatedText)
-            .build();
-        sendClient(session, translateResponseDto);
+        sendClovaSpeechServer(newFile, newFilePath, session, false);
     }
 
 
@@ -191,7 +170,7 @@ public class AudioWebSocketHandler extends AbstractWebSocketHandler {
 
                 List<String> newFile = (List<String>) untruncResult.get("new_file");
                 var newFilePath = RECORD_PATH + "/" + session.getId() + "/part/";
-//                sendClovaSpeechServer(newFile, newFilePath, session, true);
+                sendClovaSpeechServer(newFile, newFilePath, session, true);
                 break;
             default:
                 logger.info("error");
@@ -234,7 +213,8 @@ public class AudioWebSocketHandler extends AbstractWebSocketHandler {
 
                 try {
                     log.info("번역 api 통신 시작");
-                    sendTranslateServer(session, textContent);
+//                    sendTranslateServer(session, textContent);
+                    sendTranslateServer(session, textContent, isFinish);
                 } catch (Exception e) {
                     log.error("번역 api 통신 실패: " + e.getMessage(), e);
                     throw e;
@@ -254,19 +234,33 @@ public class AudioWebSocketHandler extends AbstractWebSocketHandler {
     }
 
     // clova speech로 stt 후 출력된 제주 방언 텍스트 -> jejuText
-    private void sendTranslateServer(WebSocketSession session, String jejuText) throws IOException {
+//    private void sendTranslateServer(WebSocketSession session, String jejuText) throws IOException {
+//        logger.info("통역 요청 시작 jejuText : {}", jejuText );
+//        ClovaStudioResponseDto resultDto = clovaStudioService.translateByClova(jejuText);
+//        String translatedText = resultDto.getResult().getMessage().content;
+//
+//        TranslateResponseDto translateResponseDto = TranslateResponseDto.builder()
+//            .jeju(jejuText)
+//            .translated(translatedText)
+//            .build();
+//
+//        sendClient(session, translateResponseDto);
+//    }
+
+
+    private void sendTranslateServer(WebSocketSession session, String jejuText, Boolean isFinish) throws IOException {
         logger.info("통역 요청 시작 jejuText : {}", jejuText );
         ClovaStudioResponseDto resultDto = clovaStudioService.translateByClova(jejuText);
         String translatedText = resultDto.getResult().getMessage().content;
 
         TranslateResponseDto translateResponseDto = TranslateResponseDto.builder()
-            .jeju(jejuText)
-            .translated(translatedText)
-            .build();
+                .jeju(jejuText)
+                .translated(translatedText)
+                .isFinish(isFinish)
+                .build();
 
         sendClient(session, translateResponseDto);
     }
-
 
     // 클라이언트에게 (웹소켓 연결을 통해) 결과 전송
     private void sendClient(WebSocketSession session, TranslateResponseDto translateResponseDto) throws IOException {

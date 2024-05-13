@@ -42,6 +42,7 @@ public class TranslateController {
         TranslateResponseDto translateResponseDto = TranslateResponseDto.builder()
                 .jeju(textDto.getText())
                 .translated(translatedText)
+                .isFinish(true)
                 .build();
 
         return ResponseEntity

@@ -8,4 +8,5 @@ import lombok.Getter;
 public class TranslateResponseDto {
     private String jeju;
     private String translated;
+    private Boolean isFinish;
 }

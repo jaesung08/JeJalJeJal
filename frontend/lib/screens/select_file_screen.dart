@@ -190,7 +190,7 @@ class _SelectFileScreenState extends State<SelectFileScreen> {
                     //파일이 선택됐는지 여부에 따라 다르게 출력
                     Image.asset(
                       !isSend
-                          ? 'assets/images/file.png'
+                          ? 'assets/images/add_folder.gif'
                           : 'assets/images/translating.png',
                       height: 101,
                       width: 79,

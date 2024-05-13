@@ -5,6 +5,8 @@ class ReceiveMessageModel {
   String? translated;
   String? timestamp;
   bool? isFinish;
+  // translated 값이 null인지 확인하는 메서드 추가
+  bool get isTranslated => translated != null;
 
   ReceiveMessageModel({
     this.id,

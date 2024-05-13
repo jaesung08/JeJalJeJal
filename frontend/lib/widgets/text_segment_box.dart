@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 
 class TextSegmentBox extends StatelessWidget {
   final String jejuText;
-  final String translatedText;
+  final String? translatedText;
 
   const TextSegmentBox({
     Key? key,
     required this.jejuText,
-    required this.translatedText, // translatedText는 필수 매개변수
+    this.translatedText, // translatedText는 필수 매개변수
   }) : super(key: key);
 
   @override
@@ -33,11 +33,13 @@ class TextSegmentBox extends StatelessWidget {
               jejuText,
               style: TextStyle(fontSize: 16.0, color: Colors.black87),
             ),
-            if (translatedText != "제잘") // translatedText가 "제잘"이 아닌 경우에만 구분선과 번역 텍스트를 추가
+            if(translatedText == null)
+              Image.asset('assets/images/overlay_loading.gif')
+            else if (translatedText != "제잘") // translatedText가 "제잘"이 아닌 경우에만 구분선과 번역 텍스트를 추가
               ...[
                 const Divider(color: Colors.white),
                 Text(
-                  translatedText,
+                  translatedText!,
                   style: TextStyle(fontSize: 16.0, color: Colors.black87, fontWeight: FontWeight.bold),
                 ),
               ],

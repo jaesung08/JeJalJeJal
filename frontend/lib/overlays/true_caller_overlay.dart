@@ -19,6 +19,7 @@ class TrueCallerOverlay extends StatefulWidget {
 class _TrueCallerOverlayState extends State<TrueCallerOverlay> {
   final DatabaseService _databaseService = DatabaseService();
   int _conversationId = 0;
+  String? previousJejuText; // 이전 메시지의 jeju값을 저장할 변수 추가
 
   bool showIcon = true;
   bool showBox = false;
@@ -42,7 +43,19 @@ class _TrueCallerOverlayState extends State<TrueCallerOverlay> {
       setState(() {
         print('24');
 
-        messages.insert(0, message);
+        if(message.isTranslated) {
+          // translated 값이 있는 경우
+          if(previousJejuText == message.jeju) {
+            // 이전 메시지의 jeju 값과 현재 메시지의 jeju 값이 동일한 경우
+            messages.first = message; // 리스트의 첫번째 요소를 현재 메시지로 대체
+          } else {
+            messages.insert(0, message); // 새로운 메시지를 리스트 앞에 추가
+          }
+        } else {
+          // translated 값이 null인 경우
+          messages.insert(0, message); // 새로운 메시지를 리스트 앞에 추가
+        }
+        previousJejuText = message.jeju; // 이전 메시지의 jeju 값을 업데이트
       });
 
       // 콘솔에 받아온 데이터 출력
@@ -124,29 +137,9 @@ class _TrueCallerOverlayState extends State<TrueCallerOverlay> {
                 style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
               ),
               Divider(),
-              // for (var message in messages) ...[ // 모든 메시지를 반복적으로 표시
-              //   Text(
-              //     'Jeju: ${message.jeju ?? "No data"}',
-              //     style: TextStyle(
-              //       color: Colors.white,
-              //       fontSize: 16,
-              //       fontWeight: FontWeight.bold,
-              //     ),
-              //   ),
-              //   SizedBox(height: 8),
-              //   Text(
-              //     'Translated: ${message.translated ?? "No data"}',
-              //     style: TextStyle(
-              //       color: Colors.white,
-              //       fontSize: 14,
-              //       fontWeight: FontWeight.normal,
-              //     ),
-              //   ),
-              //   SizedBox(height: 20),
-              // ],
               ...messages.map((message) => TextSegmentBox(
                 jejuText: message.jeju ?? "No data",
-                translatedText: message.translated ?? "No data",
+                translatedText: message.isTranslated ? message.translated! : null,
               )).toList(),
             ],
           ),

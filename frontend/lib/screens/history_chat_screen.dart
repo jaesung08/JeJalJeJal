@@ -26,21 +26,19 @@ class HistoryChatScreen extends StatelessWidget {
           builder: (context, snapshot) {
             if (snapshot.hasData) {
               print('30');
-
               final conversation = snapshot.data!;
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('${conversation.phoneNumber}의 통화 번역 기록'),
+                  Text('${conversation.name}의 통화 번역 기록'),
                   Text(
-                    '${DateFormat('yyyy-MM-dd').format(DateTime.now())} 통화',
+                    '${DateFormat('MM-dd HH:mm').format(DateTime.parse(conversation.date))} 통화',
                     style: TextStyle(fontSize: 14, color: Colors.orange),
                   ),
                 ],
               );
             } else {
               print('31');
-
               return Text('Loading...');
             }
           },

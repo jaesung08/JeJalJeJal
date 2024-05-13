@@ -211,9 +211,15 @@ public class AudioWebSocketHandler extends AbstractWebSocketHandler {
                 JsonNode rootNode = objectMapper.readTree(jsonResponse); // 응답 JSON을 JsonNode로 변환
                 String textContent = rootNode.get("text").asText(); // 'text' 필드의 값을 추출
 
+                // 프론트에 stt 텍스트 원본 먼저 보내주기 (번역 되기전에 미리 보냄)
+                TranslateResponseDto translateResponseDto = TranslateResponseDto.builder()
+                        .jeju(textContent)
+                        .isFinish(false)
+                        .build();
+                sendClient(session, translateResponseDto);
+
                 try {
                     log.info("번역 api 통신 시작");
-//                    sendTranslateServer(session, textContent);
                     sendTranslateServer(session, textContent, isFinish);
                 } catch (Exception e) {
                     log.error("번역 api 통신 실패: " + e.getMessage(), e);

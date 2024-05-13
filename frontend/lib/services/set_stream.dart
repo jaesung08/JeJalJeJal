@@ -1,5 +1,3 @@
-// lib/services/set_stream.dart
-
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
@@ -74,25 +72,29 @@ void initPhoneStateListener() {
         ws?.sink.add(jsonEncode(startMessage));
 
         //보낼 파일 찾기
-        var temp = await recentFile(recordDirectory!);
-        targetFile = temp is FileSystemEntity ? temp as File : null;
+        // var temp = await recentFile(recordDirectory!);
+        // targetFile = temp is FileSystemEntity ? temp as File : null;
 
-        //6초마다 파일 전송
-        if (targetFile is File) {
-          print('파일 찾음: ${targetFile?.path}');
-          timer = Timer.periodic(const Duration(seconds: 6), (timer) async {
-            Uint8List entireBytes = targetFile!.readAsBytesSync();
-            var nextOffset = entireBytes.length;
+        //2초마다 파일 전송
 
-            var splittedBytes = entireBytes.sublist(offset, nextOffset);
-            offset = nextOffset;
-            print('전송 데이터: $splittedBytes');
+        timer = Timer.periodic(const Duration(seconds: 2), (timer) async {
+            var temp = await recentFile(recordDirectory!);
+            targetFile = temp is FileSystemEntity ? temp as File : null;
+            if (targetFile is File) {
+              print('파일 찾음: ${targetFile?.path}');
+              Uint8List entireBytes = targetFile!.readAsBytesSync();
+              var nextOffset = entireBytes.length;
 
-            ws?.sink.add(splittedBytes);
+              // 범위 초과 문제를 해결하기 위해 nextOffset 이전의 데이터만 추출
+              if (offset < nextOffset) {
+                var splittedBytes = entireBytes.sublist(offset, nextOffset);
+                print('전송 데이터: $splittedBytes');
+                ws?.sink.add(splittedBytes);
+              }
+
+              offset = nextOffset;
+            }
           });
-        } else {
-          print('파일 못 찾음.');
-          ws?.sink.close();
         }
 
         //결과 데이터 받아오기
@@ -110,10 +112,8 @@ void initPhoneStateListener() {
             }
           }
         });
-      } else {
-        print('전화 번호가 감지되지 않음.');
       }
-    } else if (event.status == PhoneStateStatus.CALL_ENDED) {
+     else if (event.status == PhoneStateStatus.CALL_ENDED) {
       print('통화 종료.');
 
       //타이머 취소, 남은 데이터 보내주기
@@ -143,3 +143,82 @@ void initPhoneStateListener() {
     }
   });
 }
+
+Future<void> startStreamOnCallStarted(String phoneNumber) async {
+  if (phoneStatus!.number?.isNotEmpty ?? false) {
+    phoneNumber = phoneStatus!.number.toString();
+    print('발신전화 시작됨.');
+    print('전화 번호: $phoneNumber');
+
+    List<Contact>? contacts = await ContactsService.getContactsForPhone(phoneNumber!);
+    String? name;
+
+    if (contacts != null && contacts.isNotEmpty) {
+      name = contacts.first.displayName;
+    } else {
+      name = "제주도민";
+    }
+
+    conversationId = await DatabaseService.instance.insertConversation(phoneNumber!, name!);
+    print('상대방 이름: $name');
+
+    //웹소켓 연결
+    ws = WebSocketChannel.connect(
+      Uri.parse('wss://k10a406.p.ssafy.io/api/record'),
+    );
+
+    //시작 알림 메시지
+    var startMessage = SendMessageModel(
+      state: 0,
+      androidId: androidId!,
+    );
+
+    ws?.sink.add(jsonEncode(startMessage));
+
+    //보낼 파일 찾기
+    var temp = await recentFile(recordDirectory!);
+    targetFile = temp is FileSystemEntity ? temp as File : null;
+
+    //2초마다 파일 전송
+    if (targetFile is File) {
+      print('파일 찾음: ${targetFile?.path}');
+      timer = Timer.periodic(const Duration(seconds: 2), (timer) async {
+        Uint8List entireBytes = targetFile!.readAsBytesSync();
+        var nextOffset = entireBytes.length;
+
+        // 범위 초과 문제를 해결하기 위해 nextOffset 이전의 데이터만 추출
+        if (offset < nextOffset) {
+          var splittedBytes = entireBytes.sublist(offset, nextOffset);
+          print('전송 데이터: $splittedBytes');
+          ws?.sink.add(splittedBytes);
+        }
+
+        offset = nextOffset;
+
+      });
+    } else {
+      print('파일 못 찾음.');
+      ws?.sink.close();
+    }
+
+    //결과 데이터 받아오기
+    ws?.stream.listen((msg) async {
+      if (msg != null) {
+        ReceiveMessageModel receivedResult = ReceiveMessageModel.fromJson(jsonDecode(msg));
+        receivedResult.conversationId = conversationId;
+
+        //위젯으로 보내주기
+        FlutterOverlayWindow.shareData(msg);
+        await DatabaseService.instance.insertMessage(receivedResult, conversationId!);
+
+        //마지막 데이터 받아오고 나서 웹소켓 닫기
+        if(receivedResult.isFinish == true){
+          ws?.sink.close();
+        }
+      }
+    });
+  } else {
+    print('전화 번호가 감지되지 않음.');
+  }
+}
+

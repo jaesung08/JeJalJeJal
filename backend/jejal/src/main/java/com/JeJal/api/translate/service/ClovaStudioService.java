@@ -46,12 +46,13 @@ public class ClovaStudioService {
 
     // clova Studio의 chatCompletion api 호출 메서드
     public ClovaStudioResponseDto translateByClova(String jeju, String prev) {
-        log.info("sendChatCompletion 실행됨");
-        log.info("userContent: " + jeju +" " + prev);
+        log.info(" [9] ------------------------ ClovaStudioService - translateByClova() ");
+        log.info(" [9] ------------------------ jeju:{}, prev:{} ", jeju ,prev);
 
         //todo. curr, prev 로직 필요시 작성
 
         String userContent = "\"" + jeju + "\" \"" + prev + "\"";
+        log.info(" [9] ------------------------ userContent : {} ", userContent);
 
         List<Message> clovaMessages = Arrays.asList(
                 new Message("system", systemContent),

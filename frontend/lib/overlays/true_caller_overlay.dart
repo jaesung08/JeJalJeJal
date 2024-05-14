@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_overlay_window/flutter_overlay_window.dart';
 import 'package:jejal_project/overlays/tangerine_icon.dart';
-import 'package:jejal_project/services/database_service.dart';
 import 'package:jejal_project/widgets/text_segment_box.dart';
 import 'package:jejal_project/widgets/loading_text.dart';
 import 'package:jejal_project/models/receive_message_model.dart';
@@ -16,7 +15,6 @@ class TrueCallerOverlay extends StatefulWidget {
 }
 
 class _TrueCallerOverlayState extends State<TrueCallerOverlay> {
-  final DatabaseService _databaseService = DatabaseService();
   final ScrollController _scrollController = ScrollController();
 
   bool showIcon = true;
@@ -80,7 +78,7 @@ class _TrueCallerOverlayState extends State<TrueCallerOverlay> {
   }
 
   void _scrollToBottom() {
-    WidgetsBinding.instance?.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       if (_scrollController.hasClients) {
         _scrollController.animateTo(
           _scrollController.position.maxScrollExtent,

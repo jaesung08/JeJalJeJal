@@ -8,7 +8,6 @@ import 'package:jejal_project/services/set_stream.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/services.dart';
 import 'package:jejal_project/overlays/true_caller_overlay.dart';
-import 'package:jejal_project/home_page.dart';
 
 void main() async {
   print('102');

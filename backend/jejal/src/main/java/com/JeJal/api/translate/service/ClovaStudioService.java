@@ -52,7 +52,7 @@ public class ClovaStudioService {
         //todo. curr, prev 로직 필요시 작성
 
         String userContent = "\"" + jeju + "\" \"" + prev + "\"";
-        log.info(" [9] ------------------------ userContent : {} ", userContent);
+        log.info(" [9] ------------------------- userContent : {} ", userContent);
 
         List<Message> clovaMessages = Arrays.asList(
                 new Message("system", systemContent),

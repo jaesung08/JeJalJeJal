@@ -38,7 +38,8 @@ public class ClovaspeechService {
 
     // MultipartFile 형식일 때
     public String recognizeByMultipartFile(MultipartFile multipartFile, NestRequestDTO request) throws IOException {
-        log.info("Starting file upload with parameters: {}", gson.toJson(request));
+//        log.info("Starting file upload with parameters: {}", gson.toJson(request));
+        log.info("clova speech api에 파일 업로드 - clovaspeechService");
 
         HttpPost httpPost = new HttpPost(INVOKE_URL + "/recognizer/upload");
         httpPost.setHeaders(HEADERS);
@@ -54,7 +55,8 @@ public class ClovaspeechService {
 
     // File 형식일 때
     public String recognizeByFile(File file, NestRequestDTO request) throws IOException {
-        log.info("Starting file upload with parameters: {}", gson.toJson(request));
+//        log.info("Starting file upload with parameters: {}", gson.toJson(request));
+        log.info("clova speech api에 파일 업로드 - clovaspeechService");
 
         HttpPost httpPost = new HttpPost(INVOKE_URL + "/recognizer/upload");
         httpPost.setHeaders(HEADERS);
@@ -72,7 +74,8 @@ public class ClovaspeechService {
             final HttpEntity entity = httpResponse.getEntity();
 
             String response = EntityUtils.toString(entity, StandardCharsets.UTF_8);
-            log.info("Received response: {}", response);
+//            log.info("Received response: {}", response);
+            log.info("clova speech api 응답 완료 - clovaspeechService");
 
             return response;
         } catch (Exception e) {

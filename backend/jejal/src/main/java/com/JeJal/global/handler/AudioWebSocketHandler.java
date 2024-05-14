@@ -65,7 +65,7 @@ public class AudioWebSocketHandler extends AbstractWebSocketHandler {
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
         super.afterConnectionEstablished(session);
         session.getAttributes().put("prevText", ""); // 초기 prevText를 세션에 저장
-        logger.info(" [0] -------------------------WebSocket 연결 성공");
+        logger.info(" [0] --------------------------WebSocket 연결 성공");
         createFolder(session.getId());
         // -> websocket 세션의 고유 식별자 사용하여 해당 세션에 대한 폴더 생성
         // 오디오 레코드 파일 저장을 위해 사용
@@ -206,11 +206,11 @@ public class AudioWebSocketHandler extends AbstractWebSocketHandler {
             File file = new File(filePath);
 
             // clova speech api 통신
-            log.info("클로바 요청 {} 시작 {} , {}: ", i , filePath);
+            log.info("[5] ------------------------- 클로바 요청 {} 시작 {} : ", i , filePath);
 
             try{
                 String jsonResponse = clovaspeechService.recognizeByFile(file, request);
-                log.info("clova speech api 통신 완료");
+                log.info("[5] --------------------- clova speech api 통신 완료");
                 JsonNode rootNode = objectMapper.readTree(jsonResponse); // 응답 JSON을 JsonNode로 변환
                 String jeju = rootNode.get("text").asText(); // 'text' 필드의 값을 추출
 
@@ -218,9 +218,11 @@ public class AudioWebSocketHandler extends AbstractWebSocketHandler {
                 // 프론트에 stt 텍스트 원본 먼저 보내주기 (번역 되기전에 미리 프론트 보냄)
                 TranslateResponseDto translateResponseDto = TranslateResponseDto.builder()
                         .jeju(jeju)
+                        .translated("wait")
                         .isFinish(false)
                         .build();
-                logger.info(" [5] -------------------- translateResponseDto의 jeju : {}", translateResponseDto.getJeju());
+                logger.info(" [5] -------------------- translateResponseDto의 jeju : {}, translated : {}",
+                        translateResponseDto.getJeju(), translateResponseDto.getTranslated());
                 sendClient(session, translateResponseDto);
 
                 try {

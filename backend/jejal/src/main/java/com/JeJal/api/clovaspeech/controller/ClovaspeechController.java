@@ -91,15 +91,10 @@ public class ClovaspeechController {
                 textNode.put("jeju", jeju);
                 textNode.put("translated", translated);
 
-                if (translated.equals("제잘")){
-                    prevSentence = jeju;
-                } else {
-                    prevSentence = translated;
-                }
+                prevSentence = jeju;
 
                 log.info("jeju : " + jeju);
                 log.info("translated : " + translated);
-                log.info("prevSentence : " + prevSentence);
 
                 translatedSegments.add(textNode);
             }

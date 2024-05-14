@@ -237,24 +237,11 @@ public class AudioWebSocketHandler extends AbstractWebSocketHandler {
         }
     }
 
-    // clova speech로 stt 후 출력된 제주 방언 텍스트 -> jejuText
-//    private void sendTranslateServer(WebSocketSession session, String jejuText) throws IOException {
-//        logger.info("통역 요청 시작 jejuText : {}", jejuText );
-//        ClovaStudioResponseDto resultDto = clovaStudioService.translateByClova(jejuText);
-//        String translatedText = resultDto.getResult().getMessage().content;
-//
-//        TranslateResponseDto translateResponseDto = TranslateResponseDto.builder()
-//            .jeju(jejuText)
-//            .translated(translatedText)
-//            .build();
-//
-//        sendClient(session, translateResponseDto);
-//    }//
 
-
+    // todo. api처럼 prev 추가하는 수정 필요
     private void sendTranslateServer(WebSocketSession session, String jejuText, Boolean isFinish) throws IOException {
         logger.info("통역 요청 시작 jejuText : {}", jejuText );
-        ClovaStudioResponseDto resultDto = clovaStudioService.translateByClova(jejuText);
+        ClovaStudioResponseDto resultDto = clovaStudioService.translateByClova(jejuText, ""); //todo. prev 수정
         String translatedText = resultDto.getResult().getMessage().content;
 
         TranslateResponseDto translateResponseDto = TranslateResponseDto.builder()

@@ -90,14 +90,7 @@ public class ClovaspeechController {
 
                 String jeju = segment.path("text").asText();
 
-
-                //todo 지우야 이거 지워야해 (여기서 부터)
-                String sentences = "\"" + jeju + "\" \"" + prevSentence + "\"";
-                ClovaStudioResponseDto translationResponse = clovaStudioService.translateByClova(sentences);
-                // 지워야해 (여기 까지)
-
-                //todo 이거써야해 (String, String)
-//                ClovaStudioResponseDto translationResponse = clovaStudioService.translateByClova(jeju, prevSentence);
+                ClovaStudioResponseDto translationResponse = clovaStudioService.translateByClova(jeju, prevSentence);
 
                 String translated = translationResponse.getResult().getMessage().content;
 

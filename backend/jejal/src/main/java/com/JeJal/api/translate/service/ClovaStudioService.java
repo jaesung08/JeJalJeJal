@@ -46,9 +46,13 @@ public class ClovaStudioService {
 
 
     // clova Studio의 chatCompletion api 호출 메서드
-    public ClovaStudioResponseDto translateByClova(String userContent) {
+    public ClovaStudioResponseDto translateByClova(String jeju, String prev) {
         log.info("sendChatCompletion 실행됨");
-        log.info("userContent: " + userContent);
+        log.info("userContent: " + jeju +" " + prev);
+
+        //todo. curr, prev 로직 필요시 작성
+
+        String userContent = "\"" + jeju + "\" \"" + prev + "\"";
 
         List<Message> clovaMessages = Arrays.asList(
                 new Message("system", systemContent),

@@ -45,9 +45,11 @@ class _TrueCallerOverlayState extends State<TrueCallerOverlay> {
 
         if(message.isTranslated) {
           // translated 값이 있는 경우
-          if(previousJejuText == message.jeju) {
+          // messages 리스트에서 jeju 값이 같고 translated가 null인 메시지를 찾아 업데이트
+          var index = messages.lastIndexWhere((m) => m.jeju == message.jeju && !m.isTranslated);
+          if(index != -1) {
             // 이전 메시지의 jeju 값과 현재 메시지의 jeju 값이 동일한 경우
-            messages.first = message; // 리스트의 첫번째 요소를 현재 메시지로 대체
+            messages[index] = message; // 리스트의 첫번째 요소를 현재 메시지로 대체
           } else {
             messages.insert(0, message); // 새로운 메시지를 리스트 앞에 추가
           }
@@ -55,7 +57,7 @@ class _TrueCallerOverlayState extends State<TrueCallerOverlay> {
           // translated 값이 null인 경우
           messages.insert(0, message); // 새로운 메시지를 리스트 앞에 추가
         }
-        previousJejuText = message.jeju; // 이전 메시지의 jeju 값을 업데이트
+        // previousJejuText = message.jeju; // 이전 메시지의 jeju 값을 업데이트
       });
 
       // 콘솔에 받아온 데이터 출력

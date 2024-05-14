@@ -104,9 +104,10 @@ public class AudioWebSocketHandler extends AbstractWebSocketHandler {
 
         logger.info(" [2] ------------------- 결과 (복원): {}", untruncResult);
         
-        // 초단위 추가 파일
+        // 쪼개진 파일 만큼 전송
         List<String> newFile = (List<String>) untruncResult.get("new_file");
         String newFilePath = RECORD_PATH + "/" + session.getId() + "/part/";
+        log.info("쪼개진 파일 개수 : ", newFile);
         sendClovaSpeechServer(newFile, newFilePath, session, false);
     }
 
@@ -171,8 +172,19 @@ public class AudioWebSocketHandler extends AbstractWebSocketHandler {
                 var untruncResult = restApiUtil.requestGet(untruncUrl, params);
 
                 List<String> newFile = (List<String>) untruncResult.get("new_file");
-                var newFilePath = RECORD_PATH + "/" + session.getId() + "/part/";
-                sendClovaSpeechServer(newFile, newFilePath, session, true);
+                log.info("파일 개수 : ", newFile.size());
+                if (!newFile.isEmpty()) { // newFile 리스트가 비어있지 않은 경우에만 실행
+                    log.info("=======통화 종료 후 파일 있음========================");
+                    var newFilePath = RECORD_PATH + "/" + session.getId() + "/part/";
+                    sendClovaSpeechServer(newFile, newFilePath, session, true);
+                } else {
+//                    logger.info("state : 2, 남은 파일 없음", session.getId());
+                    log.info("=========통화 종료 후 파일 없음========================");
+                    TranslateResponseDto translateResponseDto = TranslateResponseDto.builder()
+                        .isFinish(true)
+                        .build();
+                    sendClient(session, translateResponseDto);
+                }
                 break;
             default:
                 logger.info("error");
@@ -286,7 +298,7 @@ public class AudioWebSocketHandler extends AbstractWebSocketHandler {
     // WebSocket 연결이 종료된 후 실행되는 메서드
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
-        logger.info(" [8] --------------------- afterConnectionClosed() 호출됨");
+        logger.info(" [8] -------------------- afterConnectionClosed() 호출됨");
         // 세션 종료시 prevText 속성 제거
         session.getAttributes().remove("prevText");
         

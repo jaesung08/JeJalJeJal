@@ -143,21 +143,18 @@ class _TrueCallerOverlayState extends State<TrueCallerOverlay> {
           borderRadius: BorderRadius.circular(12.0),
         ),
         child: SingleChildScrollView(
+          controller: _scrollController, // 여기에 controller 속성 추가
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               LoadingText(text: "실시간 통역 중"),
-              // Text(
-              //   "실시간 통역 중",
-              //   style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
-              // ),
               Divider(),
               ...messages
                   .map((message) => TextSegmentBox(
-                        jejuText: message.jeju ?? "No data",
-                        translatedText: message.translated,
-                        isLoading: message.translated == "wait",
-                      ))
+                jejuText: message.jeju ?? "No data",
+                translatedText: message.translated,
+                isLoading: message.translated == "wait",
+              ))
                   .toList(),
             ],
           ),

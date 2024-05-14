@@ -3,7 +3,6 @@ import 'package:flutter_overlay_window/flutter_overlay_window.dart';
 import 'package:toggle_switch/toggle_switch.dart';
 import 'package:contacts_service/contacts_service.dart';
 import 'package:intl/intl.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:jejal_project/models/conversation.dart';
 import 'package:jejal_project/services/database_service.dart';
 import 'package:jejal_project/screens/history_chat_screen.dart';

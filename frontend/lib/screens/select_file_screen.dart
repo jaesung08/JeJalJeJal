@@ -6,18 +6,38 @@ import 'package:flutter/material.dart';
 import '../services/database_service.dart';
 import 'package:jejal_project/models/file_result_model.dart';
 
+const String recordDirectoryPath = "/storage/emulated/0/Recordings/Call";
+
 class SelectFileScreen extends StatefulWidget {
-  const SelectFileScreen({Key? key, required this.databaseService}) : super(key: key);
-  final DatabaseService databaseService;
+  const SelectFileScreen({Key? key}) : super(key: key);
 
   @override
-  State<SelectFileScreen> createState() => _SelectStepScreen();
+  State<SelectFileScreen> createState() => _SelectFileState();
 }
 
-class _SelectStepScreen extends State<SelectFileScreen> {
+class _SelectFileState extends State<SelectFileScreen> {
   String? _filePath;
   bool isSending = false;
   FileResultModel? resultModel;
+  Directory recordDirectory = Directory(recordDirectoryPath);
+  List<File> recentFiles = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadRecentFiles();
+  }
+
+  Future<void> _loadRecentFiles() async {
+    // Load and sort files by modification date
+    var files = recordDirectory.listSync()
+        .whereType<File>()
+        .toList();
+    files.sort((a, b) => b.statSync().changed.compareTo(a.statSync().changed)); // Sort by modified time descending
+    setState(() {
+      recentFiles = files.take(5).toList(); // Take the most recent 5 files
+    });
+  }
 
   void _openFilePicker() async {
     FilePickerResult? fileResult = await FilePicker.platform.pickFiles();
@@ -39,14 +59,14 @@ class _SelectStepScreen extends State<SelectFileScreen> {
 
     try {
       final response = await Dio().post(
-        'https://k10a406.p.ssafy.io/api/clovaspeech/upload', // Update your API endpoint
+        'https://k10a406.p.ssafy.io/api/clovaspeech/upload',
         data: formData,
       );
 
       if (response.statusCode == 200) {
         setState(() {
           resultModel = FileResultModel.fromJson(response.data);
-          isSending = false; // Stop showing the spinner after getting the response
+          isSending = false;
         });
       }
     } catch (e) {
@@ -78,6 +98,7 @@ class _SelectStepScreen extends State<SelectFileScreen> {
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
+
           children: [
             if (isSending) ...[
               CircularProgressIndicator(),
@@ -90,16 +111,36 @@ class _SelectStepScreen extends State<SelectFileScreen> {
                 onPressed: _openFilePicker,
                 child: Text('파일 선택'),
                 style: ElevatedButton.styleFrom(
-                  foregroundColor: Colors.white, backgroundColor: Colors.blue, // Text color
+                  foregroundColor: Colors.white,
+                  backgroundColor: Colors.blue,
                 ),
               ),
+              Expanded(
+                child: ListView.builder(
+                  itemCount: recentFiles.length,
+                  itemBuilder: (context, index) {
+                    final file = recentFiles[index];
+                    return ListTile(
+                      title: Text(file.path.split('/').last),
+                      subtitle: Text(FileStat.statSync(file.path).changed.toString()),
+                      onTap: () {
+                        setState(() {
+                          _filePath = file.path;
+                          isSending = true;
+                        });
+                        _sendFile();
+                      },
+                    );
+                  },
+                ),
+              ),
+
             ],
           ],
         ),
       ),
     );
   }
-
 
   Widget _buildResultDisplay() {
     return Column(

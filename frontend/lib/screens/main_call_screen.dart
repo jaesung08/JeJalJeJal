@@ -1,12 +1,13 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_overlay_window/flutter_overlay_window.dart';
 import 'package:toggle_switch/toggle_switch.dart';
 import 'package:contacts_service/contacts_service.dart';
 import 'package:intl/intl.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:jejal_project/models/conversation.dart';
 import 'package:jejal_project/services/database_service.dart';
 import 'package:jejal_project/screens/history_chat_screen.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 
 class MainCallScreen extends StatelessWidget {
   final DatabaseService databaseService;
@@ -68,47 +69,59 @@ class MainCallScreen extends StatelessWidget {
               child: Text("통화해볼까요?", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
             ),
             Container(
-              height: 120, // Increased height to accommodate names below the avatars
+              height: 120,
               child: FutureBuilder<List<Conversation>>(
-                future: databaseService.getUniqueRecentConversations(5), // Adjusted to call new method
+                future: databaseService.getUniqueRecentConversations(5),
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
                     final conversations = snapshot.data!;
                     return ListView.builder(
                       scrollDirection: Axis.horizontal,
-                      itemCount: conversations.length, // This now corresponds to the number of unique conversations
+                      itemCount: conversations.length,
                       itemBuilder: (context, index) {
                         final conversation = conversations[index];
-                        return Container(
-                          width: MediaQuery.of(context).size.width / 5, // Adjust width to fit 5 items on screen
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              FutureBuilder<Contact?>(
-                                future: ContactsService.getContactsForPhone(conversation.phoneNumber).then((contacts) {
-                                  return contacts.isNotEmpty ? contacts.first : null;
-                                }),
-                                builder: (context, snapshot) {
-                                  if (snapshot.connectionState == ConnectionState.waiting) {
-                                    return CircularProgressIndicator();
-                                  } else {
-                                    final contact = snapshot.data;
-                                    final avatar = contact?.avatar;
-                                    return CircleAvatar(
-                                      radius: 30,
-                                      backgroundImage: avatar != null && avatar.isNotEmpty ? MemoryImage(avatar) : null,
-                                      child: avatar == null || avatar.isEmpty ? Icon(Icons.person, size: 30) : null,
-                                    );
-                                  }
-                                },
-                              ),
-                              SizedBox(height: 8), // Space between avatar and name
-                              Text(
-                                conversation.name == "제주도민" ? conversation.phoneNumber : conversation.name,
-                                style: TextStyle(fontSize: 12), // Adjust font size to fit
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ],
+                        return GestureDetector(
+                          onTap: () async {
+                            var url = 'tel:${conversation.phoneNumber}';
+                            if (await canLaunchUrlString(url)) {
+                              await launchUrlString(url);
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(content: Text('Could not launch $url'))
+                              );
+                            }
+                          },
+                          child: Container(
+                            width: MediaQuery.of(context).size.width / 5,
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                FutureBuilder<List<Contact>>(
+                                  future: ContactsService.getContactsForPhone(conversation.phoneNumber),
+                                  builder: (context, snapshot) {
+                                    if (snapshot.connectionState == ConnectionState.waiting) {
+                                      return CircularProgressIndicator();
+                                    } else if (snapshot.hasData && snapshot.data!.isNotEmpty) {
+                                      final contact = snapshot.data!.first;
+                                      final avatar = contact.avatar;
+                                      return CircleAvatar(
+                                        radius: 30,
+                                        backgroundImage: avatar != null && avatar.isNotEmpty ? MemoryImage(avatar) : null,
+                                        child: avatar == null || avatar.isEmpty ? Icon(Icons.person, size: 30) : null,
+                                      );
+                                    } else {
+                                      return CircleAvatar(child: Icon(Icons.person, size: 30)); // Default icon if no contact or avatar found
+                                    }
+                                  },
+                                ),
+                                SizedBox(height: 8),
+                                Text(
+                                  conversation.name == "제주도민" ? conversation.phoneNumber : conversation.name,
+                                  style: TextStyle(fontSize: 12),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ],
+                            ),
                           ),
                         );
                       },
@@ -119,9 +132,6 @@ class MainCallScreen extends StatelessWidget {
                 },
               ),
             ),
-
-
-
             const Padding(
               padding: EdgeInsets.symmetric(vertical: 10),
               child: Text("통화기록", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
@@ -139,23 +149,25 @@ class MainCallScreen extends StatelessWidget {
                       itemBuilder: (context, index) {
                         final conversation = conversations[index];
                         return ListTile(
-                          leading: FutureBuilder<Contact?>(
-                            future: ContactsService.getContactsForPhone(conversation.phoneNumber).then((contacts) {
-                              return contacts.isNotEmpty ? contacts.first : null;
-                            }),
+                          leading: FutureBuilder<List<Contact>>(
+                            future: ContactsService.getContactsForPhone(conversation.phoneNumber),
                             builder: (context, snapshot) {
                               if (snapshot.connectionState == ConnectionState.waiting) {
                                 return CircularProgressIndicator();
+                              } else if (snapshot.hasData && snapshot.data!.isNotEmpty) {
+                                final contact = snapshot.data!.first;
+                                final avatar = contact.avatar;
+                                return CircleAvatar(
+                                  radius: 30,
+                                  backgroundImage: avatar != null && avatar.isNotEmpty ? MemoryImage(avatar) : null,
+                                  child: avatar == null || avatar.isEmpty ? Icon(Icons.person, size: 30) : null,
+                                );
                               } else {
-                                final contact = snapshot.data;
-                                final avatar = contact?.avatar;
-                                return avatar != null && avatar.isNotEmpty
-                                    ? CircleAvatar(backgroundImage: MemoryImage(avatar))
-                                    : CircleAvatar(child: Icon(Icons.person));
+                                return CircleAvatar(child: Icon(Icons.person, size: 30)); // Default icon if no contact or avatar found
                               }
                             },
                           ),
-                          title: Text(conversation.name+'님과의 대화 기록'),
+                          title: Text('${conversation.name}님과의 대화 기록'),
                           subtitle: Text(conversation.phoneNumber),
                           trailing: Text(
                             DateFormat('MM-dd HH:mm').format(DateTime.parse(conversation.date)),

@@ -77,7 +77,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
       controller: tabController,
       children: [
         MainCallScreen(databaseService: DatabaseService()),
-        SelectFileScreen(databaseService: DatabaseService()),
+        SelectFileScreen(),
       ],
     );
   }

@@ -44,8 +44,6 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.kafka:spring-kafka-test'
 
-    // https://mvnrepository.com/artifact/org.xerial/sqlite-jdbc
-    implementation 'org.xerial:sqlite-jdbc:3.45.3.0'
 
     // hibernate-community-dialects
     implementation 'org.hibernate.orm:hibernate-community-dialects'

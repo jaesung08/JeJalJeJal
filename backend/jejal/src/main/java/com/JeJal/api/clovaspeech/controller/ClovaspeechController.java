@@ -1,12 +1,11 @@
 package com.JeJal.api.clovaspeech.controller;
 
+import com.JeJal.api.clovaspeech.dto.Boosting;
 import com.JeJal.api.clovaspeech.dto.NestRequestDTO;
 import com.JeJal.api.clovaspeech.service.ClovaspeechService;
-import com.JeJal.api.clovaspeech.dto.Boosting;
 import com.JeJal.api.translate.dto.ClovaStudioResponseDto;
 import com.JeJal.api.translate.service.ClovaStudioService;
 import com.JeJal.global.common.response.BaseResponse;
-import com.JeJal.api.translate.dto.TextDto;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -14,26 +13,20 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.coyote.Response;
-import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.reactive.function.client.WebClient;
 
 @RestController
 @RequestMapping("/clovaspeech")

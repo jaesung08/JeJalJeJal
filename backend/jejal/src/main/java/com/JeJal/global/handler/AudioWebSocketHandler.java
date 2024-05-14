@@ -65,7 +65,7 @@ public class AudioWebSocketHandler extends AbstractWebSocketHandler {
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
         super.afterConnectionEstablished(session);
         session.getAttributes().put("prevText", ""); // 초기 prevText를 세션에 저장
-        logger.info("WebSocket 연결 성공");
+        logger.info(" [0] -------------------------WebSocket 연결 성공");
         createFolder(session.getId());
         // -> websocket 세션의 고유 식별자 사용하여 해당 세션에 대한 폴더 생성
         // 오디오 레코드 파일 저장을 위해 사용
@@ -73,17 +73,18 @@ public class AudioWebSocketHandler extends AbstractWebSocketHandler {
 
     // 통화연결 시작했을 때 폴더생성
     private void createFolder(String sessionId) {
+        logger.info(" [1] ----------------------------createFolder() 호출됨");
         var directory = new File(RECORD_PATH + "/" + sessionId);
         if (!directory.exists()) {
             directory.mkdirs();
-            logger.info("폴더 생성 경로 :" + directory);
+            logger.info(" [1] ----------------------- 폴더 생성 경로 :" + directory);
             var partDirectory = new File(RECORD_PATH + "/" + sessionId + "/part");
             partDirectory.mkdirs();
-            logger.info("디렉터리 생성 완료");
+            logger.info(" [1] ----------------------- 디렉터리 생성 완료");
         } else {
-            logger.info("이미 디렉터리가 존재합니다.");
+            logger.info(" [1] ---------------------- 이미 디렉터리가 존재합니다.");
         }
-        logger.info("소켓연결시작: {}", sessionId);
+        logger.info(" [1] --------------------------- 소켓연결시작: {}", sessionId);
     }
 
     // BinaryMessage를 처리하는 메서드
@@ -91,17 +92,17 @@ public class AudioWebSocketHandler extends AbstractWebSocketHandler {
     // 받은 오디오 데이터를 파일에 추가 저장하고 복원과 분석을 위해 외부 api에 데이터 전송
     @Override
     public void handleBinaryMessage(WebSocketSession session, BinaryMessage message) throws Exception {
-        logger.info("바이너리 메시지 처리: {}", session.getId());
+        logger.info("[2] ------------------- 바이너리 메시지 처리: {}", session.getId());
         appendFile(message.getPayload(), session.getId());
 
-        logger.info("GET 요청 (복원): {}", DOMAIN_UNTRUNC + "/recover");
+        logger.info(" [2] ------------------ GET 요청 (복원): {}", DOMAIN_UNTRUNC + "/recover");
         String untruncUrl = DOMAIN_UNTRUNC + "/recover";
         Map<String, String> params = new HashMap<>();
         params.put("sessionId", session.getId());
         params.put("state", "1");
         Map<String, Object> untruncResult = restApiUtil.requestGet(untruncUrl, params);
 
-        logger.info("결과 (복원): {}", untruncResult);
+        logger.info(" [2] ------------------- 결과 (복원): {}", untruncResult);
         
         // 초단위 추가 파일
         List<String> newFile = (List<String>) untruncResult.get("new_file");
@@ -114,16 +115,17 @@ public class AudioWebSocketHandler extends AbstractWebSocketHandler {
     // ByteBuffer에서 받은 데이터를 파일에 추가
     // 이 메서드는 바이너리 메시지 처리 중에 호출됨
     private void appendFile(ByteBuffer byteBuffer, String sessionId) throws IOException {
+        logger.info(" [3] ------------------ appendFile() 호출됨");
         // 파일 경로 설정
         String filePath = RECORD_PATH + "/" + sessionId + "/record.m4a";
         // 파일 출력 스트림 생성
         try (FileOutputStream outputStream = new FileOutputStream(filePath, true)) {
-            logger.info("파일 아웃 스트림 및 m4a 파일 데이터 삽입하기 위해 진입");
-            logger.info("바이트 버퍼 크기 : {}", byteBuffer);
+            logger.info(" [3] -------------------- 파일 아웃 스트림 및 m4a 파일 데이터 삽입하기 위해 진입");
+            logger.info(" [3] -------------------- 바이트 버퍼 크기 : {}", byteBuffer);
     
             // 남은 데이터가 있는지 확인
             if (byteBuffer.hasRemaining()) {
-                logger.info("파일에 데이터 작성");
+                logger.info(" [3] ----------------- 파일에 데이터 작성");
                 byte[] bytes = new byte[byteBuffer.remaining()];
                 byteBuffer.get(bytes);
                 outputStream.write(bytes);
@@ -147,7 +149,8 @@ public class AudioWebSocketHandler extends AbstractWebSocketHandler {
     // 특정 상태 값에 따라 추가 정보(전화번호) 저장하거나 복원 작업
     @Override
     public void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
-        logger.info("socket 정보 전달받음 : {}", message);
+        logger.info(" [4] --------------------- handleTextMessage() 호출됨");
+        logger.info(" [4] --------------------- socket 정보 전달받음 : {}", message);
         var gson = new Gson();
         var messageMap = gson.fromJson(message.getPayload(), Map.class);
         var stateValue = (int) Math.floor((double) messageMap.get("state"));
@@ -179,7 +182,8 @@ public class AudioWebSocketHandler extends AbstractWebSocketHandler {
 
     // 새로생성된 part파일을 clover api로 전송.
     private void sendClovaSpeechServer(List<String> newFile, String newFilePath, WebSocketSession session, Boolean isFinish) throws Exception {
-
+        logger.info(" [5] -------------------- sendClovaSpeechServer() 호출됨");
+        logger.info(" [5] -------------------- isFinish: {}", isFinish);
         // JSON 데이터 처리를 위한 ObjectMapper 인스턴스 생성
         ObjectMapper objectMapper = new ObjectMapper();
 
@@ -210,11 +214,13 @@ public class AudioWebSocketHandler extends AbstractWebSocketHandler {
                 JsonNode rootNode = objectMapper.readTree(jsonResponse); // 응답 JSON을 JsonNode로 변환
                 String jeju = rootNode.get("text").asText(); // 'text' 필드의 값을 추출
 
+                logger.info(" [5] ------------------ jeju : {}", jeju);
                 // 프론트에 stt 텍스트 원본 먼저 보내주기 (번역 되기전에 미리 프론트 보냄)
                 TranslateResponseDto translateResponseDto = TranslateResponseDto.builder()
                         .jeju(jeju)
                         .isFinish(false)
                         .build();
+                logger.info(" [5] -------------------- translateResponseDto의 jeju : {}", translateResponseDto.getJeju());
                 sendClient(session, translateResponseDto);
 
                 try {
@@ -239,12 +245,13 @@ public class AudioWebSocketHandler extends AbstractWebSocketHandler {
         }
     }
 
-    // todo. api처럼 prev 추가하는 수정 필요
     private void sendTranslateServer(WebSocketSession session, String jejuText, Boolean isFinish) throws IOException {
+        logger.info(" [6] ------------------ sendTranslateServer() 호출됨");
+
         String prevText = (String) session.getAttributes().getOrDefault("prevText", "");
-        logger.info("통역 요청 시작 jejuText : {}", jejuText);
-        logger.info("통역 요청 시작 prevText : {}", prevText);
-        ClovaStudioResponseDto resultDto = clovaStudioService.translateByClova(jejuText, prevText); //todo. prev 수정
+        logger.info(" [6] ------------------ 통역 요청 시작 jejuText : {}", jejuText);
+        logger.info(" [6] ------------------ 통역 요청 시작 prevText : {}", prevText);
+        ClovaStudioResponseDto resultDto = clovaStudioService.translateByClova(jejuText, prevText);
 
         // 번역 된 문장
         String translatedText = resultDto.getResult().getMessage().content;
@@ -258,11 +265,12 @@ public class AudioWebSocketHandler extends AbstractWebSocketHandler {
                 .build();
 
         sendClient(session, translateResponseDto);
+        logger.info(" [6] -------------------- 통역후 sendClient - jeju : {}, translated : {} , isFinish : {}", jejuText, translatedText, isFinish);
     }
 
     // 클라이언트에게 (웹소켓 연결을 통해) 결과 전송
     private void sendClient(WebSocketSession session, TranslateResponseDto translateResponseDto) throws IOException {
-        logger.info("sendClient 호출됨, 제주어: {}, 번역된 텍스트: {}", translateResponseDto.getJeju(), translateResponseDto.getTranslated() );
+        logger.info(" [7] -------------------- sendClient 호출됨, 제주어: {}, 번역된 텍스트: {}", translateResponseDto.getJeju(), translateResponseDto.getTranslated() );
 
         Gson gson = new Gson();
         String json = gson.toJson(translateResponseDto);
@@ -276,6 +284,7 @@ public class AudioWebSocketHandler extends AbstractWebSocketHandler {
     // WebSocket 연결이 종료된 후 실행되는 메서드
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
+        logger.info(" [8] -------------------- afterConnectionClosed() 호출됨");
         // 세션 종료시 prevText 속성 제거
         session.getAttributes().remove("prevText");
         

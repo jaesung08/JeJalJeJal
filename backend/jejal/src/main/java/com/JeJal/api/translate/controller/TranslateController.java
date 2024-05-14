@@ -1,11 +1,11 @@
 package com.JeJal.api.translate.controller;
 
-import com.JeJal.api.translate.dto.TranslateResponseDto;
-import com.JeJal.global.common.response.BaseResponse;
 import com.JeJal.api.translate.dto.ClovaStudioResponseDto;
 import com.JeJal.api.translate.dto.TextDto;
+import com.JeJal.api.translate.dto.TranslateResponseDto;
 import com.JeJal.api.translate.service.ClovaStudioService;
 import com.JeJal.api.translate.service.TranslateService;
+import com.JeJal.global.common.response.BaseResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -36,7 +36,7 @@ public class TranslateController {
     @PostMapping("/clova")
     @Operation(summary = "제주 방언 번역 - clova", description = "제주 방언을 표준어로 번역합니다.")
     public ResponseEntity<BaseResponse<TranslateResponseDto>> translateByClova(@RequestBody TextDto textDto) {
-        ClovaStudioResponseDto clovaStudioResponseDto = clovaStudioService.translateByClova(textDto.getText());
+        ClovaStudioResponseDto clovaStudioResponseDto = clovaStudioService.translateByClova(textDto.getText(), "");
 
         String translatedText = clovaStudioResponseDto.getResult().getMessage().content;
         TranslateResponseDto translateResponseDto = TranslateResponseDto.builder()

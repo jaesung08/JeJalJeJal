@@ -1,18 +1,17 @@
 package com.JeJal.api.translate.service;
 
-import com.JeJal.global.common.exception.ErrorHttpStatus;
-import com.JeJal.global.common.exception.GlobalException;
 import com.JeJal.api.translate.dto.ClovaStudioRequestDto;
 import com.JeJal.api.translate.dto.ClovaStudioResponseDto;
 import com.JeJal.api.translate.dto.Message;
+import com.JeJal.global.common.exception.ErrorHttpStatus;
+import com.JeJal.global.common.exception.GlobalException;
+import java.util.Arrays;
+import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
-
-import java.util.Arrays;
-import java.util.List;
 
 @Service
 @Slf4j
@@ -46,9 +45,13 @@ public class ClovaStudioService {
 
 
     // clova Studio의 chatCompletion api 호출 메서드
-    public ClovaStudioResponseDto translateByClova(String userContent) {
+    public ClovaStudioResponseDto translateByClova(String jeju, String prev) {
         log.info("sendChatCompletion 실행됨");
-        log.info("userContent: " + userContent);
+        log.info("userContent: " + jeju +" " + prev);
+
+        //todo. curr, prev 로직 필요시 작성
+
+        String userContent = "\"" + jeju + "\" \"" + prev + "\"";
 
         List<Message> clovaMessages = Arrays.asList(
                 new Message("system", systemContent),

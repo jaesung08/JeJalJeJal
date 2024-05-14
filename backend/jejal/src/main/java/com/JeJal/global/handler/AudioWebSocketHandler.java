@@ -19,9 +19,7 @@ import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.kafka.common.protocol.types.Field.Str;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,6 +64,7 @@ public class AudioWebSocketHandler extends AbstractWebSocketHandler {
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
         super.afterConnectionEstablished(session);
+        session.getAttributes().put("prevText", ""); // 초기 prevText를 세션에 저장
         logger.info("WebSocket 연결 성공");
         createFolder(session.getId());
         // -> websocket 세션의 고유 식별자 사용하여 해당 세션에 대한 폴더 생성
@@ -204,17 +203,24 @@ public class AudioWebSocketHandler extends AbstractWebSocketHandler {
 
             // clova speech api 통신
             log.info("클로바 요청 {} 시작 {} , {}: ", i , filePath);
-            String jsonResponse = clovaspeechService.recognizeByFile(file, request);
 
             try{
+                String jsonResponse = clovaspeechService.recognizeByFile(file, request);
                 log.info("clova speech api 통신 완료");
                 JsonNode rootNode = objectMapper.readTree(jsonResponse); // 응답 JSON을 JsonNode로 변환
-                String textContent = rootNode.get("text").asText(); // 'text' 필드의 값을 추출
+                String jeju = rootNode.get("text").asText(); // 'text' 필드의 값을 추출
+
+                // 프론트에 stt 텍스트 원본 먼저 보내주기 (번역 되기전에 미리 프론트 보냄)
+                TranslateResponseDto translateResponseDto = TranslateResponseDto.builder()
+                        .jeju(jeju)
+                        .isFinish(false)
+                        .build();
+                sendClient(session, translateResponseDto);
 
                 try {
+                    // 번역 api 통신
                     log.info("번역 api 통신 시작");
-//                    sendTranslateServer(session, textContent);
-                    sendTranslateServer(session, textContent, isFinish);
+                    sendTranslateServer(session, jeju, isFinish);
                 } catch (Exception e) {
                     log.error("번역 api 통신 실패: " + e.getMessage(), e);
                     throw e;
@@ -233,25 +239,17 @@ public class AudioWebSocketHandler extends AbstractWebSocketHandler {
         }
     }
 
-    // clova speech로 stt 후 출력된 제주 방언 텍스트 -> jejuText
-//    private void sendTranslateServer(WebSocketSession session, String jejuText) throws IOException {
-//        logger.info("통역 요청 시작 jejuText : {}", jejuText );
-//        ClovaStudioResponseDto resultDto = clovaStudioService.translateByClova(jejuText);
-//        String translatedText = resultDto.getResult().getMessage().content;
-//
-//        TranslateResponseDto translateResponseDto = TranslateResponseDto.builder()
-//            .jeju(jejuText)
-//            .translated(translatedText)
-//            .build();
-//
-//        sendClient(session, translateResponseDto);
-//    }//
-
-
+    // todo. api처럼 prev 추가하는 수정 필요
     private void sendTranslateServer(WebSocketSession session, String jejuText, Boolean isFinish) throws IOException {
-        logger.info("통역 요청 시작 jejuText : {}", jejuText );
-        ClovaStudioResponseDto resultDto = clovaStudioService.translateByClova(jejuText);
+        String prevText = (String) session.getAttributes().getOrDefault("prevText", "");
+        logger.info("통역 요청 시작 jejuText : {}", jejuText);
+        logger.info("통역 요청 시작 prevText : {}", prevText);
+        ClovaStudioResponseDto resultDto = clovaStudioService.translateByClova(jejuText, prevText); //todo. prev 수정
+
+        // 번역 된 문장
         String translatedText = resultDto.getResult().getMessage().content;
+        // jejuText 텍스트를 prevText로 업데이트
+        session.getAttributes().put("prevText", jejuText);
 
         TranslateResponseDto translateResponseDto = TranslateResponseDto.builder()
                 .jeju(jejuText)
@@ -264,7 +262,7 @@ public class AudioWebSocketHandler extends AbstractWebSocketHandler {
 
     // 클라이언트에게 (웹소켓 연결을 통해) 결과 전송
     private void sendClient(WebSocketSession session, TranslateResponseDto translateResponseDto) throws IOException {
-        logger.info("sendClient 호출됨, {}, {}", translateResponseDto.getJeju(), translateResponseDto.getTranslated() );
+        logger.info("sendClient 호출됨, 제주어: {}, 번역된 텍스트: {}", translateResponseDto.getJeju(), translateResponseDto.getTranslated() );
 
         Gson gson = new Gson();
         String json = gson.toJson(translateResponseDto);
@@ -278,6 +276,10 @@ public class AudioWebSocketHandler extends AbstractWebSocketHandler {
     // WebSocket 연결이 종료된 후 실행되는 메서드
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
+        // 세션 종료시 prevText 속성 제거
+        session.getAttributes().remove("prevText");
+        
+        // 파일 디렉터리 제거
         File directoryToDelete = new File(RECORD_PATH + "/" + session.getId());
         if (directoryToDelete.exists()) {
             deleteDirectory(directoryToDelete);

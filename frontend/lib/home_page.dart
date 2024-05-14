@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_overlay_window/flutter_overlay_window.dart';
 import 'package:jejal_project/screens/history_screen.dart';
+import 'package:jejal_project/screens/home_screen.dart';
 import 'package:jejal_project/services/database_service.dart';
 import 'package:jejal_project/screens/select_file_screen.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
@@ -131,10 +132,8 @@ class HomePage extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => HistoryScreen(
-                        databaseService: DatabaseService(
-                        ),
-                      ),
+                      builder: (context) => GuideScreen(),
+
                     ),
                   );
                 },
@@ -192,102 +191,8 @@ class HomePage extends StatelessWidget {
               ),
             ),
             // 두 번째 버튼
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 25),
-              child: GestureDetector(
-                onTap: () {
-                  print('100');
 
-                  // 번역기 사용 버튼 클릭 시 동작 구현
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => SelectFileScreen()),
-                  );
-                },
-                child: Container(
-                  height: 200,
-                  decoration: BoxDecoration(
-                    color: Colors.orange.shade300, // 버튼 배경색
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 40),
-                    child: Row(
-                      children: [
-                        Stack(
-                          children: [
-                            Image.asset('assets/images/translating.png',
-                                width: 90),
-                          ],
-                        ),
-                        const Spacer(), // 이미지와 텍스트 사이의 공간을 분리
-                        Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 50),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: const [
-                              Text(
-                                '파일 통역',
-                                style: TextStyle(
-                                  fontSize: 27,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white,
-                                ),
-                              ),
-                              Spacer(),
-                              Text(
-                                '음성 파일을 \n 바로 통역해보세요',
-                                style: TextStyle(
-                                  fontSize: 15,
-                                  color: Colors.white,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            // 앱 사용 설명서
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 5),
-              child: GestureDetector(
-                onTap: () {
-                  print('101');
 
-                  // 번역기 사용 버튼 클릭 시 동작 구현
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => GuideScreen()),
-                  );
-                },
-                child: Container(
-                  height: 100,
-                  decoration: BoxDecoration(
-                    color: Colors.black12, // 버튼 배경색
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 40),
-                    child: Row(
-                      children: const [
-                        Text(
-                          '사용설명서', // 텍스트 추가
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black87,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ),
           ],
         ),
       ),

@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_overlay_window/flutter_overlay_window.dart';
+import 'package:jejal_project/screens/home_screen.dart';
 import 'package:jejal_project/services/database_service.dart';
 import 'package:jejal_project/services/set_stream.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -51,38 +52,27 @@ class MyApp extends StatefulWidget {
   const MyApp({Key? key, required this.databaseService}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    print('109');
-
-    return MaterialApp(
-      theme: ThemeData(
-        fontFamily: "Pretendard",
-      ),
-      home: HomePage(databaseService: databaseService),
-    );
-  }
-
-  @override
-  State<MyApp> createState() => _MyAppState();
+  _MyAppState createState() => _MyAppState();
 }
 
 class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
-    print('110');
-
+    // 이제 widget.databaseService를 통해 안전하게 접근 가능
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: HomePage(databaseService: DatabaseService()),
+      home: HomeScreen(), // databaseService를 HomeScreen에 전달
     );
   }
 
   @override
   void initState() {
-    print('111');
     super.initState();
+    // 예를 들어 여기에서 databaseService 초기화 로직을 수행할 수 있음
+    // 사용 예: widget.databaseService.initialize();
   }
 }
+
 
 Future<void> _requestPermissions() async {
   print('112');

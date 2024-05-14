@@ -49,9 +49,10 @@ public class ClovaStudioService {
         log.info(" [9] ------------------------ ClovaStudioService - translateByClova() ");
         log.info(" [9] ------------------------ jeju:{}, prev:{} ", jeju ,prev);
 
-        //todo. curr, prev 로직 필요시 작성
+        //todo. prev 안쓰는 거 확정되면 전체 코드 수정
 
-        String userContent = "\"" + jeju + "\" \"" + prev + "\"";
+//        String userContent = "\"" + jeju + "\" \"" + prev + "\"";
+        String userContent = jeju;
         log.info(" [9] ------------------------- userContent : {} ", userContent);
 
         List<Message> clovaMessages = Arrays.asList(

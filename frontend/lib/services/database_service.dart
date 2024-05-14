@@ -84,4 +84,44 @@ class DatabaseService {
       conflictAlgorithm: ConflictAlgorithm.replace,
     );
   }
+
+  // 최근 대화 목록을 가져오는 메서드
+  Future<List<Conversation>> getRecentConversations(int limit) async {
+    print('66');
+
+    final db = await _databaseHelper.database;
+    final List<Map<String, dynamic>> maps = await db.query(
+      'conversations',
+      orderBy: 'date DESC', // 날짜 기준으로 내림차순 정렬
+      limit: limit, // 가져올 행의 수 제한
+    );
+    return List.generate(maps.length, (i) {
+      print('67');
+
+      return Conversation.fromMap(maps[i]); // Map을 Conversation 객체로 변환
+    });
+  }
+
+  // Get unique recent conversations based on phone number
+  Future<List<Conversation>> getUniqueRecentConversations(int limit) async {
+    final db = await _databaseHelper.database;
+    final List<Map<String, dynamic>> maps = await db.query(
+      'conversations',
+      orderBy: 'date DESC',
+    );
+
+    var uniqueConversations = <String, Conversation>{};
+
+    for (var map in maps) {
+      var conversation = Conversation.fromMap(map);
+      if (!uniqueConversations.containsKey(conversation.phoneNumber)) {
+        uniqueConversations[conversation.phoneNumber] = conversation;
+        if (uniqueConversations.length == limit) break;
+      }
+    }
+
+    return uniqueConversations.values.toList();
+  }
+
 }
+

@@ -53,7 +53,7 @@ public class ClovaStudioService {
 
 //        String userContent = "\"" + jeju + "\" \"" + prev + "\"";
         String userContent = jeju;
-        log.info(" [9] ------------------------- userContent : {} ", userContent);
+        log.info(" [9] ------------------------ userContent : {} ", userContent);
 
         List<Message> clovaMessages = Arrays.asList(
                 new Message("system", systemContent),

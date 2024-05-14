@@ -5,8 +5,8 @@ class ReceiveMessageModel {
   String? translated;
   String? timestamp;
   bool? isFinish;
-  // translated 값이 null인지 확인하는 메서드 추가
-  bool get isTranslated => translated != null;
+
+  bool get isTranslated => translated != "wait";
 
   ReceiveMessageModel({
     this.id,
@@ -17,14 +17,25 @@ class ReceiveMessageModel {
     this.isFinish,
   });
 
+  ReceiveMessageModel copyWith({
+    String? translated,
+  }) {
+    return ReceiveMessageModel(
+      id: id,
+      conversationId: conversationId,
+      jeju: jeju,
+      translated: translated ?? this.translated,
+      timestamp: timestamp,
+      isFinish: isFinish,
+    );
+  }
+
   ReceiveMessageModel.fromJson(Map<String, dynamic> json) {
-    // JSON에서 jeju와 translated 값을 파싱
     jeju = json['jeju'];
     translated = json['translated'];
   }
 
   Map<String, dynamic> toJson() {
-    // jeju와 translated 값을 JSON으로 변환
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['jeju'] = this.jeju;
     data['translated'] = this.translated;
@@ -32,7 +43,6 @@ class ReceiveMessageModel {
   }
 
   Map<String, dynamic> toMap() {
-    // 통화 중 데이터베이스에 저장할 항목
     return {
       'id': id,
       'conversation_id': conversationId,

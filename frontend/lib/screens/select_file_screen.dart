@@ -1,17 +1,10 @@
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:device_info_plus/device_info_plus.dart';
 import '../services/database_service.dart';
-import '../widgets/head_bar.dart';
-import 'result_detail_screen.dart';
-import 'package:styled_text/tags/styled_text_tag.dart';
-import 'package:styled_text/widgets/styled_text.dart';
 import 'package:jejal_project/models/file_result_model.dart';
-import 'package:jejal_project/style/color_style.dart';
 
 class SelectFileScreen extends StatefulWidget {
   const SelectFileScreen({Key? key, required this.databaseService}) : super(key: key);

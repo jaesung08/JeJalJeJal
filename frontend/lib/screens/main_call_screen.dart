@@ -8,8 +8,6 @@ import 'package:jejal_project/models/conversation.dart';
 import 'package:jejal_project/services/database_service.dart';
 import 'package:jejal_project/screens/history_chat_screen.dart';
 
-import '../services/contacts_service.dart';
-
 class MainCallScreen extends StatelessWidget {
   final DatabaseService databaseService;
 

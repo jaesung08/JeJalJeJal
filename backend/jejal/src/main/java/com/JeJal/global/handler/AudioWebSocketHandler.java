@@ -286,7 +286,7 @@ public class AudioWebSocketHandler extends AbstractWebSocketHandler {
     // WebSocket 연결이 종료된 후 실행되는 메서드
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
-        logger.info(" [8] -------------------- afterConnectionClosed() 호출됨");
+        logger.info(" [8] --------------------- afterConnectionClosed() 호출됨");
         // 세션 종료시 prevText 속성 제거
         session.getAttributes().remove("prevText");
         

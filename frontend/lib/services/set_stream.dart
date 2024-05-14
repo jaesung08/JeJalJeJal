@@ -46,6 +46,10 @@ void initPhoneStateListener() {
         print('통화 시작됨.');
         print('전화 번호: $phoneNumber');
 
+        // 오버레이 데이터 초기화
+        FlutterOverlayWindow.shareData(jsonEncode({'clear': true}));
+        print('오버레이 클리어');
+
         List<Contact>? contacts = await ContactsService.getContactsForPhone(phoneNumber!);
         String? name;
 
@@ -62,6 +66,7 @@ void initPhoneStateListener() {
         ws = WebSocketChannel.connect(
           Uri.parse('wss://k10a406.p.ssafy.io/api/record'),
         );
+        print('웹소켓 연결 시작');
 
         //시작 알림 메시지
         var startMessage = SendMessageModel(
@@ -70,6 +75,7 @@ void initPhoneStateListener() {
         );
 
         ws?.sink.add(jsonEncode(startMessage));
+        print('startMessage JSON으로 인코딩해서 추가하기');
 
         //보낼 파일 찾기
         // var temp = await recentFile(recordDirectory!);
@@ -99,16 +105,19 @@ void initPhoneStateListener() {
 
         //결과 데이터 받아오기
         ws?.stream.listen((msg) async {
-          if (msg != null) {
-            ReceiveMessageModel receivedResult = ReceiveMessageModel.fromJson(jsonDecode(msg));
-            receivedResult.conversationId = conversationId;
-            //위젯으로 보내주기
-            FlutterOverlayWindow.shareData(msg);
-            await DatabaseService.instance.insertMessage(receivedResult, conversationId!);
+              print('결과 데이터 받아오기 성공');
+              if (msg != null) {
+                ReceiveMessageModel receivedResult = ReceiveMessageModel.fromJson(jsonDecode(msg));
+                receivedResult.conversationId = conversationId;
+                //위젯으로 보내주기
+                FlutterOverlayWindow.shareData(msg);
+                print('결과 데이터 위젯으로 전송(shareData)');
+                await DatabaseService.instance.insertMessage(receivedResult, conversationId!);
 
-            //마지막 데이터 받아오고 나서 웹소켓 닫기
-            if(receivedResult.isFinish == true){
+                //마지막 데이터 받아오고 나서 웹소켓 닫기
+                if(receivedResult.isFinish == true){
               ws?.sink.close();
+              print('마지막 데이터 받아오고 나서 웹소켓 연결 종료');
             }
           }
         });

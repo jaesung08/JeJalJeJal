@@ -106,6 +106,8 @@ flutter:
     - assets/images/translating.png
     - assets/images/call_list.png
     - assets/images/jejal_logo.png
+    - assets/images/add_folder.gif
+    - assets/images/overlay_loading.gif
   # To add assets to your application, add an assets section, like this:
   # assets:
   #   - images/a_dot_burr.jpeg

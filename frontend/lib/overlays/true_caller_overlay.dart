@@ -1,15 +1,14 @@
 // true_caller_overlay.dart
 import 'dart:convert';
-import 'dart:isolate'; // 별도의 Isolate를 사용하기 위한 import
 import 'package:flutter/material.dart';
 import 'package:flutter_overlay_window/flutter_overlay_window.dart';
 import 'package:jejal_project/overlays/tangerine_icon.dart';
 import 'package:jejal_project/services/database_service.dart';
 import 'package:jejal_project/widgets/text_segment_box.dart';
+import 'package:jejal_project/widgets/loading_text.dart';
 import 'package:jejal_project/models/receive_message_model.dart';
 
 class TrueCallerOverlay extends StatefulWidget {
-
   const TrueCallerOverlay({Key? key}) : super(key: key);
 
   @override
@@ -18,40 +17,77 @@ class TrueCallerOverlay extends StatefulWidget {
 
 class _TrueCallerOverlayState extends State<TrueCallerOverlay> {
   final DatabaseService _databaseService = DatabaseService();
-  int _conversationId = 0;
+  final ScrollController _scrollController = ScrollController();
 
   bool showIcon = true;
   bool showBox = false;
 
   List<ReceiveMessageModel> messages = [];
+  int currentIndex = -1;
 
   @override
   void initState() {
-    print('21');
-
+    print('1. 오버레이 initState 호출');
     super.initState();
     print('22');
 
-    //
     FlutterOverlayWindow.overlayListener.listen((newResult) async {
-      var decodedResult = json.decode(newResult); // JSON 문자열을 디코드
-      print('23');
-
-      // 새 메시지를 리스트 앞에 추가
-      ReceiveMessageModel message = ReceiveMessageModel.fromJson(decodedResult);
       setState(() {
-        print('24');
+        if (newResult == '{"clear":true}') {
+          messages.clear();
+          currentIndex = -1;
+          print('2. 메시지 초기화 확인');
+        } else {
+          var decodedResult = json.decode(newResult);
+          print('3. 수신 데이터 확인: $decodedResult');
 
-        messages.insert(0, message);
+          ReceiveMessageModel newMessage =
+              ReceiveMessageModel.fromJson(decodedResult);
+          print('4. 새 메시지 확인: ${newMessage.jeju}, ${newMessage.translated}');
+
+          if (newMessage.translated == "wait") {
+            currentIndex++;
+            messages.add(newMessage);
+            print('5. 새 메시지 추가 확인: ${newMessage}');
+            print('"wait" 메시지 도착 시간 출력: ${DateTime.now()}');
+            _scrollToBottom(); // 새 메시지 추가 후 스크롤 위치 이동
+          } else {
+            int existingIndex = messages.indexWhere((message) =>
+                message.jeju == newMessage.jeju &&
+                message.translated == "wait");
+            print('6. 기존 메시지 인덱스 확인: $existingIndex');
+
+            if (existingIndex != -1) {
+              messages[existingIndex] = messages[existingIndex].copyWith(
+                translated: newMessage.translated,
+              );
+              print(
+                  '7. 인덱스 $existingIndex에 맞는 메시지 업데이트 확인: ${newMessage.isTranslated}');
+              print('번역된 메시지 도착 시간 출력: ${DateTime.now()}'); // 번역된 메시지 도착 시간 출력
+              _scrollToBottom(); // 메시지 업데이트 후 스크롤 위치 이동
+            }
+          }
+
+          if (newResult != '{"clear":true}') {
+            print('Received data from overlay window:');
+            print('Jeju: ${decodedResult['jeju']}');
+            print('Translated: ${decodedResult['translated']}');
+            print('---');
+          }
+        }
       });
+    });
+  }
 
-      // 콘솔에 받아온 데이터 출력
-      print('Received data from overlay window:');
-      print('Jeju: ${decodedResult['jeju']}');
-      print('Translated: ${decodedResult['translated']}');
-      print('conversationId: $_conversationId' );
-      print('---');
-
+  void _scrollToBottom() {
+    WidgetsBinding.instance?.addPostFrameCallback((_) {
+      if (_scrollController.hasClients) {
+        _scrollController.animateTo(
+          _scrollController.position.maxScrollExtent,
+          duration: Duration(milliseconds: 300),
+          curve: Curves.easeOut,
+        );
+      }
     });
   }
 
@@ -59,9 +95,6 @@ class _TrueCallerOverlayState extends State<TrueCallerOverlay> {
   Widget build(BuildContext context) {
     print('25');
 
-    // 오버레이 위젯 UI Rntjd
-    // 1. 아이콘 표시 (탭하면 박스 표시/숨김)
-    // 2. 박스 표시 시 _buildBox() 호출
     return Material(
       color: Colors.transparent,
       borderRadius: BorderRadius.circular(12.0),
@@ -99,12 +132,9 @@ class _TrueCallerOverlayState extends State<TrueCallerOverlay> {
   Widget _buildBox() {
     print('26');
 
-    // 실시간 통역 결과를 보여주는 박스 UI 구성
-    // 1. 제주 방언 텍스트 표시
-    // 2. 번역된 표준어 텍스트 표시
     return Positioned(
-      top: 20.0, // 원하는 위치 조정 가능
-      right: 10.0, // 원하는 위치 조정 가능
+      top: 20.0,
+      right: 10.0,
       child: Container(
         margin: const EdgeInsets.only(top: 10.0),
         padding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 16.0),
@@ -115,39 +145,22 @@ class _TrueCallerOverlayState extends State<TrueCallerOverlay> {
           borderRadius: BorderRadius.circular(12.0),
         ),
         child: SingleChildScrollView(
-          reverse: true, // 최신 메시지를 맨 아래에 위치시키기 위해 reverse 사용
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                "실시간 통역 중",
-                style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
-              ),
+              LoadingText(text: "실시간 통역 중"),
+              // Text(
+              //   "실시간 통역 중",
+              //   style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
+              // ),
               Divider(),
-              // for (var message in messages) ...[ // 모든 메시지를 반복적으로 표시
-              //   Text(
-              //     'Jeju: ${message.jeju ?? "No data"}',
-              //     style: TextStyle(
-              //       color: Colors.white,
-              //       fontSize: 16,
-              //       fontWeight: FontWeight.bold,
-              //     ),
-              //   ),
-              //   SizedBox(height: 8),
-              //   Text(
-              //     'Translated: ${message.translated ?? "No data"}',
-              //     style: TextStyle(
-              //       color: Colors.white,
-              //       fontSize: 14,
-              //       fontWeight: FontWeight.normal,
-              //     ),
-              //   ),
-              //   SizedBox(height: 20),
-              // ],
-              ...messages.map((message) => TextSegmentBox(
-                jejuText: message.jeju ?? "No data",
-                translatedText: message.translated ?? "No data",
-              )).toList(),
+              ...messages
+                  .map((message) => TextSegmentBox(
+                        jejuText: message.jeju ?? "No data",
+                        translatedText: message.translated,
+                        isLoading: message.translated == "wait",
+                      ))
+                  .toList(),
             ],
           ),
         ),
@@ -155,11 +168,9 @@ class _TrueCallerOverlayState extends State<TrueCallerOverlay> {
     );
   }
 
-
   void updateOverlaySettings(bool showIcon) async {
     print('27');
 
-    // 오버레이 설정 업데이트(아이콘 표시 여부에 따라 크기 조정)
     if (await FlutterOverlayWindow.isActive()) {
       print('28');
 
@@ -172,7 +183,6 @@ class _TrueCallerOverlayState extends State<TrueCallerOverlay> {
         overlayContent: "제주 방언 번역기",
         flag: OverlayFlag.defaultFlag,
         visibility: NotificationVisibility.visibilityPublic,
-        // positionGravity: PositionGravity.auto,
         startPosition: const OverlayPosition(0, 25),
       );
     }

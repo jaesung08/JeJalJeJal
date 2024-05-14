@@ -5,6 +5,7 @@ import 'package:dio/dio.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:device_info_plus/device_info_plus.dart';
+import '../services/database_service.dart';
 import '../widgets/head_bar.dart';
 import 'result_detail_screen.dart';
 import 'package:styled_text/tags/styled_text_tag.dart';
@@ -12,116 +13,62 @@ import 'package:styled_text/widgets/styled_text.dart';
 import 'package:jejal_project/models/file_result_model.dart';
 import 'package:jejal_project/style/color_style.dart';
 
-
 class SelectFileScreen extends StatefulWidget {
-  const SelectFileScreen({Key? key}) : super(key: key);
+  const SelectFileScreen({Key? key, required this.databaseService}) : super(key: key);
+  final DatabaseService databaseService;
 
   @override
-  State<SelectFileScreen> createState() => _SelectFileScreenState();
+  State<SelectFileScreen> createState() => _SelectStepScreen();
 }
 
-class _SelectFileScreenState extends State<SelectFileScreen> {
+class _SelectStepScreen extends State<SelectFileScreen> {
   String? _filePath;
-  String result = "a";
-  int counter = 0;
-  bool isSend = false;
+  bool isSending = false;
+  FileResultModel? resultModel;
 
-  late String androidId;
-
-  @override
-  void initState() {
-    print('42');
-
-    super.initState();
-    print('43');
-
-    initializer();
-    print('44');
-
-  }
-
-  void initializer() async {
-    print('45');
-
-    // Get Android ID
-    DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
-    print('46');
-
-    AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
-    androidId = androidInfo.id;
-
-    setState(() {
-      print('47');
-
-      isSend = false;
-    });
-  }
-
-  Future<void> _openFilePicker() async {
-    print('48');
-
+  void _openFilePicker() async {
     FilePickerResult? fileResult = await FilePicker.platform.pickFiles();
     if (fileResult != null) {
-      print('49');
-
       setState(() {
-        print('50');
-
         _filePath = fileResult.files.single.path;
-        counter = counter + 1;
-        isSend = true;
+        isSending = true;
       });
       _sendFile();
-      print('51');
-
     }
   }
 
   void _sendFile() async {
-    print('52');
-
+    if (_filePath == null) return;
     final file = File(_filePath!);
     final formData = FormData.fromMap({
       'file': await MultipartFile.fromFile(file.path),
-      'androidId': androidId,
     });
 
     try {
-      print('53');
-
       final response = await Dio().post(
-        'https://k10a406.p.ssafy.io/api/clovaspeech/upload',
+        'https://k10a406.p.ssafy.io/api/clovaspeech/upload', // Update your API endpoint
         data: formData,
       );
 
       if (response.statusCode == 200) {
-        print('54');
-
-        final resultModel = FileResultModel.fromJson(response.data);
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) => ResultDetailScreen(fileResult: resultModel)),
-        );
+        setState(() {
+          resultModel = FileResultModel.fromJson(response.data);
+          isSending = false; // Stop showing the spinner after getting the response
+        });
       }
-    } on DioError catch (e) {
+    } catch (e) {
       setState(() {
-        print('55');
-
-        isSend = false;
+        isSending = false;
       });
-      final errorMessage = e.response != null ? e.response!.data.toString() : e.message;
       showDialog(
         context: context,
         builder: (context) => AlertDialog(
-          title: const Text('Error'),
-          content: Text('Failed to upload file: $errorMessage'),
-          actions: <Widget>[
+          title: Text('Error'),
+          content: Text('Failed to upload file: $e'),
+          actions: [
             TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text('OK'),
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text('OK'),
             ),
           ],
         ),
@@ -129,108 +76,46 @@ class _SelectFileScreenState extends State<SelectFileScreen> {
     }
   }
 
-
-
   @override
   Widget build(BuildContext context) {
-    print('56');
-
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-            '음성 파일 통역',
-            style: TextStyle(fontWeight: FontWeight.bold)
-        ),
+        title: Text('음성 파일 통역'),
       ),
       body: Center(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const SizedBox(height: 10),
-              SizedBox(
-                width: 300,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        StyledText(
-                          text: '<b>통화 음성 파일</b>을',
-                          tags: {
-                            'b': StyledTextTag(
-                                style: const TextStyle(
-                                    color: ColorStyles.themeOrange,
-                                    fontSize: 25,
-                                    fontWeight: FontWeight.w700
-                                ))
-                          },
-                          style: const TextStyle(
-                            color: ColorStyles.textDarkGray,
-                            fontSize: 22,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-
-                        //파일이 선택됐는지 여부에 따라 다르게 출력
-                        StyledText(
-                            text: isSend ? '통역 중 입니다' : '통역할 수 있습니다',
-                            style: const TextStyle(
-                              color: ColorStyles.textDarkGray,
-                              fontSize: 22,
-                              fontWeight: FontWeight.bold,
-                            )),
-                      ],
-                    ),
-
-                    const SizedBox(width: 12),
-
-                    //파일이 선택됐는지 여부에 따라 다르게 출력
-                    Image.asset(
-                      !isSend
-                          ? 'assets/images/file.png'
-                          : 'assets/images/translating.png',
-                      height: 101,
-                      width: 79,
-                    )
-                  ],
-                ),
-              ),
-
-              const SizedBox(height: 40),
-
-              //파일 선택 전 보여질 이미지
-              Visibility(
-                visible: !isSend,
-                child: GestureDetector(
-                  onTap: _openFilePicker,
-                  child: Image.asset(
-                    'assets/images/select_file.png',
-                    height: 280,
-                    width: 280,
-                  ),
-                ),
-              ),
-
-              //파일 선택 후 보여질 로딩 스피너 (api 호출 후 요청 기다릴 때)
-              Visibility(
-                visible: isSend,
-                child: const SizedBox(
-                  height: 70,
-                  width: 70,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 18,
-                    backgroundColor: Colors.black,
-                    color: ColorStyles.themeOrange,
-                  ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            if (isSending) ...[
+              CircularProgressIndicator(),
+              SizedBox(height: 20),
+              Text('통화 음성 파일을 통역 중입니다...'),
+            ] else if (resultModel != null) ...[
+              _buildResultDisplay(),
+            ] else ...[
+              ElevatedButton(
+                onPressed: _openFilePicker,
+                child: Text('파일 선택'),
+                style: ElevatedButton.styleFrom(
+                  foregroundColor: Colors.white, backgroundColor: Colors.blue, // Text color
                 ),
               ),
             ],
-          ),
+          ],
         ),
       ),
+    );
+  }
+
+
+  Widget _buildResultDisplay() {
+    return Column(
+      children: resultModel!.data!.segments!.map((segment) {
+        return ListTile(
+          title: Text(segment.jeju ?? 'No Jeju Text'),
+          subtitle: Text(segment.translated ?? 'No Translation'),
+        );
+      }).toList(),
     );
   }
 }

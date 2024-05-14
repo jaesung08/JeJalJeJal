@@ -16,9 +16,6 @@ server:
 spring:
   application:
     name: JeJal
-  datasource:
-    url: jdbc:sqlite:mydb.db
-    driver-class-name: org.sqlite.JDBC
   jpa:
     database-platform: org.hibernate.community.dialect.SQLiteDialect
     hibernate:

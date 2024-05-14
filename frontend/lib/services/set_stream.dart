@@ -5,7 +5,6 @@ import 'dart:typed_data';
 
 import 'package:contacts_service/contacts_service.dart';
 import 'package:device_info_plus/device_info_plus.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_overlay_window/flutter_overlay_window.dart';
 import 'package:jejal_project/services/recent_file.dart';
 import 'package:phone_state/phone_state.dart';
@@ -50,16 +49,18 @@ void initPhoneStateListener() {
         FlutterOverlayWindow.shareData(jsonEncode({'clear': true}));
         print('오버레이 클리어');
 
-        List<Contact>? contacts = await ContactsService.getContactsForPhone(phoneNumber!);
+        List<Contact>? contacts =
+            await ContactsService.getContactsForPhone(phoneNumber!);
         String? name;
 
-        if (contacts != null && contacts.isNotEmpty) {
+        if (contacts.isNotEmpty) {
           name = contacts.first.displayName;
         } else {
           name = "제주도민";
         }
 
-        conversationId = await DatabaseService.instance.insertConversation(phoneNumber!, name!);
+        conversationId = await DatabaseService.instance
+            .insertConversation(phoneNumber!, name!);
         print('상대방 이름: $name');
 
         //웹소켓 연결
@@ -84,45 +85,50 @@ void initPhoneStateListener() {
         //2초마다 파일 전송
 
         timer = Timer.periodic(const Duration(seconds: 2), (timer) async {
-            var temp = await recentFile(recordDirectory!);
-            targetFile = temp is FileSystemEntity ? temp as File : null;
-            if (targetFile is File) {
-              print('파일 찾음: ${targetFile?.path}');
-              Uint8List entireBytes = targetFile!.readAsBytesSync();
-              var nextOffset = entireBytes.length;
+          var temp = await recentFile(recordDirectory!);
+          targetFile = temp is FileSystemEntity ? temp as File : null;
+          if (targetFile is File) {
+            print('파일 찾음: ${targetFile?.path}');
+            Uint8List entireBytes = targetFile!.readAsBytesSync();
+            var nextOffset = entireBytes.length;
 
-              // 범위 초과 문제를 해결하기 위해 nextOffset 이전의 데이터만 추출
-              if (offset < nextOffset) {
-                var splittedBytes = entireBytes.sublist(offset, nextOffset);
-                print('전송 데이터: $splittedBytes');
-                ws?.sink.add(splittedBytes);
-              }
-
-              offset = nextOffset;
+            // 범위 초과 문제를 해결하기 위해 nextOffset 이전의 데이터만 추출
+            if (offset < nextOffset) {
+              var splittedBytes = entireBytes.sublist(offset, nextOffset);
+              print('전송 데이터: $splittedBytes');
+              ws?.sink.add(splittedBytes);
             }
-          });
-        }
 
-        //결과 데이터 받아오기
-        ws?.stream.listen((msg) async {
-              print('결과 데이터 받아오기 성공');
-              if (msg != null) {
-                ReceiveMessageModel receivedResult = ReceiveMessageModel.fromJson(jsonDecode(msg));
-                receivedResult.conversationId = conversationId;
-                //위젯으로 보내주기
-                FlutterOverlayWindow.shareData(msg);
-                print('결과 데이터 위젯으로 전송(shareData)');
-                await DatabaseService.instance.insertMessage(receivedResult, conversationId!);
-
-                //마지막 데이터 받아오고 나서 웹소켓 닫기
-                if(receivedResult.isFinish == true){
-              ws?.sink.close();
-              print('마지막 데이터 받아오고 나서 웹소켓 연결 종료');
-            }
+            offset = nextOffset;
           }
         });
       }
-     else if (event.status == PhoneStateStatus.CALL_ENDED) {
+
+      //결과 데이터 받아오기
+      ws?.stream.listen((msg) async {
+        print('결과 데이터 받아오기 성공');
+        if (msg != null) {
+          ReceiveMessageModel receivedResult =
+              ReceiveMessageModel.fromJson(jsonDecode(msg));
+          receivedResult.conversationId = conversationId;
+          //위젯으로 보내주기
+          FlutterOverlayWindow.shareData(msg);
+          print('결과 데이터 위젯으로 전송(shareData)');
+
+          // translated 값이 "wait"이 아닐 때만 데이터베이스에 저장
+          if (receivedResult.translated != "wait") {
+            await DatabaseService.instance
+                .insertMessage(receivedResult, conversationId!);
+          }
+
+          //마지막 데이터 받아오고 나서 웹소켓 닫기
+          if (receivedResult.isFinish == true) {
+            ws?.sink.close();
+            print('마지막 데이터 받아오고 나서 웹소켓 연결 종료');
+          }
+        }
+      });
+    } else if (event.status == PhoneStateStatus.CALL_ENDED) {
       print('통화 종료.');
 
       //타이머 취소, 남은 데이터 보내주기
@@ -152,5 +158,3 @@ void initPhoneStateListener() {
     }
   });
 }
-
-

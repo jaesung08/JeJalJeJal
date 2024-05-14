@@ -30,11 +30,11 @@ class TextSegmentBox extends StatelessWidget {
               jejuText,
               style: TextStyle(fontSize: 16.0, color: Colors.black87),
             ),
+            if(translatedText != "제잘") const Divider(color: Colors.white),
             if (isLoading)
-              Image.asset('assets/images/overlay_loading.gif')
+              Image.asset('assets/images/translated_loading.gif')
             else if (translatedText != null && translatedText != "제잘")
               ...[
-                const Divider(color: Colors.white),
                 Text(
                   translatedText!,
                   style: TextStyle(

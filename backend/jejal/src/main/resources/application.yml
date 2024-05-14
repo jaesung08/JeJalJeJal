@@ -16,10 +16,22 @@ server:
 spring:
   application:
     name: JeJal
+  datasource:
+    hikari:
+      driver-class-name: org.mariadb.jdbc.Driver
+      username: S10P31A406
+      password: dy12tnf34
+    url: jdbc:mariadb://k10a406.p.ssafy.io:3306/S10P31A406?serverTimezone=UTC&useUnicode=true&characterEncoding=utf8
   jpa:
-    database-platform: org.hibernate.community.dialect.SQLiteDialect
+    open-in-view: true
     hibernate:
       ddl-auto: update
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+    show-sql: false
+    properties:
+      hibernate.format_sql: false
+      dialect: org.hibernate.dialect.MySQL8InnoDBDialect
   servlet:
     multipart:
       max-file-size: 20MB

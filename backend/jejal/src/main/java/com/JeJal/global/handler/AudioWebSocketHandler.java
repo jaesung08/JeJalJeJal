@@ -64,7 +64,8 @@ public class AudioWebSocketHandler extends AbstractWebSocketHandler {
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
         super.afterConnectionEstablished(session);
         session.getAttributes().put("prevText", ""); // 초기 prevText를 세션에 저장
-        logger.info(" [0] --------------------------WebSocket 연결 성공");
+        int count = (int) session.getAttributes().getOrDefault("count", 0);
+        logger.info(" [0] 카운트 : {} --------------------------WebSocket 연결 성공", count);
         createFolder(session.getId());
         // -> websocket 세션의 고유 식별자 사용하여 해당 세션에 대한 폴더 생성
         // 오디오 레코드 파일 저장을 위해 사용
@@ -99,6 +100,12 @@ public class AudioWebSocketHandler extends AbstractWebSocketHandler {
         Map<String, String> params = new HashMap<>();
         params.put("sessionId", session.getId());
         params.put("state", "1");
+
+        // 세션 코드 반복 횟수
+        int count = (int) session.getAttributes().get("count");
+        count++;  // 카운트 증가
+        session.getAttributes().put("count", count);
+        logger.info("카운트 증가 : {} ", count);
 
         try {
             Map<String, Object> untruncResult = restApiUtil.requestGet(untruncUrl, params);
@@ -166,6 +173,13 @@ public class AudioWebSocketHandler extends AbstractWebSocketHandler {
         int stateValue = (int) Math.floor((double) messageMap.get("state"));
         String androidId = (String) messageMap.getOrDefault("androidId", "tempId");
         session.getAttributes().put("androidId", androidId);
+
+        // 세션 코드 반복 횟수
+        int count = (int) session.getAttributes().get("count");
+        count++;  // 카운트 증가
+        session.getAttributes().put("count", count);
+        logger.info("카운트 증가 : {} ", count);
+
         switch (stateValue) {
             case 0:
                 logger.info("Send session info : {} , androidId : {}", session.getId(), androidId);
@@ -180,7 +194,7 @@ public class AudioWebSocketHandler extends AbstractWebSocketHandler {
                 // Untrunc 및 ClovaSpeech 처리
                 Map<String, Object> untruncResult = restApiUtil.requestGet(untruncUrl, params);
                 List<String> newFile = (List<String>) untruncResult.get("new_file");
-                log.info("마지막 처리 파일 개수 !! : ", newFile.size());
+                log.info("마지막 횟수 확인 : {} 마지막 처리 파일 개수 !! : {} ", count, newFile.size());
                 if (!newFile.isEmpty()) { // newFile 리스트가 비어있지 않은 경우에만 실행
                     log.info("=======통화 종료 후 파일 있음========================");
                     String newFilePath = RECORD_PATH + "/" + sessionId + "/part/";
@@ -208,8 +222,10 @@ public class AudioWebSocketHandler extends AbstractWebSocketHandler {
 
     // 새로생성된 part파일을 clover api로 전송.
     private boolean sendClovaSpeechServer(List<String> newFile, String newFilePath, WebSocketSession session, Boolean isFinish) throws Exception {
-        logger.info(" [5] -------------------- sendClovaSpeechServer() 호출됨");
-        logger.info(" [5] -------------------- isFinish: {}", isFinish);
+        int count = (int) session.getAttributes().get("count");
+
+        logger.info(" [5] [{}] -------------------- sendClovaSpeechServer() 호출됨", count);
+        logger.info(" [5] [{}] -------------------- isFinish: {}", isFinish, count);
         boolean allSuccess = true;
         // JSON 데이터 처리를 위한 ObjectMapper 인스턴스 생성
         ObjectMapper objectMapper = new ObjectMapper();
@@ -279,7 +295,8 @@ public class AudioWebSocketHandler extends AbstractWebSocketHandler {
     }
 
     private void sendTranslateServer(WebSocketSession session, String jejuText, Boolean isFinish) throws IOException {
-        logger.info(" [6] ------------------ sendTranslateServer() 호출됨");
+        int count = (int) session.getAttributes().get("count");
+        logger.info(" [6] [{}] ------------------ sendTranslateServer() 호출됨", count);
 
         String prevText = (String) session.getAttributes().getOrDefault("prevText", "");
         logger.info(" [6] ------------------ 통역 요청 시작 jejuText : {}", jejuText);
@@ -303,7 +320,8 @@ public class AudioWebSocketHandler extends AbstractWebSocketHandler {
 
     // 클라이언트에게 (웹소켓 연결을 통해) 결과 전송
     private void sendClient(WebSocketSession session, TranslateResponseDto translateResponseDto) throws IOException {
-        logger.info(" [7] -------------------- sendClient 호출됨, 제주어: {}, 번역된 텍스트: {}", translateResponseDto.getJeju(), translateResponseDto.getTranslated());
+        int count = (int) session.getAttributes().get("count");
+        logger.info(" [7] [{}] -------------------- sendClient 호출됨, 제주어: {}, 번역된 텍스트: {}", translateResponseDto.getJeju(), translateResponseDto.getTranslated(), count);
 
         Gson gson = new Gson();
         String json = gson.toJson(translateResponseDto);
@@ -327,9 +345,12 @@ public class AudioWebSocketHandler extends AbstractWebSocketHandler {
     // WebSocket 연결이 종료된 후 실행되는 메서드
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
-        logger.info(" [8] --------------------- afterConnectionClosed() 호출됨");
-        // 세션 종료시 prevText 속성 제거
-        session.getAttributes().remove("prevText");
+        int count = (int) session.getAttributes().get("count");
+        logger.info(" [8] [{}] ------------------- afterConnectionClosed() 호출됨", count);
+        logger.info("총 처리된 바이너리 메시지 수: {}", count);
+
+        // 세션 종료시 모든 속성 제거
+        session.getAttributes().clear();
 
         // 파일 디렉터리 제거
         File directoryToDelete = new File(RECORD_PATH + "/" + session.getId());

@@ -31,7 +31,7 @@ class _LoadingTextState extends State<LoadingText> {
   Widget build(BuildContext context) {
     return Text(
       '${widget.text}${List.filled(_dotCount, '.').join()}',
-      style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
+      style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
     );
   }
 }

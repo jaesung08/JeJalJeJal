@@ -4,16 +4,12 @@ class TangerineIcon extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 54,
-      height: 54,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        color: Colors.transparent,
-      ),
+      width: 100,
+      height: 100,
       child: Image.asset(
-        'assets/images/common_mandarin.png',
-        fit: BoxFit.cover,
+        'assets/images/translate_on.png',
       ),
+      color: Colors.black38,
     );
   }
 }

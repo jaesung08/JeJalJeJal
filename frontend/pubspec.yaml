@@ -110,6 +110,10 @@ flutter:
     - assets/images/add_folder.gif
     - assets/images/jeju_loading.gif
     - assets/images/translated_loading.gif
+    - assets/images/file_wait.gif
+    - assets/images/translate_on.png
+    - assets/images/translate_off.png
+    - assets/images/to_small.png
   # To add assets to your application, add an assets section, like this:
   # assets:
   #   - images/a_dot_burr.jpeg

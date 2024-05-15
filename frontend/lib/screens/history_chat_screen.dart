@@ -17,20 +17,17 @@ class HistoryChatScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print('29');
-
     return Scaffold(
       appBar: AppBar(
         title: FutureBuilder<Conversation>(
           future: DatabaseService.instance.getConversationById(conversationId),
           builder: (context, snapshot) {
             if (snapshot.hasData) {
-              print('30');
               final conversation = snapshot.data!;
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('${conversation.name}의 통화 번역 기록'),
+                  Text('${conversation.name}과의 통화 통역 기록', style: TextStyle(fontSize: 16),),
                   Text(
                     '${DateFormat('MM-dd HH:mm').format(DateTime.parse(conversation.date))} 통화',
                     style: TextStyle(fontSize: 14, color: Colors.orange),
@@ -49,7 +46,7 @@ class HistoryChatScreen extends StatelessWidget {
         itemBuilder: (context, index) {
           final message = messages[index];
           return Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+            padding: const EdgeInsets.symmetric(vertical: 6.0, horizontal: 16.0),
             child: _buildTranslationPair(message.jeju, message.translated),
           );
         },

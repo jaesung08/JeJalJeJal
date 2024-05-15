@@ -1,4 +1,6 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_overlay_window/flutter_overlay_window.dart';
 import 'package:toggle_switch/toggle_switch.dart';
 import 'package:contacts_service/contacts_service.dart';
@@ -21,54 +23,98 @@ class MainCallScreen extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             Padding(
-              padding: const EdgeInsets.all(20.0),
+              padding: EdgeInsets.symmetric(vertical: 10),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Expanded(
-                    child: Text(
-                      "통화 중 번역을 원한다면! \n 결과를 표시해줄 위젯을 ON해주세요",
-                      style: TextStyle(fontSize: 16),
+                  Container(
+                    padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10) ,
+                    child: Column(
+                      children: [
+                        SizedBox(height: 20),
+                        Text(
+                          "통화 중 번역을 원한다면!",
+                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        ),
+                        SizedBox(height: 3),
+                        Text(
+                          "결과를 표시해 줄",
+                          style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+                        ),
+                        SizedBox(height: 3),
+                        Text(
+                          "위젯을 ON 해주세요",
+                          style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+                        ),
+                        SizedBox(height: 20),
+                      ],
                     ),
                   ),
-                  SizedBox(width: 20),
-                  ToggleSwitch(
-                    initialLabelIndex: 1,
-                    minWidth: 90.0,
-                    minHeight: 30.0,
-                    cornerRadius: 20.0,
-                    activeFgColor: Colors.white,
-                    activeBgColor: [Colors.orange],
-                    inactiveBgColor: Colors.grey,
-                    inactiveFgColor: Colors.white,
-                    labels: const ['On', 'Off'],
-                    onToggle: (index) async {
-                      if (index == 0 && !(await FlutterOverlayWindow.isActive())) {
-                        await FlutterOverlayWindow.showOverlay(
-                          enableDrag: true,
-                          overlayTitle: "제잘제잘",
-                          overlayContent: "제주 방언 번역기",
-                          flag: OverlayFlag.defaultFlag,
-                          visibility: NotificationVisibility.visibilityPublic,
-                          height: 170,
-                          width: 200,
-                          startPosition: const OverlayPosition(0, 0),
-                        );
-                      } else if (index == 1 && await FlutterOverlayWindow.isActive()) {
-                        await FlutterOverlayWindow.closeOverlay();
-                      }
-                    },
+                  Container(
+                    padding: EdgeInsets.symmetric(horizontal: 10) ,
+                    decoration: BoxDecoration(
+                      // boxShadow: [
+                      //   BoxShadow(
+                      //     color: Colors.grey.withOpacity(0.5),
+                      //     spreadRadius: 1,
+                      //     blurRadius: 5,
+                      //     blurStyle: BlurStyle.outer,
+                      //     offset: Offset(0, 3),
+                      //   ),
+                      // ],
+                    ),
+                    child: ToggleSwitch(
+                      initialLabelIndex: 1,
+                      minWidth: 60.0,
+                      minHeight: 60.0,
+                      cornerRadius: 20.0,
+                      activeFgColor: Colors.white,
+                      activeBgColor: [Colors.orange],
+                      inactiveBgColor: Colors.grey,
+                      inactiveFgColor: Colors.white,
+                      labels: const ['On', 'Off'],
+                      onToggle: (index) async {
+                        if (index == 0 && !(await FlutterOverlayWindow.isActive())) {
+                          await FlutterOverlayWindow.showOverlay(
+                            enableDrag: true,
+                            overlayTitle: "제잘제잘",
+                            overlayContent: "제주 방언 번역기",
+                            flag: OverlayFlag.defaultFlag,
+                            visibility: NotificationVisibility.visibilityPublic,
+                            height: 250,
+                            width: 250,
+                            startPosition: const OverlayPosition(0, 25),
+                          );
+                        } else if (index == 1 && await FlutterOverlayWindow.isActive()) {
+                          await FlutterOverlayWindow.closeOverlay();
+                        }
+                      },
+                    ),
                   ),
                 ],
               ),
             ),
-            const Padding(
+            Container(
               padding: EdgeInsets.symmetric(vertical: 10),
-              child: Text("통화해볼까요?", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                Text("\u{260E} 전화 통역 체험해봐요!",
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                textAlign: TextAlign.start
+                ),
+                  Text(
+                    "최근 통화 목록",
+                    style: TextStyle(fontSize: 12, color: Colors.grey),
+                  ),
+                ]
+              )
             ),
             Container(
-              height: 120,
+              padding: EdgeInsets.symmetric(vertical: 10),
+              height: 130,
+              width: 350,
               child: FutureBuilder<List<Conversation>>(
                 future: databaseService.getUniqueRecentConversations(5),
                 builder: (context, snapshot) {
@@ -91,7 +137,22 @@ class MainCallScreen extends StatelessWidget {
                             }
                           },
                           child: Container(
-                            width: MediaQuery.of(context).size.width / 5,
+                            margin: EdgeInsets.only(right: 10),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.all(
+                                Radius.circular(12),
+                              ),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.grey.withOpacity(0.5),
+                                  spreadRadius: 1,
+                                  blurRadius: 5,
+                                  offset: Offset(0, 3),
+                                ),
+                              ],
+                            ),
+                            width: MediaQuery.of(context).size.width / 6,
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
@@ -104,12 +165,12 @@ class MainCallScreen extends StatelessWidget {
                                       final contact = snapshot.data!.first;
                                       final avatar = contact.avatar;
                                       return CircleAvatar(
-                                        radius: 30,
+                                        radius: 25,
                                         backgroundImage: avatar != null && avatar.isNotEmpty ? MemoryImage(avatar) : null,
                                         child: avatar == null || avatar.isEmpty ? Icon(Icons.person, size: 30) : null,
                                       );
                                     } else {
-                                      return CircleAvatar(child: Icon(Icons.person, size: 30)); // Default icon if no contact or avatar found
+                                      return CircleAvatar(radius: 25,child: Icon(Icons.person, size: 30)); // Default icon if no contact or avatar found
                                     }
                                   },
                                 ),
@@ -131,65 +192,124 @@ class MainCallScreen extends StatelessWidget {
                 },
               ),
             ),
-            const Padding(
-              padding: EdgeInsets.symmetric(vertical: 10),
-              child: Text("통화기록", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+            Column(
+              children: [SizedBox(height: 30)],
+            ),
+            Container(
+              padding: EdgeInsets.symmetric(horizontal: 10),
+              child:
+              Container(
+                width: 350,
+                height: 40,
+                child: Text("\u{1F4CB} 전화 통역 기록",
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    textAlign: TextAlign.start
+                ),
+              ),
             ),
             Expanded(
-              child: FutureBuilder<List<Conversation>>(
-                future: databaseService.getAllConversations().catchError((error) {
-                  return <Conversation>[]; // 에러 발생 시 빈 리스트 반환
-                }),
-                builder: (context, snapshot) {
-                  if (snapshot.hasData) {
-                    final conversations = snapshot.data!.reversed.toList(); // 정렬 변경
-                    return ListView.builder(
-                      itemCount: conversations.length,
-                      itemBuilder: (context, index) {
-                        final conversation = conversations[index];
-                        return ListTile(
-                          leading: FutureBuilder<List<Contact>>(
-                            future: ContactsService.getContactsForPhone(conversation.phoneNumber),
-                            builder: (context, snapshot) {
-                              if (snapshot.connectionState == ConnectionState.waiting) {
-                                return CircularProgressIndicator();
-                              } else if (snapshot.hasData && snapshot.data!.isNotEmpty) {
-                                final contact = snapshot.data!.first;
-                                final avatar = contact.avatar;
-                                return CircleAvatar(
-                                  radius: 30,
-                                  backgroundImage: avatar != null && avatar.isNotEmpty ? MemoryImage(avatar) : null,
-                                  child: avatar == null || avatar.isEmpty ? Icon(Icons.person, size: 30) : null,
-                                );
-                              } else {
-                                return CircleAvatar(child: Icon(Icons.person, size: 30)); // Default icon if no contact or avatar found
-                              }
-                            },
-                          ),
-                          title: Text('${conversation.name}님과의 대화 기록'),
-                          subtitle: Text(conversation.phoneNumber),
-                          trailing: Text(
-                            DateFormat('MM-dd HH:mm').format(DateTime.parse(conversation.date)),
-                            style: TextStyle(color: Colors.grey, fontSize: 14),
-                          ),
-                          onTap: () async {
-                            final messages = await databaseService.getMessagesByConversationId(conversation.id!);
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (context) => HistoryChatScreen(
-                                  conversationId: conversation.id!,
-                                  messages: messages,
+              child: Container(
+                padding: EdgeInsets.symmetric(vertical: 10), // 리스트뷰의 좌우 여백
+                width: 370,
+                child: FutureBuilder<List<Conversation>>(
+                  future: databaseService.getAllConversations().catchError((error) {
+                    return <Conversation>[]; // 에러 발생 시 빈 리스트 반환
+                  }),
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData) {
+                      final conversations = snapshot.data!.reversed.toList(); // 정렬 변경
+                      return ListView.builder(
+                        padding: EdgeInsets.zero,
+                        itemCount: conversations.length,
+                        itemBuilder: (context, index) {
+                          final conversation = conversations[index];
+                          bool isDefaultName = conversation.name == "제주도민";
+                          return
+                            Column(
+                              children: [
+                                Container(
+                                    height: 70,
+                                    width: 350,
+                                    margin: EdgeInsets.symmetric(vertical: 3),
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(10),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.grey.withOpacity(0.5),
+                                          spreadRadius: 1,
+                                          blurRadius: 5,
+                                          offset: Offset(0, 3),
+                                        ),
+                                      ],
+                                    ),
+                                    child: ListTile(
+                                      contentPadding: EdgeInsets.symmetric(vertical: 8, horizontal: 10),
+                                      leading: FutureBuilder<List<Contact>>(
+                                        future: ContactsService.getContactsForPhone(conversation.phoneNumber),
+                                        builder: (context, snapshot) {
+                                          if (snapshot.connectionState == ConnectionState.waiting) {
+                                            return CircularProgressIndicator();
+                                          } else if (snapshot.hasData && snapshot.data!.isNotEmpty) {
+                                            final contact = snapshot.data!.first;
+                                            final avatar = contact.avatar;
+                                            return CircleAvatar(
+                                              radius: 25,
+                                              backgroundImage: avatar != null && avatar.isNotEmpty ? MemoryImage(avatar) : null,
+                                              child: avatar == null || avatar.isEmpty ? Icon(Icons.person, size: 30) : null,
+                                            );
+                                          } else {
+                                            return CircleAvatar(radius: 25, child: Icon(Icons.person, size: 30)); // Default icon if no contact or avatar found
+                                          }
+                                        },
+                                      ),
+                                      title:Column(
+                                        mainAxisAlignment: MainAxisAlignment.center, // Center the column along the cross axis
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        mainAxisSize: MainAxisSize.min, // Use minimum space that the children need
+                                        children: [
+                                          Text(
+                                            isDefaultName ? conversation.phoneNumber + "님과의 통화" : conversation.name + "님과의 통화",
+                                            style: TextStyle(fontSize: 12),
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                          if (!isDefaultName) Text(
+                                            conversation.phoneNumber,
+                                            style: TextStyle(fontSize: 12),
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                        ],
+                                      ),
+
+                                      trailing: Text(
+                                        DateFormat('MM-dd HH:mm').format(DateTime.parse(conversation.date)),
+                                        style: TextStyle(color: Colors.grey, fontSize: 14),
+                                      ),
+                                      onTap: () async {
+                                        final messages = await databaseService.getMessagesByConversationId(conversation.id!);
+                                        Navigator.of(context).push(
+                                          MaterialPageRoute(
+                                            builder: (context) => HistoryChatScreen(
+                                              conversationId: conversation.id!,
+                                              messages: messages,
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                    )
                                 ),
-                              ),
+                                Container(
+                                  height: 15,
+                                )
+                              ],
                             );
-                          },
-                        );
-                      },
-                    );
-                  } else {
-                    return Center(child: CircularProgressIndicator());
-                  }
-                },
+                        },
+                      );
+                    } else {
+                      return Center(child: CircularProgressIndicator());
+                    }
+                  },
+                ),
               ),
             ),
           ],

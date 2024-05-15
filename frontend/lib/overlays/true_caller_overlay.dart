@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_overlay_window/flutter_overlay_window.dart';
 import 'package:jejal_project/overlays/tangerine_icon.dart';
+import 'package:jejal_project/style/color_style.dart';
 import 'package:jejal_project/widgets/text_segment_box.dart';
 import 'package:jejal_project/widgets/loading_text.dart';
 import 'package:jejal_project/models/receive_message_model.dart';
@@ -82,36 +83,25 @@ class _TrueCallerOverlayState extends State<TrueCallerOverlay> {
 
   @override
   Widget build(BuildContext context) {
-    print('25');
-
     return Material(
       color: Colors.transparent,
-      borderRadius: BorderRadius.circular(12.0),
       child: Stack(
+        alignment: Alignment.center,  // 모든 자식을 중앙에 배치합니다.
         children: [
-          Positioned(
-            top: 0.0,
-            right: 10.0,
-            child: GestureDetector(
-              onTap: () {
-                setState(() {
-                  showBox = !showBox;
-                  showIcon = !showIcon;
-                });
-                updateOverlaySettings(showIcon);
-              },
-              child: Column(
-                children: [
-                  if (showIcon) TangerineIcon(),
-                  if (showBox)
-                    const Icon(
-                      Icons.close,
-                      color: Colors.white,
+          if (showIcon)  // 메인 아이콘을 중앙에 표시합니다.
+            GestureDetector(
+                onTap: toggleOverlay,
+                child: Container(
+                  width: 250, // 이미지 크기 일관성 유지
+                  height: 250,
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                      image: AssetImage('assets/images/translate_on.png'),
+                      fit: BoxFit.contain,
                     ),
-                ],
-              ),
+                  ),
+                ),
             ),
-          ),
           if (showBox) _buildBox(),
         ],
       ),
@@ -119,52 +109,66 @@ class _TrueCallerOverlayState extends State<TrueCallerOverlay> {
   }
 
   Widget _buildBox() {
-    print('26');
-
     return Positioned(
       top: 20.0,
       right: 10.0,
       child: Container(
         margin: const EdgeInsets.only(top: 10.0),
-        padding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 16.0),
+        padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
         width: 340.0,
         height: 450.0,
         decoration: BoxDecoration(
-          color: Colors.orangeAccent.shade100,
-          borderRadius: BorderRadius.circular(12.0),
+          color: ColorStyles.backgroundBox,
+          borderRadius: BorderRadius.circular(12),
         ),
-        child: SingleChildScrollView(
-          controller: _scrollController,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              LoadingText(text: "실시간 통역 중"),
-              Divider(),
-              ...messages
-                  .map((message) => TextSegmentBox(
-                        jejuText: message.jeju ?? "No data",
-                        translatedText: message.translated,
-                        isLoading: message.translated == "wait",
-                      ))
-                  .toList(),
-            ],
-          ),
+        child: Stack(
+          children: [
+            SingleChildScrollView(
+              controller: _scrollController,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  LoadingText(text: "실시간 통역 중"),
+                  Divider(color: Colors.black),
+                  ...messages
+                      .map((message) => TextSegmentBox(
+                    jejuText: message.jeju ?? "No data",
+                    translatedText: message.translated,
+                    isLoading: message.translated == "wait",
+                  )).toList(),
+                ],
+              ),
+            ),
+            Positioned(
+              top: 5,
+              right: 5,
+              child: GestureDetector(
+                onTap: toggleOverlay,
+                child: Icon(Icons.close, size: 24),  // 닫기 아이콘
+              ),
+            ),
+          ],
         ),
       ),
     );
   }
 
+
+  void toggleOverlay() {
+    setState(() {
+      showBox = !showBox;
+      showIcon = !showIcon;
+    });
+    updateOverlaySettings(showIcon);
+  }
+
   void updateOverlaySettings(bool showIcon) async {
-    print('27');
-
     if (await FlutterOverlayWindow.isActive()) {
-      print('28');
-
       await FlutterOverlayWindow.closeOverlay();
       await FlutterOverlayWindow.showOverlay(
         enableDrag: showIcon,
-        height: showIcon ? 170 : 1300,
-        width: showIcon ? 200 : 950,
+        height: showIcon ? 250 : 1300,
+        width: showIcon ? 250 : 950,
         overlayTitle: "제잘제잘",
         overlayContent: "제주 방언 번역기",
         flag: OverlayFlag.defaultFlag,

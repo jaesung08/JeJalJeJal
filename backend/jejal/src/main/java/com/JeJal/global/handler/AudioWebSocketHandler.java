@@ -66,26 +66,56 @@ public class AudioWebSocketHandler extends AbstractWebSocketHandler {
         super.afterConnectionEstablished(session);
         session.getAttributes().put("prevText", ""); // 초기 prevText를 세션에 저장
         logger.info("-----------------[소켓 연결 시작]-----------------");
-        createFolder(session.getId());
+
+        // 기존 파일 삭제 및 새 폴더 생성 (테스트 해봐야함)
+        deleteExistingFilesAndCreateFolder(session.getId());
+
+        //잠시 주석
+//        createFolder(session.getId());
         // -> websocket 세션의 고유 식별자 사용하여 해당 세션에 대한 폴더 생성
         // 오디오 레코드 파일 저장을 위해 사용
     }
 
-    // 통화연결 시작했을 때 폴더생성
-    private void createFolder(String sessionId) {
-//        logger.info(" [1] ----------------------------createFolder() 호출됨");
+    // 기존 파일을 삭제하고 새 폴더를 생성하는 메서드 (테스트 해봐야함)
+    // 이건 이전 통화의 데이터가 다음 통화에 따라오는 것을 막기위해
+    // 남아있는거 따라오는 부분 해결하기 위해서 추가함
+    private void deleteExistingFilesAndCreateFolder(String sessionId) {
         var directory = new File(RECORD_PATH + "/" + sessionId);
-        if (!directory.exists()) {
-            directory.mkdirs();
-            logger.info(" [폴더 생성 경로] " + directory);
-            var partDirectory = new File(RECORD_PATH + "/" + sessionId + "/part");
-            partDirectory.mkdirs();
-//            logger.info(" [1] ----------------------- 디렉터리 생성 완료");
-        } else {
-            logger.info(" [1] ---------------------- 이미 디렉터리가 존재합니다.");
+        if (directory.exists()) {
+            deleteDirectory(directory);  // 기존 디렉터리 삭제
+            logger.info(" [1] ---------------------- 기존 디렉터리 삭제됨");
         }
-        logger.info("-----------------[소켓 연결 시작]-----------------", sessionId);
+        directory.mkdirs(); // 새 디렉터리 생성
+        var partDirectory = new File(RECORD_PATH + "/" + sessionId + "/part");
+        partDirectory.mkdirs();  // part 디렉터리 생성
+        logger.info(" [1] ----------------------- 디렉터리 생성 완료");
+        logger.info(" [폴더 생성 경로] " + directory);
+
+        // 세션별로 초기화할 오디오 파일을 생성
+        File initialFile = new File(RECORD_PATH + "/" + sessionId + "/record.m4a");
+        try {
+            initialFile.createNewFile();
+        } catch (IOException e) {
+            logger.error("Failed to create initial file for session: {}", sessionId, e);
+        }
     }
+
+    // 잠시 주석
+    // 통화연결 시작했을 때 폴더생성
+//    private void createFolder(String sessionId) {
+////        logger.info(" [1] ----------------------------createFolder() 호출됨");
+//        var directory = new File(RECORD_PATH + "/" + sessionId);
+//        if (!directory.exists()) {
+//            directory.mkdirs();
+//            logger.info(" [폴더 생성 경로] " + directory);
+//            var partDirectory = new File(RECORD_PATH + "/" + sessionId + "/part");
+//            partDirectory.mkdirs();
+////            logger.info(" [1] ----------------------- 디렉터리 생성 완료");
+//        } else {
+//            logger.info(" [1] ---------------------- 이미 디렉터리가 존재합니다.");
+//        }
+//        logger.info("-----------------[소켓 연결 시작]-----------------", sessionId);
+//    }
 
     // BinaryMessage를 처리하는 메서드
     // 우리 프로젝트의 경우 오디오 데이터 받았을때 호출됨
@@ -187,18 +217,11 @@ public class AudioWebSocketHandler extends AbstractWebSocketHandler {
                     var newFilePath = RECORD_PATH + "/" + session.getId() + "/part/";
                     sendClovaSpeechServer(newFile, newFilePath, session, false);
                     log.info("-----------------[클로바 > 번역 > 세션 종료 요청 보냄]-----------------");
-//                    session.close(CloseStatus.NORMAL); // 세션 종료
                     sendClientToCloseConnection(session);
                 } else {
-//                    logger.info("state : 2, 남은 파일 없음", session.getId());
                     log.info("-----------------[통화 종료 후 파일 없음]-----------------");
                     log.info("-----------------[세션 종료 요청 보냄]-----------------");
                     sendClientToCloseConnection(session);
-//                    session.close(CloseStatus.NORMAL); // 세션 종료
-//                    TranslateResponseDto translateResponseDto = TranslateResponseDto.builder()
-//                        .isFinish(true)
-//                        .build();
-//                    sendClient(session, translateResponseDto);
                 }
                 break;
             default:
@@ -370,7 +393,7 @@ public class AudioWebSocketHandler extends AbstractWebSocketHandler {
                     boolean success = file.delete();
                     if (!success) {
                         // 파일 삭제 실패에 대한 처리
-                        System.err.println("Failed to delete file: " + file.getAbsolutePath());
+                        logger.info("Failed to delete file: " + file.getAbsolutePath());
                     }
                 }
             }
@@ -378,7 +401,7 @@ public class AudioWebSocketHandler extends AbstractWebSocketHandler {
         boolean success = directory.delete();
         if (!success) {
             // 디렉터리 삭제 실패에 대한 처리
-            System.err.println("Failed to delete directory: " + directory.getAbsolutePath());
+            logger.info("Failed to delete directory: " + directory.getAbsolutePath());
         }
     }
 }

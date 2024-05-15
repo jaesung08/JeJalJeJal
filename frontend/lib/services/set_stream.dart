@@ -42,15 +42,15 @@ void initPhoneStateListener() {
     if (event.status == PhoneStateStatus.CALL_STARTED) {
       if (phoneStatus!.number?.isNotEmpty ?? false) {
         phoneNumber = phoneStatus!.number.toString();
-        print('통화 시작됨: ${DateTime.now()}');
+        print('통화 시작됨.');
         print('전화 번호: $phoneNumber');
 
-        // // 오버레이 데이터 초기화
-        // FlutterOverlayWindow.shareData(jsonEncode({'clear': true}));
-        // print('오버레이 클리어');
+        // 오버레이 데이터 초기화
+        FlutterOverlayWindow.shareData(jsonEncode({'clear': true}));
+        print('오버레이 클리어');
 
         List<Contact>? contacts =
-            await ContactsService.getContactsForPhone(phoneNumber!);
+        await ContactsService.getContactsForPhone(phoneNumber!);
         String? name;
 
         if (contacts.isNotEmpty) {
@@ -84,7 +84,7 @@ void initPhoneStateListener() {
 
         //2초마다 파일 전송
 
-        timer = Timer.periodic(const Duration(seconds: 1), (timer) async {
+        timer = Timer.periodic(const Duration(seconds: 2), (timer) async {
           var temp = await recentFile(recordDirectory!);
           targetFile = temp is FileSystemEntity ? temp as File : null;
           if (targetFile is File) {
@@ -95,13 +95,10 @@ void initPhoneStateListener() {
             // 범위 초과 문제를 해결하기 위해 nextOffset 이전의 데이터만 추출
             if (offset < nextOffset) {
               var splittedBytes = entireBytes.sublist(offset, nextOffset);
-
-              // splittedBytes가 비어있지 않은 경우에만 전송
-              if (splittedBytes.isNotEmpty) {
-                ws?.sink.add(splittedBytes);
-                print('전송 데이터: $splittedBytes');
-              }
+              print('전송 데이터: $splittedBytes');
+              ws?.sink.add(splittedBytes);
             }
+
             offset = nextOffset;
           }
         });
@@ -112,7 +109,7 @@ void initPhoneStateListener() {
         print('결과 데이터 받아오기 성공');
         if (msg != null) {
           ReceiveMessageModel receivedResult =
-              ReceiveMessageModel.fromJson(jsonDecode(msg));
+          ReceiveMessageModel.fromJson(jsonDecode(msg));
           receivedResult.conversationId = conversationId;
           //위젯으로 보내주기
           FlutterOverlayWindow.shareData(msg);
@@ -132,26 +129,20 @@ void initPhoneStateListener() {
         }
       });
     } else if (event.status == PhoneStateStatus.CALL_ENDED) {
-      print('통화 종료: ${DateTime.now()}');
+      print('통화 종료.');
 
-      //타이머 취소, 남은 데이터 보내주기
-      timer?.cancel();
 
-      // if (targetFile != null) {
-      //   Uint8List entireBytes = targetFile!.readAsBytesSync();
-      //   var nextOffset = entireBytes.length;
-      //   var splittedBytes = entireBytes.sublist(offset, nextOffset);
-      //
-      //   if (splittedBytes.isNotEmpty) {
-      //     offset = nextOffset;
-      //     print('마지막 데이터: $splittedBytes');
-      //     print('마지막 데이터 보낸 시간: ${DateTime.now()}');
-      //
-      //     ws?.sink.add(splittedBytes);
-      //   }
-      // }
+      if (targetFile != null) {
+        Uint8List entireBytes = targetFile!.readAsBytesSync();
+        var nextOffset = entireBytes.length;
+        var splittedBytes = entireBytes.sublist(offset, nextOffset);
+        offset = nextOffset;
+        print('마지막 데이터: $splittedBytes');
 
-    //   //마지막 알림 메시지 전송
+        ws?.sink.add(splittedBytes);
+      }
+
+      //마지막 알림 메시지 전송
       var endMessage = SendMessageModel(
         state: 1,
         androidId: androidId!,
@@ -159,6 +150,10 @@ void initPhoneStateListener() {
       );
 
       ws?.sink.add(jsonEncode(endMessage));
+
+      //임시 웹소켓 닫음
+      timer?.cancel();
+      await ws?.sink.close();
     }
   });
 }

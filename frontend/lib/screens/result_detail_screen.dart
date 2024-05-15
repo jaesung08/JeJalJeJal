@@ -7,13 +7,20 @@ class ResultDetailScreen extends StatelessWidget {
   final FileResultModel fileResult;
 
 
-  ResultDetailScreen({Key? key, required this.fileResult, required this.databaseService}) : super(key: key);
-
-  final DatabaseService databaseService;
+  ResultDetailScreen({Key? key, required this.fileResult}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    print('38');
+    if (fileResult == null) {
+      return Scaffold(
+        appBar: AppBar(
+          title: Text('결과 없음'),
+        ),
+        body: Center(
+          child: Text('파일 결과가 없습니다.'),
+        ),
+      );
+    }
 
     return Scaffold(
       appBar: AppBar(

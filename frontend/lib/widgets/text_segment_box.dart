@@ -28,7 +28,7 @@ class TextSegmentBox extends StatelessWidget {
           children: [
             Text(
               jejuText,
-              style: TextStyle(fontSize: 16.0, color: Colors.black87),
+              style: TextStyle(fontSize: 14.0, color: Colors.black87),
             ),
             if(translatedText != "제잘") const Divider(color: Colors.white),
             if (isLoading)
@@ -38,7 +38,7 @@ class TextSegmentBox extends StatelessWidget {
                 Text(
                   translatedText!,
                   style: TextStyle(
-                    fontSize: 16.0,
+                    fontSize: 14.0,
                     color: Colors.black87,
                     fontWeight: FontWeight.bold,
                   ),

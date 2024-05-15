@@ -100,16 +100,27 @@ public class AudioWebSocketHandler extends AbstractWebSocketHandler {
         Map<String, String> params = new HashMap<>();
         params.put("sessionId", session.getId());
         params.put("state", "1");
-        Map<String, Object> untruncResult = restApiUtil.requestGet(untruncUrl, params);
 
-        logger.info(" [2] ------------------- 결과 (복원): {}", untruncResult);
-        
-        // 쪼개진 파일 만큼 전송
-        List<String> newFile = (List<String>) untruncResult.get("new_file");
-        String newFilePath = RECORD_PATH + "/" + session.getId() + "/part/";
-        log.info("쪼개진 파일 개수 : ", newFile);
-        sendClovaSpeechServer(newFile, newFilePath, session, false);
+        try {
+            Map<String, Object> untruncResult = restApiUtil.requestGet(untruncUrl, params);
+            logger.info(" [2] ------------------- 결과 (복원): {}", untruncResult);
+
+            List<String> newFile = (List<String>) untruncResult.get("new_file");
+            if (newFile == null || newFile.isEmpty()) {
+                logger.info("복원된 새 파일이 없습니다.");
+                return; // 새 파일이 없으면 추가 처리를 중단
+            }
+            String newFilePath = RECORD_PATH + "/" + session.getId() + "/part/";
+            log.info("쪼개진 파일 개수 : {}", newFile.size());
+            sendClovaSpeechServer(newFile, newFilePath, session, false);
+        } catch (ClassCastException e) {
+            logger.error("복원 결과 파싱 실패", e);
+        } catch (Exception e) {
+            logger.error("복원 요청 처리 중 오류 발생", e);
+            throw e;
+        }
     }
+
 
 
     // 파일에 데이터를 추가하는 메서드
@@ -310,7 +321,14 @@ public class AudioWebSocketHandler extends AbstractWebSocketHandler {
         } else {
             logger.info("삭제할 디렉터리가 존재하지 않습니다.");
         }
-        logger.info("소켓연결해제: {}", session.getId());
+        try {
+            session.close();
+            logger.info("소켓연결해제: {}", session.getId());
+        } catch (IOException e) {
+                e.printStackTrace();
+                // 에러 처리 로직
+        }
+
     }
 
     // 디렉터리 삭제 메서드

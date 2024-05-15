@@ -33,7 +33,6 @@ import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.AbstractWebSocketHandler;
 
-
 // 웹소켓 통신에서 발생할 수 있는 다양한 이벤트를 처리
 @Component
 @Slf4j
@@ -122,7 +121,6 @@ public class AudioWebSocketHandler extends AbstractWebSocketHandler {
     }
 
 
-
     // 파일에 데이터를 추가하는 메서드
     // ByteBuffer에서 받은 데이터를 파일에 추가
     // 이 메서드는 바이너리 메시지 처리 중에 호출됨
@@ -134,7 +132,7 @@ public class AudioWebSocketHandler extends AbstractWebSocketHandler {
         try (FileOutputStream outputStream = new FileOutputStream(filePath, true)) {
             logger.info(" [3] -------------------- 파일 아웃 스트림 및 m4a 파일 데이터 삽입하기 위해 진입");
             logger.info(" [3] -------------------- 바이트 버퍼 크기 : {}", byteBuffer);
-    
+
             // 남은 데이터가 있는지 확인
             if (byteBuffer.hasRemaining()) {
                 logger.info(" [3] ----------------- 파일에 데이터 작성");
@@ -153,7 +151,7 @@ public class AudioWebSocketHandler extends AbstractWebSocketHandler {
             throw e;
         }
     }
-    
+
 
     // TextMessage를 처리하는 메서드
     // 텍스트 메시지 받았을 때 호출됨
@@ -163,33 +161,38 @@ public class AudioWebSocketHandler extends AbstractWebSocketHandler {
     public void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
         logger.info(" [4] --------------------- handleTextMessage() 호출됨");
         logger.info(" [4] --------------------- socket 정보 전달받음 : {}", message);
-        var gson = new Gson();
-        var messageMap = gson.fromJson(message.getPayload(), Map.class);
-        var stateValue = (int) Math.floor((double) messageMap.get("state"));
-        var androidId = (String) messageMap.getOrDefault("androidId", "tempId");
+        Gson gson = new Gson();
+        Map<String, Object> messageMap = gson.fromJson(message.getPayload(), Map.class);
+        int stateValue = (int) Math.floor((double) messageMap.get("state"));
+        String androidId = (String) messageMap.getOrDefault("androidId", "tempId");
         session.getAttributes().put("androidId", androidId);
         switch (stateValue) {
             case 0:
                 logger.info("Send session info : {} , androidId : {}", session.getId(), androidId);
                 break;
             case 1:
-                var phoneNumber = (String) messageMap.getOrDefault("phoneNumber", "010-1234-1234");
-                session.getAttributes().put("phoneNumber", phoneNumber);
-
-                var untruncUrl = DOMAIN_UNTRUNC + "/recover";
-                var params = new HashMap<String, String>();
-                params.put("sessionId", session.getId());
+                String sessionId = session.getId();
+                String untruncUrl = DOMAIN_UNTRUNC + "/recover";
+                Map<String, String> params = new HashMap<>();
+                params.put("sessionId", sessionId);
                 params.put("state", "2");
-                var untruncResult = restApiUtil.requestGet(untruncUrl, params);
 
+                // Untrunc 및 ClovaSpeech 처리
+                Map<String, Object> untruncResult = restApiUtil.requestGet(untruncUrl, params);
                 List<String> newFile = (List<String>) untruncResult.get("new_file");
-                log.info("파일 개수 : ", newFile.size());
+                log.info("마지막 처리 파일 개수 !! : ", newFile.size());
                 if (!newFile.isEmpty()) { // newFile 리스트가 비어있지 않은 경우에만 실행
                     log.info("=======통화 종료 후 파일 있음========================");
-                    var newFilePath = RECORD_PATH + "/" + session.getId() + "/part/";
-                    sendClovaSpeechServer(newFile, newFilePath, session, true);
+                    String newFilePath = RECORD_PATH + "/" + sessionId + "/part/";
+                    boolean clovaSpeechSuccess = sendClovaSpeechServer(newFile, newFilePath, session, true);
+                    // 모든 파일이 성공적으로 전송되었는지 확인
+                    if (clovaSpeechSuccess) {
+                        logger.info("모든 파일 처리 및 전송 완료. 세션 종료 준비 중 : {}", sessionId);
+                        closeSessionSafely(session);
+                    } else {
+                        logger.error("ClovaSpeech 처리 실패, 세션 종료 지연 : {}", sessionId);
+                    }
                 } else {
-//                    logger.info("state : 2, 남은 파일 없음", session.getId());
                     log.info("=========통화 종료 후 파일 없음========================");
                     TranslateResponseDto translateResponseDto = TranslateResponseDto.builder()
                         .isFinish(true)
@@ -204,16 +207,18 @@ public class AudioWebSocketHandler extends AbstractWebSocketHandler {
     }
 
     // 새로생성된 part파일을 clover api로 전송.
-    private void sendClovaSpeechServer(List<String> newFile, String newFilePath, WebSocketSession session, Boolean isFinish) throws Exception {
+    private boolean sendClovaSpeechServer(List<String> newFile, String newFilePath, WebSocketSession session, Boolean isFinish) throws Exception {
         logger.info(" [5] -------------------- sendClovaSpeechServer() 호출됨");
         logger.info(" [5] -------------------- isFinish: {}", isFinish);
+        boolean allSuccess = true;
         // JSON 데이터 처리를 위한 ObjectMapper 인스턴스 생성
         ObjectMapper objectMapper = new ObjectMapper();
 
         // 키워드 부스팅
         Resource resource = new ClassPathResource("keyword/boosting.json");
         InputStream inputStream = resource.getInputStream(); // 파일을 InputStream으로 읽기
-        List<Boosting> boostList = objectMapper.readValue(inputStream, new TypeReference<List<Boosting>>(){}); // InputStream에서 직접 읽기
+        List<Boosting> boostList = objectMapper.readValue(inputStream, new TypeReference<List<Boosting>>() {
+        }); // InputStream에서 직접 읽기
         inputStream.close(); // 스트림을 명시적으로 닫아줍니다.
 
         NestRequestDTO request = new NestRequestDTO();
@@ -229,23 +234,24 @@ public class AudioWebSocketHandler extends AbstractWebSocketHandler {
             File file = new File(filePath);
 
             // clova speech api 통신
-            log.info("[5] ------------------------- 클로바 요청 {} 시작 {} : ", i , filePath);
+            log.info("[5] ------------------------- 클로바 요청 {} 시작 {} : ", i, filePath);
 
-            try{
+            try {
                 String jsonResponse = clovaspeechService.recognizeByFile(file, request);
                 log.info("[5] --------------------- clova speech api 통신 완료");
                 JsonNode rootNode = objectMapper.readTree(jsonResponse); // 응답 JSON을 JsonNode로 변환
                 String jeju = rootNode.get("text").asText(); // 'text' 필드의 값을 추출
-
                 logger.info(" [5] ------------------ jeju : {}", jeju);
+
                 // 프론트에 stt 텍스트 원본 먼저 보내주기 (번역 되기전에 미리 프론트 보냄)
+                logger.info("파일 전부 진행 여부 : {}", isFinish && i == newFile.size() - 1);
                 TranslateResponseDto translateResponseDto = TranslateResponseDto.builder()
-                        .jeju(jeju)
-                        .translated("wait")
-                        .isFinish(false)
-                        .build();
+                    .jeju(jeju)
+                    .translated("wait")
+                    .isFinish(isFinish && i == newFile.size() - 1)
+                    .build();
                 logger.info(" [5] -------------------- translateResponseDto의 jeju : {}, translated : {}",
-                        translateResponseDto.getJeju(), translateResponseDto.getTranslated());
+                    translateResponseDto.getJeju(), translateResponseDto.getTranslated());
                 sendClient(session, translateResponseDto);
 
                 try {
@@ -265,9 +271,11 @@ public class AudioWebSocketHandler extends AbstractWebSocketHandler {
 
             } catch (Exception e) {
                 log.error("clova speech api 통신 실패: " + e.getMessage(), e);
-                throw e;
+                allSuccess = false;
+//                throw e;
             }
         }
+        return allSuccess;
     }
 
     private void sendTranslateServer(WebSocketSession session, String jejuText, Boolean isFinish) throws IOException {
@@ -284,10 +292,10 @@ public class AudioWebSocketHandler extends AbstractWebSocketHandler {
         session.getAttributes().put("prevText", jejuText);
 
         TranslateResponseDto translateResponseDto = TranslateResponseDto.builder()
-                .jeju(jejuText)
-                .translated(translatedText)
-                .isFinish(isFinish)
-                .build();
+            .jeju(jejuText)
+            .translated(translatedText)
+            .isFinish(isFinish)
+            .build();
 
         sendClient(session, translateResponseDto);
         logger.info(" [6] -------------------- 통역후 sendClient - jeju : {}, translated : {} , isFinish : {}", jejuText, translatedText, isFinish);
@@ -295,7 +303,7 @@ public class AudioWebSocketHandler extends AbstractWebSocketHandler {
 
     // 클라이언트에게 (웹소켓 연결을 통해) 결과 전송
     private void sendClient(WebSocketSession session, TranslateResponseDto translateResponseDto) throws IOException {
-        logger.info(" [7] -------------------- sendClient 호출됨, 제주어: {}, 번역된 텍스트: {}", translateResponseDto.getJeju(), translateResponseDto.getTranslated() );
+        logger.info(" [7] -------------------- sendClient 호출됨, 제주어: {}, 번역된 텍스트: {}", translateResponseDto.getJeju(), translateResponseDto.getTranslated());
 
         Gson gson = new Gson();
         String json = gson.toJson(translateResponseDto);
@@ -305,14 +313,24 @@ public class AudioWebSocketHandler extends AbstractWebSocketHandler {
         session.sendMessage(textMessage);
     }
 
+    private void closeSessionSafely(WebSocketSession session) {
+        try {
+            if (session.isOpen()) {
+                session.close();
+                logger.info("세션 {} 정상적으로 종료됨.", session.getId());
+            }
+        } catch (IOException e) {
+            logger.error("세션 종료 중 에러 발생: {}", session.getId(), e);
+        }
+    }
 
     // WebSocket 연결이 종료된 후 실행되는 메서드
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
-        logger.info(" [8] -------------------- afterConnectionClosed() 호출됨");
+        logger.info(" [8] --------------------- afterConnectionClosed() 호출됨");
         // 세션 종료시 prevText 속성 제거
         session.getAttributes().remove("prevText");
-        
+
         // 파일 디렉터리 제거
         File directoryToDelete = new File(RECORD_PATH + "/" + session.getId());
         if (directoryToDelete.exists()) {
@@ -321,14 +339,7 @@ public class AudioWebSocketHandler extends AbstractWebSocketHandler {
         } else {
             logger.info("삭제할 디렉터리가 존재하지 않습니다.");
         }
-        try {
-            session.close();
-            logger.info("소켓연결해제: {}", session.getId());
-        } catch (IOException e) {
-                e.printStackTrace();
-                // 에러 처리 로직
-        }
-
+        logger.info("소켓연결해제: {}", session.getId());
     }
 
     // 디렉터리 삭제 메서드

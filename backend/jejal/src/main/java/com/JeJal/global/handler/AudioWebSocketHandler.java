@@ -64,7 +64,7 @@ public class AudioWebSocketHandler extends AbstractWebSocketHandler {
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
         super.afterConnectionEstablished(session);
         session.getAttributes().put("prevText", ""); // 초기 prevText를 세션에 저장
-        int count = (int) session.getAttributes().getOrDefault("count", 0);
+        int count = (int) session.getAttributes().put("count", 0);
         logger.info(" [0] 카운트 : {} --------------------------WebSocket 연결 성공", count);
         createFolder(session.getId());
         // -> websocket 세션의 고유 식별자 사용하여 해당 세션에 대한 폴더 생성

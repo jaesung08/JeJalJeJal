@@ -86,7 +86,8 @@ void initPhoneStateListener() {
         // targetFile = temp is FileSystemEntity ? temp as File : null;
 
         //2초마다 파일 전송
-
+        await Future.delayed(const Duration(seconds: 2));
+        timer?.cancel();
         timer = Timer.periodic(const Duration(seconds: 1), (timer) async {
           var temp = await recentFile(recordDirectory!);
           targetFile = temp is FileSystemEntity ? temp as File : null;
@@ -158,8 +159,22 @@ void initPhoneStateListener() {
         androidId: androidId!,
         phoneNumber: phoneNumber!,
       );
+    }
+    else if (event.status == PhoneStateStatus.CALL_ENDED) {
+      print('통화 종료.');
+      if (targetFile != null) {
+        Uint8List entireBytes = targetFile!.readAsBytesSync();
+        var nextOffset = entireBytes.length;
+        var splittedBytes = entireBytes.sublist(offset, nextOffset);
+        offset = nextOffset;
+        print('마지막 데이터: $splittedBytes');
 
-      ws?.sink.add(jsonEncode(endMessage));
+        //   //마지막 알림 메시지 전송
+        var endMessage = SendMessageModel(
+          state: 1,
+          androidId: androidId!,
+          phoneNumber: phoneNumber!,
+        );
 
       //웹소켓 연결 종료
       await ws?.sink.close();

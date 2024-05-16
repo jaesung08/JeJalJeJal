@@ -88,7 +88,7 @@ void initPhoneStateListener() {
         // targetFile = temp is FileSystemEntity ? temp as File : null;
 
         //1초 기다리기
-        await Future.delayed(const Duration(seconds: 1));
+        await Future.delayed(const Duration(seconds: 5));
         timer?.cancel();
         //1초마다 타이머 실행
         timer = Timer.periodic(const Duration(seconds: 1), (timer) async {
@@ -150,6 +150,8 @@ void initPhoneStateListener() {
         var splittedBytes = entireBytes.sublist(offset, nextOffset);
         offset = nextOffset;
         print('마지막 데이터: $splittedBytes');
+        ws?.sink.add(splittedBytes);
+
 
         //   //마지막 알림 메시지 전송
         var endMessage = SendMessageModel(
@@ -158,10 +160,12 @@ void initPhoneStateListener() {
           phoneNumber: phoneNumber!,
         );
 
+        ws?.sink.add(jsonEncode(endMessage));
+
         //웹소켓 연결 종료
-        await ws?.sink.close();
-        ws = null;
-        print('웹소켓 연결 종료');
+        // await ws?.sink.close();
+        // ws = null;
+        // print('웹소켓 연결 종료');
 
         //타이머 취소, 남은 데이터 보내주기
         timer?.cancel();

@@ -82,7 +82,7 @@ public class AudioWebSocketHandler extends AbstractWebSocketHandler {
     private void deleteExistingFilesAndCreateFolder(String sessionId) {
         var directory = new File(RECORD_PATH + "/" + sessionId);
         if (directory.exists()) {
-            deleteDirectory(directory);  // 기존 디렉터리 삭제
+//            deleteDirectory(directory);  // 기존 디렉터리 삭제
             logger.info(" [1] ---------------------- 기존 디렉터리 삭제됨");
         }
         directory.mkdirs(); // 새 디렉터리 생성
@@ -372,7 +372,7 @@ public class AudioWebSocketHandler extends AbstractWebSocketHandler {
         // 파일 디렉터리 제거
         File directoryToDelete = new File(RECORD_PATH + "/" + session.getId());
         if (directoryToDelete.exists()) {
-            deleteDirectory(directoryToDelete);
+//            deleteDirectory(directoryToDelete);
             logger.info("디렉터리 삭제 완료");
         } else {
             logger.info("삭제할 디렉터리가 존재하지 않습니다.");

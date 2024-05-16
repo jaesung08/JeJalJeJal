@@ -15,6 +15,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -77,22 +78,17 @@ public class ClovaspeechController {
             ArrayNode translatedSegments = objectMapper.createArrayNode();
 
             // segment 수 만큼 반복
-            // prevSentence : 이전에 출력 된 문장
-            String prevSentence = "";
             for (JsonNode segment : segments) {
 
                 String jeju = segment.path("text").asText();
 
-                ClovaStudioResponseDto translationResponse = clovaStudioService.translateByClova(jeju, prevSentence);
+                ClovaStudioResponseDto translationResponse = clovaStudioService.translateByClova(jeju);
 
                 String translated = translationResponse.getResult().getMessage().content;
 
                 ObjectNode textNode = objectMapper.createObjectNode();
                 textNode.put("jeju", jeju);
                 textNode.put("translated", translated);
-
-                prevSentence = jeju;
-
                 log.info("jeju : " + jeju);
                 log.info("translated : " + translated);
 

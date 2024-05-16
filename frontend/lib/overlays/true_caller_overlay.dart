@@ -20,7 +20,7 @@ class _TrueCallerOverlayState extends State<TrueCallerOverlay> {
 
   bool showIcon = true;
   bool showBox = false;
-  bool isLoadingGifVisible = false;
+  bool showLoadingGif = false;
 
   List<ReceiveMessageModel> messages = [];
   int currentIndex = -1;
@@ -33,18 +33,14 @@ class _TrueCallerOverlayState extends State<TrueCallerOverlay> {
 
     FlutterOverlayWindow.overlayListener.listen((newResult) async {
       setState(() {
-        if (newResult == '{"clear":true}') {
-          messages.clear();
-          currentIndex = -1;
-          print('2. 메시지 초기화 확인');
-        } else if (newResult == '{"showImage": true}') {
-          isLoadingGifVisible = true;
-        } else {
-          var decodedResult = json.decode(newResult);
-          print('3. 수신 데이터 확인: $decodedResult');
+        var decodedResult = json.decode(newResult);
+        print('3. 수신 데이터 확인: $decodedResult');
 
+        if (decodedResult['type'] == 'websocket_connected') {
+          showLoadingGif = true;
+        } else {
           ReceiveMessageModel newMessage =
-              ReceiveMessageModel.fromJson(decodedResult);
+          ReceiveMessageModel.fromJson(decodedResult);
           print('4. 새 메시지 확인: ${newMessage.jeju}, ${newMessage.translated}');
 
           if (newMessage.translated == "wait") {
@@ -53,34 +49,31 @@ class _TrueCallerOverlayState extends State<TrueCallerOverlay> {
             print('5. 새 메시지 추가 확인: ${newMessage}');
             print('"wait" 메시지 도착 시간 출력: ${DateTime.now()}');
             _scrollToBottom(); // 새 메시지 추가 후 스크롤 위치 이동
+
+            if (currentIndex == 0) {
+              showLoadingGif = false;
+            }
           } else {
             int existingIndex = messages.indexWhere((message) =>
-                message.jeju == newMessage.jeju &&
-                message.translated == "wait");
+            message.jeju == newMessage.jeju && message.translated == "wait");
             print('6. 기존 메시지 인덱스 확인: $existingIndex');
 
             if (existingIndex != -1) {
               messages[existingIndex] = messages[existingIndex].copyWith(
                 translated: newMessage.translated,
               );
-
-              if (existingIndex == 0) {
-                isLoadingGifVisible = false;
-              }
               print(
                   '7. 인덱스 $existingIndex에 맞는 메시지 업데이트 확인: ${newMessage.isTranslated}');
               print('번역된 메시지 도착 시간 출력: ${DateTime.now()}'); // 번역된 메시지 도착 시간 출력
               _scrollToBottom(); // 메시지 업데이트 후 스크롤 위치 이동
             }
           }
-
-          if (newResult != '{"clear":true}') {
-            print('Received data from overlay window:');
-            print('Jeju: ${decodedResult['jeju']}');
-            print('Translated: ${decodedResult['translated']}');
-            print('---');
-          }
         }
+
+        print('Received data from overlay window:');
+        print('Jeju: ${decodedResult['jeju']}');
+        print('Translated: ${decodedResult['translated']}');
+        print('---');
       });
     });
   }
@@ -102,13 +95,13 @@ class _TrueCallerOverlayState extends State<TrueCallerOverlay> {
     return Material(
       color: Colors.transparent,
       child: Stack(
-        alignment: Alignment.center, // 모든 자식을 중앙에 배치합니다.
+        alignment: Alignment.center,
         children: [
-          if (showIcon) // 메인 아이콘을 중앙에 표시합니다.
+          if (showIcon)
             GestureDetector(
               onTap: toggleOverlay,
               child: Container(
-                width: 250, // 이미지 크기 일관성 유지
+                width: 250,
                 height: 250,
                 decoration: BoxDecoration(
                   image: DecorationImage(
@@ -118,8 +111,6 @@ class _TrueCallerOverlayState extends State<TrueCallerOverlay> {
                 ),
               ),
             ),
-          if (isLoadingGifVisible) // 수정
-            Image.asset('assets/images/jeju_loading.gif', gaplessPlayback: true),
           if (showBox) _buildBox(),
         ],
       ),
@@ -148,13 +139,14 @@ class _TrueCallerOverlayState extends State<TrueCallerOverlay> {
                 children: [
                   LoadingText(text: "실시간 통역 중"),
                   Divider(color: Colors.black),
+                  if (showLoadingGif)
+                    Image.asset('assets/images/jeju_loading.gif'),
                   ...messages
                       .map((message) => TextSegmentBox(
-                            jejuText: message.jeju ?? "No data",
-                            translatedText: message.translated,
-                            isLoading: message.translated == "wait",
-                          ))
-                      .toList(),
+                    jejuText: message.jeju ?? "No data",
+                    translatedText: message.translated,
+                    isLoading: message.translated == "wait",
+                  )).toList(),
                 ],
               ),
             ),
@@ -163,7 +155,7 @@ class _TrueCallerOverlayState extends State<TrueCallerOverlay> {
               right: 5,
               child: GestureDetector(
                 onTap: toggleOverlay,
-                child: Icon(Icons.close, size: 24), // 닫기 아이콘
+                child: Icon(Icons.close, size: 24),
               ),
             ),
           ],

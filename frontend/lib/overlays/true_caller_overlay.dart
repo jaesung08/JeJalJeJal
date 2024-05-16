@@ -20,6 +20,8 @@ class _TrueCallerOverlayState extends State<TrueCallerOverlay> {
 
   bool showIcon = true;
   bool showBox = false;
+  bool isLoading = true;
+  Image? loadingGif;
 
   List<ReceiveMessageModel> messages = [];
   int currentIndex = -1;
@@ -28,6 +30,7 @@ class _TrueCallerOverlayState extends State<TrueCallerOverlay> {
   void initState() {
     print('1. 오버레이 initState 호출');
     super.initState();
+    loadingGif = Image.asset('assets/images/jeju_loading.gif');
     print('22');
 
     FlutterOverlayWindow.overlayListener.listen((newResult) async {
@@ -36,21 +39,21 @@ class _TrueCallerOverlayState extends State<TrueCallerOverlay> {
           messages.clear();
           currentIndex = -1;
           print('2. 메시지 초기화 확인');
-        } else {
-          var decodedResult = json.decode(newResult);
-          print('3. 수신 데이터 확인: $decodedResult');
+        var decodedResult = json.decode(newResult);
+        print('3. 수신 데이터 확인: $decodedResult');
 
-          ReceiveMessageModel newMessage =
-          ReceiveMessageModel.fromJson(decodedResult);
-          print('4. 새 메시지 확인: ${newMessage.jeju}, ${newMessage.translated}');
+        ReceiveMessageModel newMessage =
+            ReceiveMessageModel.fromJson(decodedResult);
+        print('4. 새 메시지 확인: ${newMessage.jeju}, ${newMessage.translated}');
 
-          if (newMessage.translated == "wait") {
-            currentIndex++;
-            messages.add(newMessage);
-            print('5. 새 메시지 추가 확인: ${newMessage}');
-            print('"wait" 메시지 도착 시간 출력: ${DateTime.now()}');
-            _scrollToBottom(); // 새 메시지 추가 후 스크롤 위치 이동
-          } else {
+        if (newMessage.translated == "wait") {
+          currentIndex++;
+          messages.add(newMessage);
+          print('5. 새 메시지 추가 확인: ${newMessage}');
+          print('"wait" 메시지 도착 시간 출력: ${DateTime.now()}');
+          _scrollToBottom(); // 새 메시지 추가 후 스크롤 위치 이동
+          isLoading = false; // 첫번째 메시지를 받으면 isLoading을 false로 변경
+         } else {
             int existingIndex = messages.indexWhere((message) =>
             message.jeju == newMessage.jeju &&
                 message.translated == "wait");
@@ -64,6 +67,7 @@ class _TrueCallerOverlayState extends State<TrueCallerOverlay> {
                   '7. 인덱스 $existingIndex에 맞는 메시지 업데이트 확인: ${newMessage.isTranslated}');
               print('번역된 메시지 도착 시간 출력: ${DateTime.now()}'); // 번역된 메시지 도착 시간 출력
               _scrollToBottom(); // 메시지 업데이트 후 스크롤 위치 이동
+              isLoading = false;
             }
           }
 
@@ -76,6 +80,12 @@ class _TrueCallerOverlayState extends State<TrueCallerOverlay> {
         }
       });
     });
+  }
+
+  @override
+  void dispose() {
+    loadingGif = null;
+    super.dispose();
   }
 
   void _scrollToBottom() {

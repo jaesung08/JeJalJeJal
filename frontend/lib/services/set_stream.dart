@@ -45,8 +45,9 @@ void initPhoneStateListener() {
         print('통화 시작됨: ${DateTime.now()}');
         print('전화 번호: $phoneNumber');
 
-        // 오버레이 데이터 초기화
+        // // 오버레이 데이터 초기화
         FlutterOverlayWindow.shareData(jsonEncode({'clear': true}));
+        print('오버레이 클리어');
 
         List<Contact>? contacts =
         await ContactsService.getContactsForPhone(phoneNumber!);
@@ -133,7 +134,30 @@ void initPhoneStateListener() {
             print('마지막 데이터 받아오고 나서 웹소켓 연결 종료');
           }
         }
-      }
+      });
+    } else if (event.status == PhoneStateStatus.CALL_ENDED) {
+      print('통화 종료: ${DateTime.now()}');
+
+
+      // if (targetFile != null) {
+      //   Uint8List entireBytes = targetFile!.readAsBytesSync();
+      //   var nextOffset = entireBytes.length;
+      //   var splittedBytes = entireBytes.sublist(offset, nextOffset);
+      //
+      //   if (splittedBytes.isNotEmpty) {
+      //     offset = nextOffset;
+      //     print('마지막 데이터: $splittedBytes');
+      //     print('마지막 데이터 보낸 시간: ${DateTime.now()}');
+      //
+      //     ws?.sink.add(splittedBytes);
+      //   }
+      // }
+
+      //마지막 알림 메시지 전송
+      var endMessage = SendMessageModel(
+        state: 1,
+        androidId: androidId!,
+        phoneNumber: phoneNumber!,
       );
     }
     else if (event.status == PhoneStateStatus.CALL_ENDED) {
@@ -152,12 +176,13 @@ void initPhoneStateListener() {
           phoneNumber: phoneNumber!,
         );
 
-        ws?.sink.add(jsonEncode(endMessage));
+      //웹소켓 연결 종료
+      await ws?.sink.close();
+      ws = null;
+      print('웹소켓 연결 종료');
 
-        //타이머 취소, 남은 데이터 보내주기
-        timer?.cancel();
-        // await ws?.sink.close();
-      }
+      //타이머 취소, 남은 데이터 보내주기
+      timer?.cancel();
     }
   });
 }

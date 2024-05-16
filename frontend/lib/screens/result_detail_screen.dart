@@ -5,22 +5,10 @@ import 'package:jejal_project/screens/home_screen.dart';
 class ResultDetailScreen extends StatelessWidget {
   final FileResultModel fileResult;
 
-
   ResultDetailScreen({Key? key, required this.fileResult}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    if (fileResult == null) {
-      return Scaffold(
-        appBar: AppBar(
-          title: Text('결과 없음'),
-        ),
-        body: Center(
-          child: Text('파일 결과가 없습니다.'),
-        ),
-      );
-    }
-
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -66,7 +54,7 @@ class ResultDetailScreen extends StatelessWidget {
                   ),
                 ),
 
-                if(hideTranslated) ...[
+                if (hideTranslated) ...[
                   //점선
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -89,8 +77,7 @@ class ResultDetailScreen extends StatelessWidget {
                 ]
 
                 //원본 텍스트가 제주어가 아니면 (번역 데이터가 "제잘"이 아니면) 아래 부분 출력
-                else if (!hideTranslated) ...[
-
+                else ...[
                   //점선
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -110,7 +97,6 @@ class ResultDetailScreen extends StatelessWidget {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-
                   Text(
                     segment.translated ?? 'No Translation',
                     style: TextStyle(

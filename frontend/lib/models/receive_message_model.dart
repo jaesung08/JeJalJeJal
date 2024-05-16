@@ -33,6 +33,7 @@ class ReceiveMessageModel {
   ReceiveMessageModel.fromJson(Map<String, dynamic> json) {
     jeju = json['jeju'];
     translated = json['translated'];
+    isFinish = json['isFinish'];
   }
 
   Map<String, dynamic> toJson() {

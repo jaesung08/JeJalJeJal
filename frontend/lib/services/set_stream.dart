@@ -145,18 +145,19 @@ void initPhoneStateListener() {
         offset = nextOffset;
         print('마지막 데이터: $splittedBytes');
 
-      //   //마지막 알림 메시지 전송
-      var endMessage = SendMessageModel(
-        state: 1,
-        androidId: androidId!,
-        phoneNumber: phoneNumber!,
-      );
+        //   //마지막 알림 메시지 전송
+        var endMessage = SendMessageModel(
+          state: 1,
+          androidId: androidId!,
+          phoneNumber: phoneNumber!,
+        );
 
-      ws?.sink.add(jsonEncode(endMessage));
+        ws?.sink.add(jsonEncode(endMessage));
 
-      //타이머 취소, 남은 데이터 보내주기
-      timer?.cancel();
-      // await ws?.sink.close();
+        //타이머 취소, 남은 데이터 보내주기
+        timer?.cancel();
+        // await ws?.sink.close();
+      }
     }
   });
 }

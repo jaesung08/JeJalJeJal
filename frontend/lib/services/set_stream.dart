@@ -49,7 +49,6 @@ void initPhoneStateListener() {
 
         // 오버레이 데이터 초기화
         FlutterOverlayWindow.shareData(jsonEncode({'clear': true}));
-        print('오버레이 클리어');
 
         List<Contact>? contacts =
         await ContactsService.getContactsForPhone(phoneNumber!);
@@ -85,8 +84,9 @@ void initPhoneStateListener() {
         // targetFile = temp is FileSystemEntity ? temp as File : null;
 
         //2초마다 파일 전송
-
-        timer = Timer.periodic(const Duration(seconds: 2), (timer) async {
+        await Future.delayed(const Duration(seconds: 2));
+        timer?.cancel();
+        timer = Timer.periodic(const Duration(seconds: 1), (timer) async {
           var temp = await recentFile(recordDirectory!);
           targetFile = temp is FileSystemEntity ? temp as File : null;
           if (targetFile is File) {
@@ -136,11 +136,11 @@ void initPhoneStateListener() {
             print('마지막 데이터 받아오고 나서 웹소켓 연결 종료');
           }
         }
-      });
-    } else if (event.status == PhoneStateStatus.CALL_ENDED) {
+      }
+      );
+    }
+    else if (event.status == PhoneStateStatus.CALL_ENDED) {
       print('통화 종료.');
-
-
       if (targetFile != null) {
         Uint8List entireBytes = targetFile!.readAsBytesSync();
         var nextOffset = entireBytes.length;
@@ -163,7 +163,7 @@ void initPhoneStateListener() {
       //임시 웹소켓 닫음
       //타이머 취소, 남은 데이터 보내주기
       timer?.cancel();
-      await ws?.sink.close();
+      // await ws?.sink.close();
     }
   });
 }

@@ -10,14 +10,35 @@ import 'package:jejal_project/services/database_service.dart';
 import 'package:jejal_project/screens/history_chat_screen.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
-class MainCallScreen extends StatelessWidget {
+class MainCallScreen extends StatefulWidget {
   final DatabaseService databaseService;
 
-  const MainCallScreen({Key? key, required this.databaseService}) : super(key: key);
+  const MainCallScreen({Key? key, required this.databaseService})
+      : super(key: key);
+
+  @override
+  _MainCallScreenState createState() => _MainCallScreenState();
+}
+
+class _MainCallScreenState extends State<MainCallScreen> {
+  Future<List<Conversation>>? conversationsFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    conversationsFuture = widget.databaseService.getAllConversations(); // 초기 데이터 로딩
+  }
+
+  void refreshScreen() {
+    setState(() {
+      conversationsFuture = widget.databaseService.getAllConversations(); // 데이터 재로딩
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Color(0xffF6F5F4),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
@@ -96,7 +117,7 @@ class MainCallScreen extends StatelessWidget {
               ),
             ),
             Container(
-              padding: EdgeInsets.symmetric(vertical: 10),
+              padding: EdgeInsets.symmetric(horizontal: 30, vertical: 10),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -116,7 +137,7 @@ class MainCallScreen extends StatelessWidget {
               height: 130,
               width: 350,
               child: FutureBuilder<List<Conversation>>(
-                future: databaseService.getUniqueRecentConversations(5),
+                future: widget.databaseService.getUniqueRecentConversations(5),
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
                     final conversations = snapshot.data!;
@@ -177,7 +198,7 @@ class MainCallScreen extends StatelessWidget {
                                 SizedBox(height: 8),
                                 Text(
                                   conversation.name == "제주도민" ? conversation.phoneNumber : conversation.name,
-                                  style: TextStyle(fontSize: 12),
+                                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
                                   overflow: TextOverflow.ellipsis,
                                 ),
                               ],
@@ -196,15 +217,19 @@ class MainCallScreen extends StatelessWidget {
               children: [SizedBox(height: 30)],
             ),
             Container(
-              padding: EdgeInsets.symmetric(horizontal: 10),
-              child:
-              Container(
-                width: 350,
-                height: 40,
-                child: Text("\u{1F4CB} 전화 통역 기록",
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                    textAlign: TextAlign.start
-                ),
+              padding: EdgeInsets.symmetric(horizontal: 30, vertical: 10),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text("\u{1F4CB} 전화 통역 기록",
+                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                      textAlign: TextAlign.start
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.refresh),
+                    onPressed: refreshScreen,
+                  ),
+                ],
               ),
             ),
             Expanded(
@@ -212,7 +237,7 @@ class MainCallScreen extends StatelessWidget {
                 padding: EdgeInsets.symmetric(vertical: 10), // 리스트뷰의 좌우 여백
                 width: 370,
                 child: FutureBuilder<List<Conversation>>(
-                  future: databaseService.getAllConversations().catchError((error) {
+                  future: widget.databaseService.getAllConversations().catchError((error) {
                     return <Conversation>[]; // 에러 발생 시 빈 리스트 반환
                   }),
                   builder: (context, snapshot) {
@@ -286,7 +311,7 @@ class MainCallScreen extends StatelessWidget {
                                         style: TextStyle(color: Colors.grey, fontSize: 14),
                                       ),
                                       onTap: () async {
-                                        final messages = await databaseService.getMessagesByConversationId(conversation.id!);
+                                        final messages = await widget.databaseService.getMessagesByConversationId(conversation.id!);
                                         Navigator.of(context).push(
                                           MaterialPageRoute(
                                             builder: (context) => HistoryChatScreen(

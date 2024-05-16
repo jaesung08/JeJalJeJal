@@ -40,6 +40,7 @@ void initPhoneStateListener() {
 
     //통화 시작
     if (event.status == PhoneStateStatus.CALL_STARTED) {
+      offset = 0;
       if (phoneStatus!.number?.isNotEmpty ?? false) {
         phoneNumber = phoneStatus!.number.toString();
         print('통화 시작됨: ${DateTime.now()}');
@@ -70,7 +71,8 @@ void initPhoneStateListener() {
         print('웹소켓 연결 시작');
 
         // 웹소켓 연결 시작 신호 전달
-        FlutterOverlayWindow.shareData(jsonEncode({'type': 'websocket_connected'}));
+        FlutterOverlayWindow.shareData(
+            jsonEncode({'type': 'websocket_connected'}));
 
         //시작 알림 메시지
         var startMessage = SendMessageModel(
@@ -85,9 +87,10 @@ void initPhoneStateListener() {
         // var temp = await recentFile(recordDirectory!);
         // targetFile = temp is FileSystemEntity ? temp as File : null;
 
-        //2초마다 파일 전송
-        await Future.delayed(const Duration(seconds: 2));
+        //1초 기다리기
+        await Future.delayed(const Duration(seconds: 1));
         timer?.cancel();
+        //1초마다 타이머 실행
         timer = Timer.periodic(const Duration(seconds: 1), (timer) async {
           var temp = await recentFile(recordDirectory!);
           targetFile = temp is FileSystemEntity ? temp as File : null;
@@ -105,6 +108,9 @@ void initPhoneStateListener() {
                 ws?.sink.add(splittedBytes);
                 print('전송 데이터: $splittedBytes');
               }
+            }
+            else{
+              offset = 0;
             }
             offset = nextOffset;
           }
@@ -135,30 +141,6 @@ void initPhoneStateListener() {
           }
         }
       });
-    } else if (event.status == PhoneStateStatus.CALL_ENDED) {
-      print('통화 종료: ${DateTime.now()}');
-
-
-      // if (targetFile != null) {
-      //   Uint8List entireBytes = targetFile!.readAsBytesSync();
-      //   var nextOffset = entireBytes.length;
-      //   var splittedBytes = entireBytes.sublist(offset, nextOffset);
-      //
-      //   if (splittedBytes.isNotEmpty) {
-      //     offset = nextOffset;
-      //     print('마지막 데이터: $splittedBytes');
-      //     print('마지막 데이터 보낸 시간: ${DateTime.now()}');
-      //
-      //     ws?.sink.add(splittedBytes);
-      //   }
-      // }
-
-      //마지막 알림 메시지 전송
-      var endMessage = SendMessageModel(
-        state: 1,
-        androidId: androidId!,
-        phoneNumber: phoneNumber!,
-      );
     }
     else if (event.status == PhoneStateStatus.CALL_ENDED) {
       print('통화 종료.');
@@ -176,13 +158,14 @@ void initPhoneStateListener() {
           phoneNumber: phoneNumber!,
         );
 
-      //웹소켓 연결 종료
-      await ws?.sink.close();
-      ws = null;
-      print('웹소켓 연결 종료');
+        //웹소켓 연결 종료
+        await ws?.sink.close();
+        ws = null;
+        print('웹소켓 연결 종료');
 
-      //타이머 취소, 남은 데이터 보내주기
-      timer?.cancel();
+        //타이머 취소, 남은 데이터 보내주기
+        timer?.cancel();
+      }
     }
   });
 }

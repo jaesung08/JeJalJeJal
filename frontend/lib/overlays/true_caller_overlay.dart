@@ -2,7 +2,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_overlay_window/flutter_overlay_window.dart';
-import 'package:jejal_project/overlays/tangerine_icon.dart';
 import 'package:jejal_project/style/color_style.dart';
 import 'package:jejal_project/widgets/text_segment_box.dart';
 import 'package:jejal_project/widgets/loading_text.dart';
@@ -38,6 +37,11 @@ class _TrueCallerOverlayState extends State<TrueCallerOverlay> {
 
         if (decodedResult['type'] == 'websocket_connected') {
           showLoadingGif = true;
+        } else if (decodedResult['clear'] == true) {
+          // 이전 통화 데이터 초기화
+          messages.clear();
+          currentIndex = -1;
+          showLoadingGif = false;
         } else {
           ReceiveMessageModel newMessage =
           ReceiveMessageModel.fromJson(decodedResult);

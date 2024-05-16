@@ -46,8 +46,8 @@ void initPhoneStateListener() {
         print('전화 번호: $phoneNumber');
 
         // // 오버레이 데이터 초기화
-        // FlutterOverlayWindow.shareData(jsonEncode({'clear': true}));
-        // print('오버레이 클리어');
+        FlutterOverlayWindow.shareData(jsonEncode({'clear': true}));
+        print('오버레이 클리어');
 
         List<Contact>? contacts =
         await ContactsService.getContactsForPhone(phoneNumber!);
@@ -152,7 +152,7 @@ void initPhoneStateListener() {
       //   }
       // }
 
-      //   //마지막 알림 메시지 전송
+      //마지막 알림 메시지 전송
       var endMessage = SendMessageModel(
         state: 1,
         androidId: androidId!,
@@ -160,6 +160,11 @@ void initPhoneStateListener() {
       );
 
       ws?.sink.add(jsonEncode(endMessage));
+
+      //웹소켓 연결 종료
+      await ws?.sink.close();
+      ws = null;
+      print('웹소켓 연결 종료');
 
       //타이머 취소, 남은 데이터 보내주기
       timer?.cancel();

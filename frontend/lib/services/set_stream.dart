@@ -45,9 +45,8 @@ void initPhoneStateListener() {
         print('통화 시작됨: ${DateTime.now()}');
         print('전화 번호: $phoneNumber');
 
-        // // 오버레이 데이터 초기화
-        // FlutterOverlayWindow.shareData(jsonEncode({'clear': true}));
-        // print('오버레이 클리어');
+        // 오버레이 데이터 초기화
+        FlutterOverlayWindow.shareData(jsonEncode({'clear': true}));
 
         List<Contact>? contacts =
         await ContactsService.getContactsForPhone(phoneNumber!);
@@ -86,7 +85,8 @@ void initPhoneStateListener() {
         // targetFile = temp is FileSystemEntity ? temp as File : null;
 
         //2초마다 파일 전송
-
+        await Future.delayed(const Duration(seconds: 2));
+        timer?.cancel();
         timer = Timer.periodic(const Duration(seconds: 1), (timer) async {
           var temp = await recentFile(recordDirectory!);
           targetFile = temp is FileSystemEntity ? temp as File : null;
@@ -133,24 +133,17 @@ void initPhoneStateListener() {
             print('마지막 데이터 받아오고 나서 웹소켓 연결 종료');
           }
         }
-      });
-    } else if (event.status == PhoneStateStatus.CALL_ENDED) {
-      print('통화 종료: ${DateTime.now()}');
-
-
-      // if (targetFile != null) {
-      //   Uint8List entireBytes = targetFile!.readAsBytesSync();
-      //   var nextOffset = entireBytes.length;
-      //   var splittedBytes = entireBytes.sublist(offset, nextOffset);
-      //
-      //   if (splittedBytes.isNotEmpty) {
-      //     offset = nextOffset;
-      //     print('마지막 데이터: $splittedBytes');
-      //     print('마지막 데이터 보낸 시간: ${DateTime.now()}');
-      //
-      //     ws?.sink.add(splittedBytes);
-      //   }
-      // }
+      }
+      );
+    }
+    else if (event.status == PhoneStateStatus.CALL_ENDED) {
+      print('통화 종료.');
+      if (targetFile != null) {
+        Uint8List entireBytes = targetFile!.readAsBytesSync();
+        var nextOffset = entireBytes.length;
+        var splittedBytes = entireBytes.sublist(offset, nextOffset);
+        offset = nextOffset;
+        print('마지막 데이터: $splittedBytes');
 
       //   //마지막 알림 메시지 전송
       var endMessage = SendMessageModel(
@@ -163,6 +156,7 @@ void initPhoneStateListener() {
 
       //타이머 취소, 남은 데이터 보내주기
       timer?.cancel();
+      // await ws?.sink.close();
     }
   });
 }

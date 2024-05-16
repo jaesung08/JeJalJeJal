@@ -1,5 +1,3 @@
-// lib/services/set_stream.dart
-
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
@@ -44,7 +42,7 @@ void initPhoneStateListener() {
     if (event.status == PhoneStateStatus.CALL_STARTED) {
       if (phoneStatus!.number?.isNotEmpty ?? false) {
         phoneNumber = phoneStatus!.number.toString();
-        print('통화 시작됨.');
+        print('통화 시작됨: ${DateTime.now()}');
         print('전화 번호: $phoneNumber');
 
         // 오버레이 데이터 초기화
@@ -69,6 +67,9 @@ void initPhoneStateListener() {
           Uri.parse('wss://k10a406.p.ssafy.io/api/record'),
         );
         print('웹소켓 연결 시작');
+
+        // 웹소켓 연결 시작 신호 전달
+        FlutterOverlayWindow.shareData(jsonEncode({'type': 'websocket_connected'}));
 
         //시작 알림 메시지
         var startMessage = SendMessageModel(
@@ -97,10 +98,13 @@ void initPhoneStateListener() {
             // 범위 초과 문제를 해결하기 위해 nextOffset 이전의 데이터만 추출
             if (offset < nextOffset) {
               var splittedBytes = entireBytes.sublist(offset, nextOffset);
-              print('전송 데이터: $splittedBytes');
-              ws?.sink.add(splittedBytes);
-            }
 
+              // splittedBytes가 비어있지 않은 경우에만 전송
+              if (splittedBytes.isNotEmpty) {
+                ws?.sink.add(splittedBytes);
+                print('전송 데이터: $splittedBytes');
+              }
+            }
             offset = nextOffset;
           }
         });
@@ -109,17 +113,10 @@ void initPhoneStateListener() {
       //결과 데이터 받아오기
       ws?.stream.listen((msg) async {
         print('결과 데이터 받아오기 성공');
-
-        // 웹소켓에서 첫 번째 메시지를 받았을 때 이미지 표시 시작
-        if (msg != null) {
-          FlutterOverlayWindow.shareData(jsonEncode({'showImage': true}));
-        }
-
         if (msg != null) {
           ReceiveMessageModel receivedResult =
           ReceiveMessageModel.fromJson(jsonDecode(msg));
           receivedResult.conversationId = conversationId;
-
           //위젯으로 보내주기
           FlutterOverlayWindow.shareData(msg);
           print('결과 데이터 위젯으로 전송(shareData)');
@@ -148,10 +145,7 @@ void initPhoneStateListener() {
         offset = nextOffset;
         print('마지막 데이터: $splittedBytes');
 
-        ws?.sink.add(splittedBytes);
-      }
-
-      //마지막 알림 메시지 전송
+      //   //마지막 알림 메시지 전송
       var endMessage = SendMessageModel(
         state: 1,
         androidId: androidId!,
@@ -160,7 +154,6 @@ void initPhoneStateListener() {
 
       ws?.sink.add(jsonEncode(endMessage));
 
-      //임시 웹소켓 닫음
       //타이머 취소, 남은 데이터 보내주기
       timer?.cancel();
       // await ws?.sink.close();

@@ -167,10 +167,17 @@ public class AudioWebSocketHandler extends AbstractWebSocketHandler {
 
             // 남은 데이터가 있는지 확인
             if (byteBuffer.hasRemaining()) {
-                logger.info(" [3] ----------------- 파일에 데이터 작성");
+                int remainingBefore = byteBuffer.remaining();  // 쓰기 전 남은 데이터 양
+                logger.info("-----------------[파일에 데이터 넣기 전에 남은 데이터 양 확인]-----------------", remainingBefore);
+
+//                logger.info(" [3] ----------------- 파일에 데이터 작성");
                 byte[] bytes = new byte[byteBuffer.remaining()];
                 byteBuffer.get(bytes);
                 outputStream.write(bytes);
+
+                int remainingAfter = byteBuffer.remaining();  // 쓰기 후 남은 데이터 양
+                logger.info("-----------------[파일에 데이터 작성 후 데이터 양 확인]-----------------", remainingAfter);
+
             } else {
                 logger.info("No data to write for session: {}", sessionId);
             }
@@ -326,14 +333,19 @@ public class AudioWebSocketHandler extends AbstractWebSocketHandler {
     // 클라이언트에게 (웹소켓 연결을 통해) 결과 전송
     private void sendClient(WebSocketSession session, TranslateResponseDto translateResponseDto) throws IOException {
 //        logger.info(" [7] -------------------- sendClient 호출됨, 제주어: {}, 번역된 텍스트: {}", translateResponseDto.getJeju(), translateResponseDto.getTranslated() );
-        logger.info("-----------------[클라이언트에게 웹 소켓 전송]-----------------");
+        logger.info("-----------------[클라이언트에게 웹 소켓 전송 시이작]-----------------");
 
         Gson gson = new Gson();
         String json = gson.toJson(translateResponseDto);
         TextMessage textMessage = new TextMessage(json);
 //        logger.info("textmessage = {}", textMessage);
-
+        logger.info("-----------------[텍스트 메세지 확인]-----------------");
+        logger.info("", textMessage);
+        logger.info("-----------------[클라이언트에게 메세지 보내기 전]-----------------");
+        
         session.sendMessage(textMessage);
+
+        logger.info("-----------------[클라이언트에게 메세지 전송 완료]-----------------");
     }
 
     private void sendClientToCloseConnection(WebSocketSession session) throws IOException {

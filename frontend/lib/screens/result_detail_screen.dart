@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:jejal_project/models/file_result_model.dart';
 import 'package:jejal_project/screens/home_screen.dart';
-import '../services/database_service.dart';
 
 class ResultDetailScreen extends StatelessWidget {
   final FileResultModel fileResult;

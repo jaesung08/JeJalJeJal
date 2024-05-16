@@ -6,8 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:jejal_project/models/file_result_model.dart';
 import 'package:jejal_project/screens/result_detail_screen.dart';
 
-import 'history_chat_screen.dart';
-
 const String recordDirectoryPath = "/storage/emulated/0/Recordings/Call";
 
 class SelectFileScreen extends StatefulWidget {

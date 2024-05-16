@@ -20,6 +20,7 @@ class _TrueCallerOverlayState extends State<TrueCallerOverlay> {
 
   bool showIcon = true;
   bool showBox = false;
+  bool isLoadingGifVisible = false;
 
   List<ReceiveMessageModel> messages = [];
   int currentIndex = -1;
@@ -36,6 +37,8 @@ class _TrueCallerOverlayState extends State<TrueCallerOverlay> {
           messages.clear();
           currentIndex = -1;
           print('2. 메시지 초기화 확인');
+        } else if (newResult == '{"showImage": true}') {
+          isLoadingGifVisible = true;
         } else {
           var decodedResult = json.decode(newResult);
           print('3. 수신 데이터 확인: $decodedResult');
@@ -60,6 +63,10 @@ class _TrueCallerOverlayState extends State<TrueCallerOverlay> {
               messages[existingIndex] = messages[existingIndex].copyWith(
                 translated: newMessage.translated,
               );
+
+              if (existingIndex == 0) {
+                isLoadingGifVisible = false;
+              }
               print(
                   '7. 인덱스 $existingIndex에 맞는 메시지 업데이트 확인: ${newMessage.isTranslated}');
               print('번역된 메시지 도착 시간 출력: ${DateTime.now()}'); // 번역된 메시지 도착 시간 출력
@@ -95,22 +102,24 @@ class _TrueCallerOverlayState extends State<TrueCallerOverlay> {
     return Material(
       color: Colors.transparent,
       child: Stack(
-        alignment: Alignment.center,  // 모든 자식을 중앙에 배치합니다.
+        alignment: Alignment.center, // 모든 자식을 중앙에 배치합니다.
         children: [
-          if (showIcon)  // 메인 아이콘을 중앙에 표시합니다.
+          if (showIcon) // 메인 아이콘을 중앙에 표시합니다.
             GestureDetector(
-                onTap: toggleOverlay,
-                child: Container(
-                  width: 250, // 이미지 크기 일관성 유지
-                  height: 250,
-                  decoration: BoxDecoration(
-                    image: DecorationImage(
-                      image: AssetImage('assets/images/translate_on.png'),
-                      fit: BoxFit.contain,
-                    ),
+              onTap: toggleOverlay,
+              child: Container(
+                width: 250, // 이미지 크기 일관성 유지
+                height: 250,
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                    image: AssetImage('assets/images/translate_on.png'),
+                    fit: BoxFit.contain,
                   ),
                 ),
+              ),
             ),
+          if (isLoadingGifVisible) // 수정
+            Image.asset('assets/images/jeju_loading.gif', gaplessPlayback: true),
           if (showBox) _buildBox(),
         ],
       ),
@@ -141,10 +150,11 @@ class _TrueCallerOverlayState extends State<TrueCallerOverlay> {
                   Divider(color: Colors.black),
                   ...messages
                       .map((message) => TextSegmentBox(
-                    jejuText: message.jeju ?? "No data",
-                    translatedText: message.translated,
-                    isLoading: message.translated == "wait",
-                  )).toList(),
+                            jejuText: message.jeju ?? "No data",
+                            translatedText: message.translated,
+                            isLoading: message.translated == "wait",
+                          ))
+                      .toList(),
                 ],
               ),
             ),
@@ -153,7 +163,7 @@ class _TrueCallerOverlayState extends State<TrueCallerOverlay> {
               right: 5,
               child: GestureDetector(
                 onTap: toggleOverlay,
-                child: Icon(Icons.close, size: 24),  // 닫기 아이콘
+                child: Icon(Icons.close, size: 24), // 닫기 아이콘
               ),
             ),
           ],
@@ -161,7 +171,6 @@ class _TrueCallerOverlayState extends State<TrueCallerOverlay> {
       ),
     );
   }
-
 
   void toggleOverlay() {
     setState(() {

@@ -1,3 +1,5 @@
+// lib/services/set_stream.dart
+
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
@@ -50,7 +52,7 @@ void initPhoneStateListener() {
         print('오버레이 클리어');
 
         List<Contact>? contacts =
-            await ContactsService.getContactsForPhone(phoneNumber!);
+        await ContactsService.getContactsForPhone(phoneNumber!);
         String? name;
 
         if (contacts.isNotEmpty) {
@@ -107,10 +109,17 @@ void initPhoneStateListener() {
       //결과 데이터 받아오기
       ws?.stream.listen((msg) async {
         print('결과 데이터 받아오기 성공');
+
+        // 웹소켓에서 첫 번째 메시지를 받았을 때 이미지 표시 시작
+        if (msg != null) {
+          FlutterOverlayWindow.shareData(jsonEncode({'showImage': true}));
+        }
+
         if (msg != null) {
           ReceiveMessageModel receivedResult =
-              ReceiveMessageModel.fromJson(jsonDecode(msg));
+          ReceiveMessageModel.fromJson(jsonDecode(msg));
           receivedResult.conversationId = conversationId;
+
           //위젯으로 보내주기
           FlutterOverlayWindow.shareData(msg);
           print('결과 데이터 위젯으로 전송(shareData)');
@@ -131,8 +140,6 @@ void initPhoneStateListener() {
     } else if (event.status == PhoneStateStatus.CALL_ENDED) {
       print('통화 종료.');
 
-      //타이머 취소, 남은 데이터 보내주기
-      timer?.cancel();
 
       if (targetFile != null) {
         Uint8List entireBytes = targetFile!.readAsBytesSync();
@@ -154,7 +161,9 @@ void initPhoneStateListener() {
       ws?.sink.add(jsonEncode(endMessage));
 
       //임시 웹소켓 닫음
-      // ws?.sink.close();
+      //타이머 취소, 남은 데이터 보내주기
+      timer?.cancel();
+      await ws?.sink.close();
     }
   });
 }

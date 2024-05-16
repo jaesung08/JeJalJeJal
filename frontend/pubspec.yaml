@@ -53,6 +53,7 @@ dependencies:
   sqflite: ^2.3.3
   toggle_switch: ^2.3.0
   path: ^1.9.0
+  callkeep: ^0.3.3
 
 dev_dependencies:
   flutter_test:

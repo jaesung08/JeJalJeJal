@@ -6,6 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:jejal_project/models/file_result_model.dart';
 import 'package:jejal_project/screens/result_detail_screen.dart';
 
+import '../style/color_style.dart';
+
 const String recordDirectoryPath = "/storage/emulated/0/Recordings/Call";
 
 class SelectFileScreen extends StatefulWidget {
@@ -97,6 +99,7 @@ class _SelectFileState extends State<SelectFileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: ColorStyles.backgroundBox,
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -120,17 +123,17 @@ class _SelectFileState extends State<SelectFileScreen> {
                           SizedBox(height: 20),
                           Text(
                             "파일 통역을 원한다면!",
-                            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                            style: TextStyle(fontSize: 17, fontWeight: FontWeight.w200, fontFamily: 'Rikodeo'),
                           ),
                           SizedBox(height: 3),
                           Text(
                             "통역을 원하는",
-                            style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+                            style: TextStyle(fontSize: 12, fontWeight: FontWeight.w100, color: Colors.grey, fontFamily: 'Rikodeo'),
                           ),
                           SizedBox(height: 3),
                           Text(
                             "음성 파일을 선택해주세요",
-                            style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+                            style: TextStyle(fontSize: 12, fontWeight: FontWeight.w100, color: Colors.grey, fontFamily: 'Rikodeo'),
                           ),
                           SizedBox(height: 20),
                         ],
@@ -143,7 +146,7 @@ class _SelectFileState extends State<SelectFileScreen> {
                         child: Text('파일 선택'),
                         style: ElevatedButton.styleFrom(
                           foregroundColor: Colors.white,
-                          backgroundColor: Colors.blue,
+                          backgroundColor: Colors.orange,
                         ),
                       ),
                     ),
@@ -157,11 +160,11 @@ class _SelectFileState extends State<SelectFileScreen> {
                     children: [
                       Text(
                         "\u{1F4C1} 파일 통역 체험해봐요!",
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        style: TextStyle(fontSize: 17, fontWeight: FontWeight.w200, fontFamily: 'Rikodeo'),
                       ),
                       Text(
                         "최근 통화 녹음 파일",
-                        style: TextStyle(fontSize: 12, color: Colors.grey),
+                        style: TextStyle(fontSize: 12, fontWeight: FontWeight.w100, color: Colors.grey, fontFamily: 'Rikodeo'),
                       ),
                     ],
                   )
@@ -169,14 +172,15 @@ class _SelectFileState extends State<SelectFileScreen> {
               //녹음 파일 다섯개 목록
               Expanded(
                 child: ListView.builder(
-                  padding: EdgeInsets.symmetric(horizontal: 10),
+                  padding: EdgeInsets.symmetric(horizontal: 20),
                   itemCount: recentFiles.length,
                   itemBuilder: (context, index) {
                     final file = recentFiles[index];
                     return
                       Card( child: ListTile(
-                        title: Text(file.path.split('/').last, style: TextStyle(fontSize: 13)),
-                        subtitle: Text(FileStat.statSync(file.path).changed.toString()),
+                        tileColor: Color(0xFFECDFD2),
+                        title: Text(file.path.split('/').last, style: TextStyle(fontSize: 13, fontWeight: FontWeight.w100, color: Colors.black, fontFamily: 'Rikodeo')),
+                        subtitle: Text(FileStat.statSync(file.path).changed.toString(), style: TextStyle(fontSize: 12, fontWeight: FontWeight.w100, color: Colors.grey, fontFamily: 'Rikodeo')),
                         onTap: () {
                           setState(() {
                             _filePath = file.path;
@@ -204,9 +208,10 @@ class _SelectFileState extends State<SelectFileScreen> {
             child: Text(
               '파일 통역 결과',
               style: TextStyle(
-                color: Colors.orange,
+                color: Colors.brown,
                 fontSize: 20.0,
-                fontWeight: FontWeight.bold,
+                fontWeight: FontWeight.w100,
+                fontFamily: "Rikodeo"
               ),
             ),
           ),
@@ -219,29 +224,24 @@ class _SelectFileState extends State<SelectFileScreen> {
                 bool hideTranslated = segment?.translated == "제잘";
                 return Container(
                   width: MediaQuery.of(context).size.width * 0.7,
-                  margin: const EdgeInsets.symmetric(vertical: 5.0, horizontal: 20.0),
+                  margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 40.0),
                   padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 16.0),
                   decoration: BoxDecoration(
-                    color: Colors.black12,
+                    color: Color(0xFFECDFD2),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      Text(segment?.jeju ?? 'No Jeju Text', style: TextStyle(color: Colors.black, fontSize: 14.0)),
+                      Text(segment?.jeju ?? 'No Jeju Text', style: TextStyle(fontSize: 16.0, fontWeight:FontWeight.w600, color: Colors.black, fontFamily: "gangwon")),
                       if (hideTranslated) ...[
-                        Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 8.0),
-                          child: CustomPaint(painter: DashedLinePainter(), child: Container(height: 1, width: double.infinity)),
-                        ),
-                        Text('통역할 제주어가 인식되지 않았습니다.', style: TextStyle(color: Colors.black, fontSize: 14.0, fontWeight: FontWeight.w600)),
                       ],
                       if (!hideTranslated) ...[
                         Padding(
                           padding: const EdgeInsets.symmetric(vertical: 8.0),
                           child: CustomPaint(painter: DashedLinePainter(), child: Container(height: 1, width: double.infinity)),
                         ),
-                        Text(segment?.translated ?? 'No Translation', style: TextStyle(color: Colors.black, fontSize: 14.0, fontWeight: FontWeight.w600)),
+                        Text(segment?.translated ?? 'No Translation', style: TextStyle(fontSize: 16.0, fontWeight:FontWeight.w600, color: Colors.black, fontFamily: "gangwon", backgroundColor: Color(0xffFFC1A0))),
                       ],
                     ],
                   ),

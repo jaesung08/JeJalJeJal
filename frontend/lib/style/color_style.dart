@@ -16,5 +16,5 @@ class ColorStyles {
   static const Color backgroundRed = Color(0xFFFFEEEE);
   static const Color backgroundYellow = Color(0xFFFFF8E5);
   static const Color backgroundBlue = Color(0xffE9F3FD);
-  static const Color backgroundBox = Color(0xFFFFB891);
+  static const Color backgroundBox = Color(0xFFFFF4E9);
 }

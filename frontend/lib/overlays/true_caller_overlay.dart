@@ -1,4 +1,3 @@
-// true_caller_overlay.dart
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_overlay_window/flutter_overlay_window.dart';
@@ -124,15 +123,25 @@ class _TrueCallerOverlayState extends State<TrueCallerOverlay> {
   Widget _buildBox() {
     return Positioned(
       top: 20.0,
-      right: 10.0,
+      left: 15.0,
+      right: 15.0,
       child: Container(
         margin: const EdgeInsets.only(top: 10.0),
         padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
-        width: 340.0,
-        height: 450.0,
+        width: 300.0,
+        height: 400.0,
         decoration: BoxDecoration(
+          border: Border.all(color: Colors.brown, width: 2),
           color: ColorStyles.backgroundBox,
           borderRadius: BorderRadius.circular(12),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.withOpacity(0.7),
+                blurRadius: 5.0,
+                spreadRadius: 0.0,
+                offset: const Offset(0,7),
+              )
+            ]
         ),
         child: Stack(
           children: [
@@ -142,7 +151,8 @@ class _TrueCallerOverlayState extends State<TrueCallerOverlay> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   LoadingText(text: "실시간 통역 중"),
-                  Divider(color: Colors.black),
+                  SizedBox(height: 10),
+                  Divider(color: Colors.brown),
                   if (showLoadingGif)
                     Image.asset('assets/images/jeju_loading.gif'),
                   ...messages

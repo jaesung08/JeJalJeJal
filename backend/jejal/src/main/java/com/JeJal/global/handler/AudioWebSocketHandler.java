@@ -69,15 +69,14 @@ public class AudioWebSocketHandler extends AbstractWebSocketHandler {
         deleteExistingFilesAndCreateFolder(session.getId());
     }
 
-    // 기존 파일을 삭제하고 새 폴더를 생성하는 메서드 (테스트 해봐야함)
-    // 이건 이전 통화의 데이터가 다음 통화에 따라오는 것을 막기위해
-    // 남아있는거 따라오는 부분 해결하기 위해서 추가함
+    // 기존 파일을 삭제하고 새 폴더를 생성하는 메서드
     private void deleteExistingFilesAndCreateFolder(String sessionId) {
         log.info("-----------------[deleteExistingFilesAndCreateFolder]-----------------");
         log.info(sessionId);
         File directory = new File(RECORD_PATH + "/" + sessionId);
         if (directory.exists()) {
             log.info(" [1] ----------------- 기존 디렉터리 삭제됨");
+            deleteDirectory(directory);
         }
         directory.mkdirs(); // 새 디렉터리 생성
         File partDirectory = new File(RECORD_PATH + "/" + sessionId + "/part");
@@ -225,6 +224,7 @@ public class AudioWebSocketHandler extends AbstractWebSocketHandler {
                             log.error("소켓 종료 메시지 전송 실패", e);
                         }
                     });
+                    session.getAttributes().put("currentFuture", future);
                 } else {
                     log.info("-----------------[통화 종료 후 파일 없음]-----------------");
                     log.info("-----------------[세션 종료 요청 보냄]-----------------");
@@ -406,6 +406,12 @@ public class AudioWebSocketHandler extends AbstractWebSocketHandler {
         // 세션 어트리뷰트를 정리합니다.
         session.getAttributes().clear();
         log.info("세션 종료: {}", session.getId());
+
+        CompletableFuture<Void> currentFuture = (CompletableFuture<Void>) session.getAttributes().get("currentFuture");
+        if (currentFuture != null && !currentFuture.isDone()) {
+            currentFuture.cancel(true);
+            log.info("진행 중인 비동기 작업을 취소했습니다. 세션 ID: {}", session.getId());
+        }
     }
 
     // 소켓 연결이 비정상적으로 종료된 경우, 해당 소켓의 상태를 초기화하는 메서드
@@ -433,6 +439,12 @@ public class AudioWebSocketHandler extends AbstractWebSocketHandler {
         // 세션 어트리뷰트를 초기화하는 등의 작업을 수행할 수 있습니다.
         deleteExistingFilesAndCreateFolder(session.getId());
         session.getAttributes().clear();
+
+        CompletableFuture<Void> currentFuture = (CompletableFuture<Void>) session.getAttributes().get("currentFuture");
+        if (currentFuture != null && !currentFuture.isDone()) {
+            currentFuture.cancel(true);
+            log.info("진행 중인 비동기 작업을 취소했습니다. 세션 ID: {}", session.getId());
+        }
     }
 
     // 디렉터리 삭제 메서드

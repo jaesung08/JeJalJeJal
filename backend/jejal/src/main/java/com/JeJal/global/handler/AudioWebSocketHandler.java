@@ -20,6 +20,8 @@ import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -201,13 +203,28 @@ public class AudioWebSocketHandler extends AbstractWebSocketHandler {
                 Map<String, Object> untruncResult = restApiUtil.requestGet(untruncUrl, params);
 
                 List<String> newFile = (List<String>) untruncResult.get("new_file");
-                log.info("파일 개수 : ", newFile.size());
+                log.info("파일 개수 : {}", newFile.size());
                 if (!newFile.isEmpty()) { // newFile 리스트가 비어있지 않은 경우에만 실행
                     log.info("-----------------[통화 종료 후 파일 있음]-----------------");
                     String newFilePath = RECORD_PATH + "/" + session.getId() + "/part/";
-                    sendClovaSpeechServer(newFile, newFilePath, session, false);
-                    log.info("-----------------[클로바 > 번역 > 세션 종료 요청 보냄]-----------------");
-                    sendClientToCloseConnection(session);
+
+                    // sendClovaSpeechServer 메서드 내부의 작업을 비동기로 실행하고,
+                    // 해당 작업이 완료된 후에 thenRun을 사용하여 sendClientToCloseConnection을 호출
+                    CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
+                        try {
+                            sendClovaSpeechServer(newFile, newFilePath, session, false);
+                        } catch (Exception e) {
+                            log.error("sendClovaSpeechServer 실행 중 오류 발생", e);
+                        }
+                    });
+                    future.thenRun(() -> {
+                        try {
+                            log.info("-----------------[클로바 > 번역 > 세션 종료 요청 보냄]-----------------");
+                            sendClientToCloseConnection(session);
+                        } catch (IOException e) {
+                            log.error("소켓 종료 메시지 전송 실패", e);
+                        }
+                    });
                 } else {
                     log.info("-----------------[통화 종료 후 파일 없음]-----------------");
                     log.info("-----------------[세션 종료 요청 보냄]-----------------");
@@ -264,10 +281,10 @@ public class AudioWebSocketHandler extends AbstractWebSocketHandler {
 
                     // 프론트에 stt 텍스트 원본 먼저 보내주기 (번역 되기전에 미리 프론트 보냄)
                     TranslateResponseDto translateResponseDto = TranslateResponseDto.builder()
-                        .jeju(jeju)
-                        .translated("wait")
-                        .isFinish(false)
-                        .build();
+                            .jeju(jeju)
+                            .translated("wait")
+                            .isFinish(false)
+                            .build();
 
                     try {
                         log.info("-----------------[클로바 스피치 STT 프론트 전송]-----------------");
@@ -291,7 +308,7 @@ public class AudioWebSocketHandler extends AbstractWebSocketHandler {
     }
 
     private void sendTranslateServer(WebSocketSession session, String jejuText, Boolean isFinish) throws IOException {
-        log.info("-----------------[sendTranslateServer]-----------------");
+        log.info("------------------[sendTranslateServer]-----------------");
         log.info(session.getId());
 
         ClovaStudioResponseDto resultDto = clovaStudioService.translateByClova(jejuText);
@@ -300,10 +317,10 @@ public class AudioWebSocketHandler extends AbstractWebSocketHandler {
         String translatedText = resultDto.getResult().getMessage().content;
 
         TranslateResponseDto translateResponseDto = TranslateResponseDto.builder()
-            .jeju(jejuText)
-            .translated(translatedText)
-            .isFinish(isFinish)
-            .build();
+                .jeju(jejuText)
+                .translated(translatedText)
+                .isFinish(isFinish)
+                .build();
 
         sendClient(session, translateResponseDto);
     }
@@ -331,8 +348,8 @@ public class AudioWebSocketHandler extends AbstractWebSocketHandler {
 
         Gson gson = new Gson();
         TranslateResponseDto translateResponseDto = TranslateResponseDto.builder()
-            .isFinish(true)
-            .build();
+                .isFinish(true)
+                .build();
         String json = gson.toJson(translateResponseDto);
         TextMessage textMessage = new TextMessage(json);
 
@@ -357,6 +374,8 @@ public class AudioWebSocketHandler extends AbstractWebSocketHandler {
             log.info("클라이언트가 서버에서 멀어지고 있습니다. 세션 ID: {}", session.getId());
         } else {
             log.error("예상치 못한 종료. 세션 ID: {}, 상태 코드: {}, 이유: {}", session.getId(), status.getCode(), status.getReason());
+            // 소켓 연결이 비정상적으로 종료된 경우, 진행 중인 API 요청과 응답을 중단하고 초기화합니다.
+            resetSocketState(session);
         }
 
         // 파일 디렉터리 제거
@@ -370,6 +389,33 @@ public class AudioWebSocketHandler extends AbstractWebSocketHandler {
         // 세션 어트리뷰트를 정리합니다.
         session.getAttributes().clear();
         log.info("세션 종료: {}", session.getId());
+    }
+
+    // 소켓 연결이 비정상적으로 종료된 경우, 해당 소켓의 상태를 초기화하는 메서드
+    private void resetSocketState(WebSocketSession session) {
+        log.info("-----------------[resetSocketState]-----------------");
+
+        // 진행 중인 ClovaspeechService API 요청 중단
+        try {
+            clovaspeechService.cancelRequests();
+            log.info("ClovaspeechService API 요청 중단 완료");
+        } catch (Exception e) {
+            log.error("ClovaspeechService API 요청 중단 실패: " + e.getMessage(), e);
+        }
+
+        // 진행 중인 ClovaStudioService API 요청 중단
+        try {
+            clovaStudioService.cancelRequests();
+            log.info("ClovaStudioService API 요청 중단 완료");
+        } catch (Exception e) {
+            log.error("ClovaStudioService API 요청 중단 실패: " + e.getMessage(), e);
+        }
+
+        // 소켓 연결이 끊어진 경우, 해당 소켓의 상태를 초기화합니다.
+        // 예를 들어, 소켓 연결 시 생성한 파일이나 디렉터리를 삭제하고,
+        // 세션 어트리뷰트를 초기화하는 등의 작업을 수행할 수 있습니다.
+        deleteExistingFilesAndCreateFolder(session.getId());
+        session.getAttributes().clear();
     }
 
     // 디렉터리 삭제 메서드

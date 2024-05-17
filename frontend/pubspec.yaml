@@ -54,6 +54,7 @@ dependencies:
   toggle_switch: ^2.3.0
   path: ^1.9.0
   callkeep: ^0.3.3
+  flutter_advanced_switch: ^3.1.0
 
 dev_dependencies:
   flutter_test:
@@ -152,6 +153,17 @@ flutter:
           weight: 800
         - asset: assets/fonts/Pretendard-Black.ttf
           weight: 900
-  #
+    - family : Rikodeo
+      fonts:
+        - asset: assets/fonts/HakgyoansimRikodeoR.ttf
+    - family: KCC-Ganpan
+      fonts:
+        - asset: assets/fonts/KCC-Ganpan.ttf
+    - family: gangwon
+      fonts:
+        - asset: assets/fonts/강원교육모두 Light.ttf
+          weight: 300
+        - asset: assets/fonts/강원교육모두 Bold.ttf
+          weight: 600
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages

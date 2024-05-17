@@ -45,15 +45,11 @@ public class ClovaStudioService {
 
 
     // clova Studio의 chatCompletion api 호출 메서드
-    public ClovaStudioResponseDto translateByClova(String jeju, String prev) {
+    public ClovaStudioResponseDto translateByClova(String jeju) {
         log.info(" [9] ------------------------ ClovaStudioService - translateByClova() ");
-        log.info(" [9] ------------------------ jeju:{}, prev:{} ", jeju ,prev);
 
-        //todo. prev 안쓰는 거 확정되면 전체 코드 수정
-
-//        String userContent = "\"" + jeju + "\" \"" + prev + "\"";
         String userContent = jeju;
-        log.info(" [9] ------------------------ userContent : {} ", userContent);
+        log.info(" [9] ----------------------- userContent : {} ", userContent);
 
         List<Message> clovaMessages = Arrays.asList(
                 new Message("system", systemContent),

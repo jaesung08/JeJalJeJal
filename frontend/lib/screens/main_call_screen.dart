@@ -48,11 +48,21 @@ class _MainCallScreenState extends State<MainCallScreen> {
   void initState() {
     super.initState();
     conversationsFuture = widget.databaseService.getAllConversations(); // 초기 데이터 로딩
+
+    // 위젯의 상태 확인 및 토글 버튼 상태 설정
+    FlutterOverlayWindow.isActive().then((isActive) {
+      _controller.value = isActive;
+    });
   }
 
   void refreshScreen() {
     setState(() {
       conversationsFuture = widget.databaseService.getAllConversations(); // 데이터 재로딩
+
+      // 위젯의 상태 확인 및 토글 버튼 상태 설정
+      FlutterOverlayWindow.isActive().then((isActive) {
+        _controller.value = isActive;
+      });
     });
   }
 

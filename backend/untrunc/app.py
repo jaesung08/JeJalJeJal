@@ -31,8 +31,8 @@ def recoverM4A():
             # 환경 변수로부터 데이터 경로와 설정값 가져오기
             DATA_PATH = os.environ.get("FLASK_DATA_PATH","/data/WebSocket")
             logger.info(f"데이터 경로: {DATA_PATH}")
-            FLASK_FILE_PERIOD = int(os.environ.get("FLASK_FILE_PERIOD","5000"))
-            FLASK_FILE_DUPLICATE = int(os.environ.get("FLASK_FILE_DUPLICATE","1000"))
+            FLASK_FILE_PERIOD = int(os.environ.get("FLASK_FILE_PERIOD","2500"))
+            FLASK_FILE_DUPLICATE = int(os.environ.get("FLASK_FILE_DUPLICATE","800"))
             
             # ok.m4a 권한 검사
             logger.info(f"파일 권한 확인 시간: {datetime.now()}")

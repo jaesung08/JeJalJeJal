@@ -9,6 +9,9 @@ import 'package:jejal_project/models/conversation.dart';
 import 'package:jejal_project/services/database_service.dart';
 import 'package:jejal_project/screens/history_chat_screen.dart';
 import 'package:url_launcher/url_launcher_string.dart';
+import 'package:flutter_advanced_switch/flutter_advanced_switch.dart';
+
+import '../style/color_style.dart';
 
 class MainCallScreen extends StatefulWidget {
   final DatabaseService databaseService;
@@ -22,6 +25,24 @@ class MainCallScreen extends StatefulWidget {
 
 class _MainCallScreenState extends State<MainCallScreen> {
   Future<List<Conversation>>? conversationsFuture;
+  final _controller = ValueNotifier<bool>(false);
+
+  // 전화번호 형식 변환 함수
+  String formatPhoneNumber(String phoneNumber) {
+    // 숫자만 추출
+    String cleanedNumber = phoneNumber.replaceAll(RegExp(r'[^0-9]'), '');
+
+    // 010 접두사 추가
+    if (cleanedNumber.length == 10 && !cleanedNumber.startsWith('010')) {
+      cleanedNumber = '010$cleanedNumber';
+    }
+
+    // 하이픈 추가
+    return cleanedNumber.replaceAllMapped(
+        RegExp(r'(\d{3})(\d{3,4})(\d{4})'),
+            (Match match) => "${match[1]}-${match[2]}-${match[3]}");
+  }
+
 
   @override
   void initState() {
@@ -36,67 +57,70 @@ class _MainCallScreenState extends State<MainCallScreen> {
   }
 
   @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xffF6F5F4),
+      backgroundColor: ColorStyles.backgroundBox,
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             Padding(
-              padding: EdgeInsets.symmetric(vertical: 10),
+              padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Container(
-                    padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10) ,
+                    padding: EdgeInsets.symmetric(horizontal: 35, vertical: 10) ,
                     child: Column(
                       children: [
                         SizedBox(height: 20),
                         Text(
-                          "통화 중 번역을 원한다면!",
-                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                          "전화 통역을 원하면!",
+                          style: TextStyle(fontSize: 17, fontWeight: FontWeight.w200, fontFamily: 'Rikodeo'),
                         ),
-                        SizedBox(height: 3),
+                        SizedBox(height: 5),
                         Text(
-                          "결과를 표시해 줄",
-                          style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+                          "번역 결과를 표시해 줄",
+                          style: TextStyle(fontSize: 12, fontWeight: FontWeight.w100, color: Colors.grey, fontFamily: 'Rikodeo'),
                         ),
-                        SizedBox(height: 3),
+                        SizedBox(height: 5),
                         Text(
                           "위젯을 ON 해주세요",
-                          style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+                          style: TextStyle(fontSize: 12, fontWeight: FontWeight.w100, color: Colors.grey, fontFamily: 'Rikodeo'),
                         ),
                         SizedBox(height: 20),
                       ],
                     ),
                   ),
                   Container(
-                    padding: EdgeInsets.symmetric(horizontal: 10) ,
-                    decoration: BoxDecoration(
-                      // boxShadow: [
-                      //   BoxShadow(
-                      //     color: Colors.grey.withOpacity(0.5),
-                      //     spreadRadius: 1,
-                      //     blurRadius: 5,
-                      //     blurStyle: BlurStyle.outer,
-                      //     offset: Offset(0, 3),
-                      //   ),
-                      // ],
-                    ),
-                    child: ToggleSwitch(
-                      initialLabelIndex: 1,
-                      minWidth: 60.0,
-                      minHeight: 60.0,
-                      cornerRadius: 20.0,
-                      activeFgColor: Colors.white,
-                      activeBgColor: [Colors.orange],
-                      inactiveBgColor: Colors.grey,
-                      inactiveFgColor: Colors.white,
-                      labels: const ['On', 'Off'],
-                      onToggle: (index) async {
-                        if (index == 0 && !(await FlutterOverlayWindow.isActive())) {
+                    decoration: BoxDecoration(),
+                    child: AdvancedSwitch(
+                      activeChild: Text(
+                          '  ON',
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                          )),
+                      inactiveChild: Text(
+                          'OFF  ',
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                          )),
+                      borderRadius: BorderRadius.circular(30),
+                      width: 110,
+                      height: 55,
+                      activeColor: Colors.orange,
+                      controller: _controller,
+                      onChanged: (value) async {
+                        if (value && !(await FlutterOverlayWindow.isActive())) {
                           await FlutterOverlayWindow.showOverlay(
                             enableDrag: true,
                             overlayTitle: "제잘제잘",
@@ -107,7 +131,7 @@ class _MainCallScreenState extends State<MainCallScreen> {
                             width: 250,
                             startPosition: const OverlayPosition(0, 25),
                           );
-                        } else if (index == 1 && await FlutterOverlayWindow.isActive()) {
+                        } else if (!value && await FlutterOverlayWindow.isActive()) {
                           await FlutterOverlayWindow.closeOverlay();
                         }
                       },
@@ -117,17 +141,23 @@ class _MainCallScreenState extends State<MainCallScreen> {
               ),
             ),
             Container(
-              padding: EdgeInsets.symmetric(horizontal: 30, vertical: 10),
+              padding: EdgeInsets.symmetric(horizontal: 40, vertical: 10),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                Text("\u{260E} 전화 통역 체험해봐요!",
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                textAlign: TextAlign.start
-                ),
+                  Row(
+                    children:[
+                      Text("\u{260E}", style: TextStyle(fontSize: 18, fontWeight: FontWeight.w200),
+                          textAlign: TextAlign.start),
+                      Text("  최근 통화 목록",
+                          style: TextStyle(fontSize: 17, fontWeight: FontWeight.w200, fontFamily: 'Rikodeo'),
+                          textAlign: TextAlign.start
+                      ),
+                    ]
+                  ),
                   Text(
-                    "최근 통화 목록",
-                    style: TextStyle(fontSize: 12, color: Colors.grey),
+                    "클릭 시 통화 화면으로 이동",
+                    style: TextStyle(fontSize: 10, fontWeight: FontWeight.w100, color: Colors.grey, fontFamily: 'Rikodeo'),
                   ),
                 ]
               )
@@ -135,7 +165,7 @@ class _MainCallScreenState extends State<MainCallScreen> {
             Container(
               padding: EdgeInsets.symmetric(vertical: 10),
               height: 130,
-              width: 350,
+              width: 320,
               child: FutureBuilder<List<Conversation>>(
                 future: widget.databaseService.getUniqueRecentConversations(5),
                 builder: (context, snapshot) {
@@ -160,7 +190,7 @@ class _MainCallScreenState extends State<MainCallScreen> {
                           child: Container(
                             margin: EdgeInsets.only(right: 10),
                             decoration: BoxDecoration(
-                              color: Colors.white,
+                              color: Color(0xFFECDFD2),
                               borderRadius: BorderRadius.all(
                                 Radius.circular(12),
                               ),
@@ -173,7 +203,7 @@ class _MainCallScreenState extends State<MainCallScreen> {
                                 ),
                               ],
                             ),
-                            width: MediaQuery.of(context).size.width / 6,
+                            width: MediaQuery.of(context).size.width / 5.5,
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
@@ -198,7 +228,7 @@ class _MainCallScreenState extends State<MainCallScreen> {
                                 SizedBox(height: 8),
                                 Text(
                                   conversation.name == "제주도민" ? conversation.phoneNumber : conversation.name,
-                                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.w300, fontFamily: "Rikodeo"),
                                   overflow: TextOverflow.ellipsis,
                                 ),
                               ],
@@ -214,15 +244,15 @@ class _MainCallScreenState extends State<MainCallScreen> {
               ),
             ),
             Column(
-              children: [SizedBox(height: 30)],
+              children: [SizedBox(height: 20)]
             ),
             Container(
-              padding: EdgeInsets.symmetric(horizontal: 30, vertical: 10),
+              padding: EdgeInsets.symmetric(horizontal: 40, vertical: 10),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text("\u{1F4CB} 전화 통역 기록",
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                      style: TextStyle(fontSize: 17, fontWeight: FontWeight.w200, fontFamily: 'Rikodeo'),
                       textAlign: TextAlign.start
                   ),
                   IconButton(
@@ -234,8 +264,8 @@ class _MainCallScreenState extends State<MainCallScreen> {
             ),
             Expanded(
               child: Container(
-                padding: EdgeInsets.symmetric(vertical: 10), // 리스트뷰의 좌우 여백
-                width: 370,
+                padding: EdgeInsets.symmetric(vertical: 0), // 리스트뷰의 좌우 여백
+                width: 330,
                 child: FutureBuilder<List<Conversation>>(
                   future: widget.databaseService.getAllConversations().catchError((error) {
                     return <Conversation>[]; // 에러 발생 시 빈 리스트 반환
@@ -257,7 +287,7 @@ class _MainCallScreenState extends State<MainCallScreen> {
                                     width: 350,
                                     margin: EdgeInsets.symmetric(vertical: 3),
                                     decoration: BoxDecoration(
-                                      color: Colors.white,
+                                      color:Color(0xFFECDFD2),
                                       borderRadius: BorderRadius.circular(10),
                                       boxShadow: [
                                         BoxShadow(
@@ -295,12 +325,12 @@ class _MainCallScreenState extends State<MainCallScreen> {
                                         children: [
                                           Text(
                                             isDefaultName ? conversation.phoneNumber + "님과의 통화" : conversation.name + "님과의 통화",
-                                            style: TextStyle(fontSize: 12),
+                                            style: TextStyle(fontSize: 12, fontWeight: FontWeight.w300, fontFamily: "Rikodeo"),
                                             overflow: TextOverflow.ellipsis,
                                           ),
                                           if (!isDefaultName) Text(
-                                            conversation.phoneNumber,
-                                            style: TextStyle(fontSize: 12),
+                                            formatPhoneNumber(conversation.phoneNumber),
+                                            style: TextStyle(fontSize: 12, fontWeight: FontWeight.w300, fontFamily: "Rikodeo", color: Colors.black45),
                                             overflow: TextOverflow.ellipsis,
                                           ),
                                         ],
@@ -308,7 +338,7 @@ class _MainCallScreenState extends State<MainCallScreen> {
 
                                       trailing: Text(
                                         DateFormat('MM-dd HH:mm').format(DateTime.parse(conversation.date)),
-                                        style: TextStyle(color: Colors.grey, fontSize: 14),
+                                        style: TextStyle(fontSize: 12, fontWeight: FontWeight.w300, fontFamily: "Rikodeo", color: Colors.black45),
                                       ),
                                       onTap: () async {
                                         final messages = await widget.databaseService.getMessagesByConversationId(conversation.id!);

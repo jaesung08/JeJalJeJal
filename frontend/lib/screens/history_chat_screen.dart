@@ -5,6 +5,8 @@ import 'package:jejal_project/models/receive_message_model.dart';
 import 'package:jejal_project/services/database_service.dart';
 import 'package:jejal_project/widgets/text_segment_box.dart';
 
+import '../style/color_style.dart';
+
 class HistoryChatScreen extends StatelessWidget {
   final int conversationId;
   final List<ReceiveMessageModel> messages;
@@ -18,7 +20,9 @@ class HistoryChatScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: ColorStyles.backgroundBox,
       appBar: AppBar(
+        backgroundColor: ColorStyles.backgroundBox,
         title: FutureBuilder<Conversation>(
           future: DatabaseService.instance.getConversationById(conversationId),
           builder: (context, snapshot) {
@@ -27,10 +31,10 @@ class HistoryChatScreen extends StatelessWidget {
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('${conversation.name}과의 통화 통역 기록', style: TextStyle(fontSize: 16),),
+                  Text('${conversation.name}과의 통화 통역 기록', style: TextStyle(fontSize: 16, fontFamily: "Rikodeo"),),
                   Text(
                     '${DateFormat('MM-dd HH:mm').format(DateTime.parse(conversation.date))} 통화',
-                    style: TextStyle(fontSize: 14, color: Colors.orange),
+                    style: TextStyle(fontSize: 14, color: Colors.orange , fontFamily: "Rikodeo"),
                   ),
                 ],
               );

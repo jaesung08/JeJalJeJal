@@ -38,9 +38,10 @@ class _LoadingTextState extends State<LoadingText> {
 
   @override
   Widget build(BuildContext context) {
-    return Text(
+    return
+      Text(
       '${widget.text}${List.filled(_dotCount, '.').join()}',
-      style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
+      style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.w100, color: Colors.brown, fontFamily: 'Rikodeo'),
     );
   }
 }

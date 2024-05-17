@@ -3,6 +3,7 @@ import 'package:jejal_project/screens/main_call_screen.dart';
 import 'package:jejal_project/screens/select_file_screen.dart';
 
 import '../services/database_service.dart';
+import '../style/color_style.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -34,6 +35,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Color(0xffFFF9F3),
       body: Column(
         children: [
           Padding(
@@ -60,15 +62,18 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
         Tab(text: "파일 통역"),
       ],
       indicatorColor: Colors.orange,
+      indicatorSize: TabBarIndicatorSize.tab,
       labelColor: Colors.black,
-      unselectedLabelColor: Colors.grey,
+      unselectedLabelColor: Colors.brown,
       labelStyle: const TextStyle(
         fontSize: 18,
-        fontWeight: FontWeight.bold,
+        fontFamily: 'Rikodeo',
+        fontWeight: FontWeight.w200,
       ),
       overlayColor: MaterialStateProperty.all(
-        Colors.amber.shade100,
+        Colors.orange.shade300,
       ),
+      // dividerColor: Colors.brown.shade200,
     );
   }
 

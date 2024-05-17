@@ -287,10 +287,15 @@ public class AudioWebSocketHandler extends AbstractWebSocketHandler {
                             .build();
 
                     try {
-                        log.info("-----------------[클로바 스피치 STT 프론트 전송]-----------------");
-                        sendClient(session, translateResponseDto);
-                        log.info("-----------------[클로바 스튜디오에 STT 전송]-----------------");
-                        sendTranslateServer(session, jeju, isFinish);
+                        if (session.isOpen()) {
+                            log.info("-----------------[클로바 스피치 STT 프론트 전송]-----------------");
+                            sendClient(session, translateResponseDto);
+                            log.info("-----------------[클로바 스튜디오에 STT 전송]-----------------");
+                            sendTranslateServer(session, jeju, isFinish);
+                        } else {
+                            log.warn("WebSocket session is closed. Unable to send message.");
+                            break;
+                        }
                     } catch (Exception e) {
                         log.error("번역 api 통신 실패: " + e.getMessage(), e);
                         throw e;
@@ -311,18 +316,22 @@ public class AudioWebSocketHandler extends AbstractWebSocketHandler {
         log.info("------------------[sendTranslateServer]-----------------");
         log.info(session.getId());
 
-        ClovaStudioResponseDto resultDto = clovaStudioService.translateByClova(jejuText);
+        if (session.isOpen()) {
+            ClovaStudioResponseDto resultDto = clovaStudioService.translateByClova(jejuText);
 
-        // 번역 된 문장
-        String translatedText = resultDto.getResult().getMessage().content;
+            // 번역 된 문장
+            String translatedText = resultDto.getResult().getMessage().content;
 
-        TranslateResponseDto translateResponseDto = TranslateResponseDto.builder()
-                .jeju(jejuText)
-                .translated(translatedText)
-                .isFinish(isFinish)
-                .build();
+            TranslateResponseDto translateResponseDto = TranslateResponseDto.builder()
+                    .jeju(jejuText)
+                    .translated(translatedText)
+                    .isFinish(isFinish)
+                    .build();
 
-        sendClient(session, translateResponseDto);
+            sendClient(session, translateResponseDto);
+        } else {
+            log.warn("WebSocket session is closed. Unable to send message.");
+        }
     }
 
     // 클라이언트에게 (웹소켓 연결을 통해) 결과 전송
@@ -330,14 +339,18 @@ public class AudioWebSocketHandler extends AbstractWebSocketHandler {
         log.info("-----------------[sendClient]-----------------");
         log.info(session.getId());
 
-        Gson gson = new Gson();
-        String json = gson.toJson(translateResponseDto);
-        TextMessage textMessage = new TextMessage(json);
-        log.info("-----------------[텍스트 메세지 확인]-----------------");
-        log.info("", textMessage);
-        log.info("-----------------[클라이언트에게 메세지 보내기 전]-----------------");
-        session.sendMessage(textMessage);
-        log.info("-----------------[클라이언트에게 메세지 전송 완료]-----------------");
+        if (session.isOpen()) {
+            Gson gson = new Gson();
+            String json = gson.toJson(translateResponseDto);
+            TextMessage textMessage = new TextMessage(json);
+            log.info("-----------------[텍스트 메세지 확인]-----------------");
+            log.info("{}", textMessage);
+            log.info("-----------------[클라이언트에게 메세지 보내기 전]-----------------");
+            session.sendMessage(textMessage);
+            log.info("-----------------[클라이언트에게 메세지 전송 완료]-----------------");
+        } else {
+            log.warn("WebSocket session is closed. Unable to send message.");
+        }
     }
 
     // 클라이언트에게 isFinish = true 전송
@@ -346,17 +359,21 @@ public class AudioWebSocketHandler extends AbstractWebSocketHandler {
         log.info("-----------------[sendClientToCloseConnection]-----------------");
         log.info(session.getId());
 
-        Gson gson = new Gson();
-        TranslateResponseDto translateResponseDto = TranslateResponseDto.builder()
-                .isFinish(true)
-                .build();
-        String json = gson.toJson(translateResponseDto);
-        TextMessage textMessage = new TextMessage(json);
+        if (session.isOpen()) {
+            Gson gson = new Gson();
+            TranslateResponseDto translateResponseDto = TranslateResponseDto.builder()
+                    .isFinish(true)
+                    .build();
+            String json = gson.toJson(translateResponseDto);
+            TextMessage textMessage = new TextMessage(json);
 
-        log.info("-----------------[isFinish 확인]-----------------");
-        log.info(json);
+            log.info("-----------------[isFinish 확인]-----------------");
+            log.info(json);
 
-        session.sendMessage(textMessage);
+            session.sendMessage(textMessage);
+        } else {
+            log.warn("WebSocket session is closed. Unable to send close connection message.");
+        }
     }
 
     // WebSocket 연결이 종료된 후 실행되는 메서드

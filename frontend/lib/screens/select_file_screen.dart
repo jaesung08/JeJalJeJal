@@ -163,7 +163,7 @@ class _SelectFileState extends State<SelectFileScreen> {
                         style: TextStyle(fontSize: 17, fontWeight: FontWeight.w200, fontFamily: 'Rikodeo'),
                       ),
                       Text(
-                        "최근 통화 녹음 파일",
+                        "최근 통화",
                         style: TextStyle(fontSize: 12, fontWeight: FontWeight.w100, color: Colors.grey, fontFamily: 'Rikodeo'),
                       ),
                     ],
@@ -261,7 +261,9 @@ class _SelectFileState extends State<SelectFileScreen> {
               child: Text('파일 다시 선택하기'),
               style: ElevatedButton.styleFrom(
                 padding: EdgeInsets.symmetric(horizontal: 30, vertical: 15),
-                textStyle: TextStyle(fontSize: 16),
+                textStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.w100, fontFamily: "Rikodeo"),
+                backgroundColor: Colors.orange,
+                foregroundColor: Colors.white,
               ),
             ),
           ),

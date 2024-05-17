@@ -291,7 +291,7 @@ public class AudioWebSocketHandler extends AbstractWebSocketHandler {
     }
 
     private void sendTranslateServer(WebSocketSession session, String jejuText, Boolean isFinish) throws IOException {
-        log.info("-----------------[sendTranslateServer]-----------------");
+        log.info("----------------[sendTranslateServer]-----------------");
         log.info(session.getId());
 
         ClovaStudioResponseDto resultDto = clovaStudioService.translateByClova(jejuText);

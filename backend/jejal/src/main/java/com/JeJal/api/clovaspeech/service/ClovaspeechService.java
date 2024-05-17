@@ -83,4 +83,14 @@ public class ClovaspeechService {
             throw new RuntimeException(e);
         }
     }
+
+    public void cancelRequests() {
+        try {
+            httpClient.close();
+            log.info("ClovaspeechService의 HttpClient 종료");
+        } catch (IOException e) {
+            log.error("ClovaspeechService의 HttpClient 종료 실패: " + e.getMessage(), e);
+        }
+        httpClient = HttpClients.createDefault();
+    }
 }

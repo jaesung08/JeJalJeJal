@@ -196,13 +196,13 @@
         <td height="140px" align="center"> <a href="https://github.com/Cho-yool">
             <img src="./assets/image/ㅅㅎ.jpg" /> <br><br> 👑 조성호 <br>(Front-End) </a> <br></td>
         <td height="140px" align="center"> <a href="https://github.com/zoonghyun">
-            <img src="./assets/image/ㅈㅎ.jpeg" /> <br><br> 박중현 <br>(Front-End) </a> <br></td>
+            <img src="./assets/image/ㅈㅎ.jpg" /> <br><br> 박중현 <br>(Front-End) </a> <br></td>
         <td height="140px" align="center"> <a href="https://github.com/hjjj99">
-            <img src="./assets/image/ㅎㅈ.jpeg" /> <br><br> 김현지 <br>(Front-End) </a> <br></td>
+            <img src="./assets/image/ㅎㅈ.png" /> <br><br> 김현지 <br>(Front-End) </a> <br></td>
         <td height="140px" align="center"> <a href="https://github.com/so2043">
-            <img src="./assets/image/ㅅㅇ.jpg" /> <br><br> 정소영 <br>(Back-End) </a> <br></td>
+            <img src="./assets/image/ㅅㅇ.jpeg" /> <br><br> 정소영 <br>(Back-End) </a> <br></td>
         <td height="140px" align="center"> <a href="https://github.com/jaesung08">
-            <img src="./assets/image/ㅈㅅ.jpg" /> <br><br> 장재성 <br>(Back-End) </a> <br></td>
+            <img src="./assets/image/ㅈㅅ.jpeg" /> <br><br> 장재성 <br>(Back-End) </a> <br></td>
         <td height="140px" align="center"> <a href="https://github.com/leeejw00">
             <img src="./assets/image/ㅈㅇ.jpg" /> <br><br> 이지우 <br>(Back-End) </a> <br></td>
     </tr>

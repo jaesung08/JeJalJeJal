@@ -81,4 +81,10 @@ public class ClovaStudioService {
         }
 
     }
+
+    public void cancelRequests() {
+        webClient.mutate().filter((request, next) -> next.exchange(request).doOnCancel(() -> {
+            log.info("ClovaStudioService의 WebClient 요청 취소");
+        })).build();
+    }
 }

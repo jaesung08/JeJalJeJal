@@ -46,7 +46,7 @@ public class ClovaStudioService {
 
     // clova Studio의 chatCompletion api 호출 메서드
     public ClovaStudioResponseDto translateByClova(String jeju) {
-        log.info(" [9] ------------------------ ClovaStudioService - translateByClova() ");
+        log.info(" [9] ----------------------- ClovaStudioService - translateByClova() ");
 
         String userContent = jeju;
         log.info(" [9] ----------------------- userContent : {} ", userContent);

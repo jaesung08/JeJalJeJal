@@ -10,7 +10,7 @@ server:
 # SSL 설정
   ssl:
     key-store: classpath:keystore.p12
-    key-store-password: dy12tnf34
+    key-store-password: 
     key-store-type: PKCS12
 
 spring:
@@ -20,7 +20,7 @@ spring:
     hikari:
       driver-class-name: org.mariadb.jdbc.Driver
       username: S10P31A406
-      password: dy12tnf34
+      password: 
     url: jdbc:mariadb://k10a406.p.ssafy.io:3306/S10P31A406?serverTimezone=UTC&useUnicode=true&characterEncoding=utf8
   jpa:
     open-in-view: true
@@ -54,9 +54,9 @@ logging:
 
 # clova studio
 clovastudio:
-  api_key: NTA0MjU2MWZlZTcxNDJiY2W69+ukC2YzzqzaAgLATjpbH+QlZCbRQEDEsCLiaTnF
-  api_key_primary_val: Tw9XWSuCu2LrtFiLXotBmXHhK7p2D4DBkGwq93xe
-  request_id: af267c9c-8934-438c-9703-d4706aa35931
+  api_key: 
+  api_key_primary_val: 
+  request_id: 
   url: https://clovastudio.apigw.ntruss.com
   endpoint: /testapp/v1/chat-completions/HCX-003
   system_content:

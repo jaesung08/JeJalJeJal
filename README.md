@@ -193,7 +193,7 @@
 
 ## 👨‍👩‍👧‍👦멤버 소개
 
-<table>
+<table style="width: 100%; border-collapse: collapse;">
     <tr>
         <td height="140px" align="center"> <a href="https://github.com/Cho-yool">
             <img src="./assets/image/ㅅㅎ.jpg" /> <br><br> 👑 조성호 <br>(Front-End) </a> <br></td>

@@ -227,11 +227,11 @@
         </td>
     </tr>
     <tr>
-        <td align="center" style="width: 16.66%; word-wrap: break-word;">- 웹소켓 실시간 통역 관리 <br/>- 통역 데이터 오버레이 출력 <br>- SQLite 로컬 DB 구축<br>- 통화 기록 텍스트 저장 및 조회</td>
-        <td align="center" style="width: 16.66%; word-wrap: break-word;">- 메인페이지, 오버레이 UI 구상 및 구현 <br/>- UX 개선 <br>- 오버레이 위젯 구현<br>- 통화 기록 데이터 처리</td>
-        <td align="center" style="width: 16.66%; word-wrap: break-word;">- 실시간 통화 녹음 전송(WebSocket)<br/>- 통화 중 실시간 결과 출력 <br>- 메인 페이지 제작 <br>- 파일 통역 페이지 제작 <br> 디자인 총괄</td>
+        <td align="center" style="width: 16.66%; word-wrap: break-word;">- 웹소켓 실시간 통역 관리 <br/>- 통역 데이터 오버레이 출력 <br/>- SQLite 로컬 DB 구축<br/>- 통화 기록 텍스트 저장 및 조회</td>
+        <td align="center" style="width: 16.66%; word-wrap: break-word;">- 메인페이지, 오버레이 UI 구상 및 구현 <br/>- UX 개선 <br/>- 오버레이 위젯 구현<br/>- 통화 기록 데이터 처리</td>
+        <td align="center" style="width: 16.66%; word-wrap: break-word;">- 실시간 통화 녹음 전송(WebSocket)<br/>- 통화 중 실시간 결과 출력 <br>- 메인 페이지 제작 <br/>- 파일 통역 페이지 제작 <br/> 디자인 총괄</td>
         <td align="center" style="width: 16.66%; word-wrap: break-word;">- 음성 파일 텍스트 변환(STT, clova speech API) <br/>- STT keyword boosting <br>- boosting 위한 데이터 수집 및 처리</td>
-        <td align="center" style="width: 16.66%; word-wrap: break-word;">- INFRA <br>- 미완성 음성 파일 복원 untrunc(FFmpeg)<br>- backend 기본 로직 구현</td>
-        <td align="center" style="width: 16.66%; word-wrap: break-word;">- 제주도 사투리 표준어 번역 <br/>- AI, clova studio API <br>- 정확도 위한 프롬프트 최적화</td>
+        <td align="center" style="width: 16.66%; word-wrap: break-word;">- INFRA <br/>- 미완성 음성 파일 복원 untrunc(FFmpeg)<br/>- backend 기본 로직 구현</td>
+        <td align="center" style="width: 16.66%; word-wrap: break-word;">- 제주도 사투리 표준어 번역 <br/>- AI, clova studio API <br/>- 정확도 위한 프롬프트 최적화</td>
     </tr>
 </table>

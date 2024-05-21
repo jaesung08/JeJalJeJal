@@ -195,43 +195,43 @@
 
 <table style="width: 100%; border-collapse: collapse; table-layout: fixed;">
     <tr>
-        <td align="center">
+        <td align="center" style="width: 16.66%;">
             <a href="https://github.com/Cho-yool">
                 <img src="./assets/image/ㅅㅎ.jpg" style="width: 100px; height: 140px;" /><br><br> 👑 조성호 <br>(Front-End)
             </a><br>
         </td>
-        <td align="center">
+        <td align="center" style="width: 16.66%;">
             <a href="https://github.com/zoonghyun">
                 <img src="./assets/image/ㅈㅎ.jpg" style="width: 100px; height: 140px;" /><br><br> 박중현 <br>(Front-End)
             </a><br>
         </td>
-        <td align="center">
+        <td align="center" style="width: 16.66%;">
             <a href="https://github.com/hjjj99">
                 <img src="./assets/image/ㅎㅈ.png" style="width: 100px; height: 140px;" /><br><br> 김현지 <br>(Front-End)
             </a><br>
         </td>
-        <td align="center">
+        <td align="center" style="width: 16.66%;">
             <a href="https://github.com/so2043">
                 <img src="./assets/image/ㅅㅇ.jpeg" style="width: 100px; height: 140px;" /><br><br> 정소영 <br>(Back-End)
             </a><br>
         </td>
-        <td align="center">
+        <td align="center" style="width: 16.66%;">
             <a href="https://github.com/jaesung08">
                 <img src="./assets/image/ㅈㅅ.jpeg" style="width: 100px; height: 140px;" /><br><br> 장재성 <br>(Back-End)
             </a><br>
         </td>
-        <td align="center">
+        <td align="center" style="width: 16.66%;">
             <a href="https://github.com/leeejw00">
                 <img src="./assets/image/ㅈㅇ.jpg" style="width: 100px; height: 140px;" /><br><br> 이지우 <br>(Back-End)
             </a><br>
         </td>
     </tr>
     <tr>
-        <td align="center">- 웹소켓 실시간 통역 관리 <br/>- 통역 데이터 오버레이 출력 <br>- SQLite 로컬 DB 구축<br>- 통화 기록 텍스트 저장 및 조회</td>
-        <td align="center">- 메인페이지, 오버레이 UI 구상 및 구현 <br/>- UX 개선 <br>- 오버레이 위젯 구현<br>- 통화 기록 데이터 처리</td>
-        <td align="center">- 실시간 통화 녹음 전송(WebSocket)<br/>- 통화 중 실시간 결과 출력 <br>- 메인 페이지 제작 <br>- 파일 통역 페이지 제작 <br> 디자인 총괄</td>
-        <td align="center">- 음성 파일 텍스트 변환(STT, clova speech API) <br/>- STT keyword boosting <br>- boosting 위한 데이터 수집 및 처리</td>
-        <td align="center">- INFRA <br>- 미완성 음성 파일 복원 untrunc(FFmpeg)<br>- backend 기본 로직 구현</td>
-        <td align="center">- 제주도 사투리 표준어 번역 <br/>- AI, clova studio API <br>- 정확도 위한 프롬프트 최적화</td>
+        <td align="center" style="width: 16.66%;">- 웹소켓 실시간 통역 관리 <br/>- 통역 데이터 오버레이 출력 <br>- SQLite 로컬 DB 구축<br>- 통화 기록 텍스트 저장 및 조회</td>
+        <td align="center" style="width: 16.66%;">- 메인페이지, 오버레이 UI 구상 및 구현 <br/>- UX 개선 <br>- 오버레이 위젯 구현<br>- 통화 기록 데이터 처리</td>
+        <td align="center" style="width: 16.66%;">- 실시간 통화 녹음 전송(WebSocket)<br/>- 통화 중 실시간 결과 출력 <br>- 메인 페이지 제작 <br>- 파일 통역 페이지 제작 <br> 디자인 총괄</td>
+        <td align="center" style="width: 16.66%;">- 음성 파일 텍스트 변환(STT, clova speech API) <br/>- STT keyword boosting <br>- boosting 위한 데이터 수집 및 처리</td>
+        <td align="center" style="width: 16.66%;">- INFRA <br>- 미완성 음성 파일 복원 untrunc(FFmpeg)<br>- backend 기본 로직 구현</td>
+        <td align="center" style="width: 16.66%;">- 제주도 사투리 표준어 번역 <br/>- AI, clova studio API <br>- 정확도 위한 프롬프트 최적화</td>
     </tr>
 </table>

@@ -153,6 +153,8 @@
 | **# Frontend**               |                                         |                   |
 |                            | ![Flutter](https://img.shields.io/badge/Flutter-02569B?style=for-the-badge&logo=flutter&logoColor=white)                                 | ![3.19.6](https://img.shields.io/badge/3.19.6-02569B?style=for-the-badge&logo=none)            |
 |                            | ![Dart](https://img.shields.io/badge/Dart-0175C2?style=for-the-badge&logo=dart&logoColor=white)                                    | ![3.3.4](https://img.shields.io/badge/3.3.4-0175C2?style=for-the-badge&logo=none)            |
+| - Database                 |                                         |                   |
+|                            | ![SQLite](https://img.shields.io/badge/SQLite_Package-003B57?style=for-the-badge&logo=SQLite&logoColor=white)                                 | ![3.41.2](https://img.shields.io/badge/2.3.3-003B57?style=for-the-badge&logo=none)            |
 | - Tools                    |                                         |                   |
 |                            | ![Flutter DevTools](https://img.shields.io/badge/Flutter_Devtools-02569B?style=for-the-badge&logo=flutter&logoColor=white)                       | ![2.31.1](https://img.shields.io/badge/2.31.1-02569B?style=for-the-badge&logo=none)            |
 |                            | ![Kotlin](https://img.shields.io/badge/Kotlin-0095D5?style=for-the-badge&logo=kotlin&logoColor=white)                        |                   |
